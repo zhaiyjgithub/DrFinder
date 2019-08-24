@@ -1,6 +1,7 @@
 package main
 
 import (
+	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
 	"fmt"
 	"github.com/kataras/iris"
@@ -17,5 +18,7 @@ func main()  {
 }
 
 func doctorMVC(app *mvc.Application)  {
+	doctorService:= service.NewDoctorService()
+	app.Register(doctorService)
 	app.Handle(new(controllers.DoctorController))
 }

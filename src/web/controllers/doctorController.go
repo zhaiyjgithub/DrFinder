@@ -1,16 +1,46 @@
 package controllers
 
-import "github.com/kataras/iris/mvc"
+import (
+	"DrFinder/src/models/doctor"
+	"DrFinder/src/service"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+)
 
 type DoctorController struct {
-
+	Ctx iris.Context
+	Service service.DoctorService
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle("GET", "/GetDoctorById", "GetDoctorById")
+	b.Handle("POST", "/AddDoctor", "AddDoctor")
 }
 
-func (c *DoctorController) GetDoctorById() string {
-	return "doctor not found"
+func (c *DoctorController) addDoctor()  {
+
+}
+
+func (c *DoctorController) AddDoctor() error {
+	type doctorParam struct {
+		Name string
+	}
+
+	var param doctorParam
+
+	if err:= c.Ctx.ReadJSON(&param); err == nil {
+
+	}else {
+
+	}
+
+	newDoctor:= &doctor.Doctor{
+		FirstName: "YuanJi",
+		LastName: "Zhai",
+		Specialty: "Alengy",
+	}
+
+	err:= c.Service.Add(newDoctor)
+
+	return err
 }
 
