@@ -1,6 +1,6 @@
 package doctor
 
-import "time"
+import "github.com/jinzhu/gorm"
 
 //`doctor_id` int(11) NOT NULL,
 //`name_prefix` varchar(5) NULL,
@@ -27,27 +27,26 @@ import "time"
 //`specialty` varchar(255) NULL,
 
 type Doctor struct {
-	DoctorId int
-	NamePrefix string
-	FirstName string
-	MiddleName string
-	LastName string
-	Name string
-	createDate time.Time
-	Npi int
-	Credential string
-	Gender string
-	Specialty string
-	Profile string
-	MailingAddress string
-	MailingCity string
-	MailingState string
-	MailingZipCode string
-	MailingPhone string
-	MailFax string
+	gorm.Model
+	NamePrefix      string
+	FirstName       string
+	MiddleName      string
+	LastName        string
+	Name            string
+	Npi             int
+	Credential      string
+	Gender          string
+	Specialty       string
+	Profile         string
+	MailingAddress  string
+	MailingCity     string
+	MailingState    string
+	MailingZipCode  string
+	MailingPhone    string
+	MailFax         string
 	BusinessAddress string
-	BusinessCity string
-	BusinessState string
+	BusinessCity    string
+	BusinessState   string
 	BusinessZipCode string
-	BusinessPhone string
+	BusinessPhone   string
 }

@@ -8,15 +8,15 @@ import (
 )
 
 type DoctorController struct {
-	Ctx iris.Context
+	Ctx     iris.Context
 	Service service.DoctorService
 }
 
-func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
+func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("POST", "/AddDoctor", "AddDoctor")
 }
 
-func (c *DoctorController) addDoctor()  {
+func (c *DoctorController) addDoctor() {
 
 }
 
@@ -27,20 +27,19 @@ func (c *DoctorController) AddDoctor() error {
 
 	var param doctorParam
 
-	if err:= c.Ctx.ReadJSON(&param); err == nil {
+	if err := c.Ctx.ReadJSON(&param); err == nil {
 
-	}else {
+	} else {
 
 	}
 
-	newDoctor:= &doctor.Doctor{
+	newDoctor := &doctor.Doctor{
 		FirstName: "YuanJi",
-		LastName: "Zhai",
+		LastName:  "Zhai",
 		Specialty: "Alengy",
 	}
 
-	err:= c.Service.Add(newDoctor)
+	err := c.Service.Add(newDoctor)
 
 	return err
 }
-

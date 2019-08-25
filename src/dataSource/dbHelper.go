@@ -3,19 +3,20 @@ package dataSource
 import (
 	"DrFinder/src/conf"
 	"fmt"
-	"github.com/go-xorm/xorm"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	"log"
 	"sync"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	masterEngine *xorm.Engine
-	slaveEngine *xorm.Engine
-	lock sync.Mutex
+	masterEngine *gorm.DB
+	slaveEngine  *gorm.DB
+	lock         sync.Mutex
 )
 
-func InstanceMaster() *xorm.Engine {
+func InstanceMaster() *gorm.DB {
+
 	if masterEngine != nil {
 		return masterEngine
 	}
@@ -27,12 +28,12 @@ func InstanceMaster() *xorm.Engine {
 		return masterEngine
 	}
 
-	c:= conf.MasterDBConf
-	driveSource:= fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?",
+	c := conf.MasterDBConf
+	driveSource := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		c.User, c.Pwd, c.Host, c.Port, c.DBName)
 
 	fmt.Println(driveSource)
-	engine, err := xorm.NewEngine(conf.DriverName,
+	engine, err := gorm.Open(conf.DriverName,
 		driveSource)
 
 	fmt.Print(err)
@@ -40,7 +41,7 @@ func InstanceMaster() *xorm.Engine {
 		log.Fatal("dbhelper instance error")
 	}
 
-	engine.ShowSQL(true)
+	engine.LogMode(true)
 
 	return engine
 }
