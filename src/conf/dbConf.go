@@ -14,6 +14,6 @@ var MasterDBConf = DBConf{
 	Host:"localhost",
 	Port: 3306,
 	User:"root",
-	Pwd: "12345678",
+	Pwd: "123456",
 	DBName:"drfinder",
 }

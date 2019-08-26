@@ -4,12 +4,26 @@ import (
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
 	"fmt"
+	"github.com/droundy/goopt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 )
 
 type User struct {
 	Name string
+}
+
+func init() {
+	// Setup goopts
+	goopt.Description = func() string {
+		return "ORM and RESTful API generator for Mysql"
+	}
+	goopt.Version = "0.1"
+	goopt.Summary = `gen --connstr "root:123456@tcp(127.0.0.1:3306)/doctors?&parseTime=True" --database doctors  --json --gorm --guregu --rest`
+
+	//Parse options
+	goopt.Parse(nil)
+
 }
 
 func main()  {

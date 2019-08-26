@@ -34,9 +34,10 @@ func (c *DoctorController) AddDoctor() error {
 	}
 
 	newDoctor:= &doctor.Doctor{
-		FirstName: "YuanJi",
-		LastName: "Zhai",
-		Specialty: "Alengy",
+		Npi: 1316960271,
+		LastName: "MASSEY",
+		FirstName: "WILLIAM",
+
 	}
 
 	err:= c.Service.Add(newDoctor)
