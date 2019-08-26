@@ -11,12 +11,10 @@ import (
 
 var (
 	masterEngine *gorm.DB
-	slaveEngine  *gorm.DB
-	lock         sync.Mutex
+	lock sync.Mutex
 )
 
 func InstanceMaster() *gorm.DB {
-
 	if masterEngine != nil {
 		return masterEngine
 	}
@@ -36,7 +34,6 @@ func InstanceMaster() *gorm.DB {
 	engine, err := gorm.Open(conf.DriverName,
 		driveSource)
 
-	fmt.Print(err)
 	if err != nil {
 		log.Fatal("dbhelper instance error")
 	}

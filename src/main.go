@@ -1,6 +1,7 @@
 package main
 
 import (
+	"DrFinder/src/Utils"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
 	"fmt"
@@ -11,8 +12,9 @@ import (
 func main() {
 	fmt.Println("Hello golang")
 
-	app := iris.New()
-	mvc.Configure(app.Party("/doctor"), doctorMVC)
+
+	app:= iris.New()
+	mvc.Configure(app.Party(Utils.APIDoctor), doctorMVC)
 	app.Run(iris.Addr(":8090"))
 }
 
