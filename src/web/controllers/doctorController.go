@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"DrFinder/src/Utils"
+	"DrFinder/src/models/doctorModel"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
-	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
+	"time"
 )
 
 var validate *validator.Validate
@@ -24,8 +25,27 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 
 func (c *DoctorController) AddDoctor() {
 	type doctorParam struct {
-		Name string `validate:"gt=0"`
-		Address string `validate:"gt=0"`
+		Npi             int64  `validate:"gt=0"`
+		LastName        string `validate:"gt=0"`
+		FirstName       string `validate:"gt=0"`
+		MiddleName      string
+		Name            string
+		NamePrefix      string
+		Credential      string `validate:"gt=0"`
+		Gender          string `validate:"len=1"`
+		MailingAddress  string `validate:"gt=0"`
+		MailingCity     string `validate:"gt=0"`
+		MailingState    string `validate:"gt=0"`
+		MailingZip      string `validate:"gt=0"`
+		MailingPhone    string
+		MailingFax      string
+		BusinessAddress string `validate:"gt=0"`
+		BusinessCity    string `validate:"gt=0"`
+		BusinessState   string `validate:"gt=0"`
+		BusinessZip     string `validate:"gt=0"`
+		BusinessPhone   string `validate:"gt=0"`
+		BusinessFax     string
+		Specialty       string `validate:"gt=0"`
 	}
 
 	var param doctorParam
@@ -37,39 +57,62 @@ func (c *DoctorController) AddDoctor() {
 
 	err:= validate.Struct(&param)
 	if err != nil {
-		fmt.Println(err.Error())
+		response.Fail(c.Ctx, response.Err, err.Error(), nil)
+		return
 	}
 
-	//newDoctor:= &doctor.Doctor{
-	//	Npi: 1316960271,
-	//	LastName: "MASSEY",
-	//	FirstName: "WILLIAM",
-	//	MiddleName: "A",
-	//	CreatedAt: time.Now(),
-	//	UpdatedAt: time.Now(),
-	//	Name: "",
-	//	NamePrefix: "DR.",
-	//	Gender: "M",
-	//	MailingAddress: "504 BROOKWOOD BLVD SUITE 100",
-	//	MailingCity: "BIRMINGHAM",
-	//	MailingState: "AL",
-	//	MailingZip: "352096802",
-	//	MailingPhone: "2058719661",
-	//	MailingFax: "2058701621",
-	//	BusinessAddress: "100 PILOT MEDICAL DR SUITE 100",
-	//	BusinessCity: "BIRMINGHAM",
-	//	BusinessState: "AL",
-	//	BusinessZip: "352353411",
-	//	BusinessPhone: "2058548084",
-	//	BusinessFax: "2058159341",
-	//	Specialty: "Allergy & Immunology",
-	//}
-	//
-	//ok := c.Service.Add(newDoctor)
-	//
-	//if ok == true {
-	//	response.Success(c.Ctx, response.Successful, nil)
-	//}else {
-	//	response.Fail(c.Ctx, response.Err, "", nil)
-	//}
+	newDoctor:= &doctorModel.Doctor{
+		Npi: param.Npi,
+		LastName: param.LastName,
+		FirstName: param.FirstName,
+		MiddleName: param.MiddleName,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name: "",
+		NamePrefix: param.NamePrefix,
+		Gender: param.Gender,
+		MailingAddress: param.MailingAddress,
+		MailingCity: param.MailingCity,
+		MailingState: param.MailingState,
+		MailingZip: param.BusinessZip,
+		MailingPhone: param.MailingPhone,
+		MailingFax: param.MailingFax,
+		BusinessAddress: param.BusinessAddress,
+		BusinessCity: param.BusinessCity,
+		BusinessState: param.BusinessState,
+		BusinessZip: param.BusinessZip,
+		BusinessPhone: param.BusinessPhone,
+		BusinessFax: param.BusinessFax,
+		Specialty: param.Specialty,
+	}
+
+	ok := c.Service.Add(newDoctor)
+
+	if ok == true {
+		response.Success(c.Ctx, response.Successful, nil)
+	}else {
+		response.Fail(c.Ctx, response.Err, "", nil)
+	}
+}
+
+func (c *DoctorController)GetDoctorById(id int) {
+	type Param struct {
+		ID int
+	}
+
+	var param Param
+
+	if err:= c.Ctx.ReadJSON(&param); err != nil {
+		response.Fail(c.Ctx, response.Err, response.ParamErr, nil)
+		return
+	}
+
+	err:= validate.Struct(&param)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, err.Error(), nil)
+		return
+	}
+
+	doctor := c.Service.GetDoctorById(id)
+	response.Success(c.Ctx, response.Successful,  doctor)
 }

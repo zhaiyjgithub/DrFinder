@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"DrFinder/src/models/doctor"
+	"DrFinder/src/models/doctorModel"
 	"github.com/jinzhu/gorm"
 )
 
@@ -15,7 +15,17 @@ func NewDoctorDao(engine *gorm.DB) *DoctorDao {
 	}
 }
 
-func (d *DoctorDao) Add(doctor *doctor.Doctor) bool  {
+func (d *DoctorDao) Add(doctor *doctorModel.Doctor) bool  {
 	ok := d.engine.NewRecord(doctor)
 	return ok
+}
+
+func (d *DoctorDao) GetDoctorById(id int) (info *doctorModel.Doctor)  {
+	 db := d.engine.Where("id =  ?", id).First(info)
+
+	 if db.Error != nil {
+	 	return nil
+	 }else {
+	 	return info
+	 }
 }

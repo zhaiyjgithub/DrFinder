@@ -3,11 +3,12 @@ package service
 import (
 	"DrFinder/src/dao"
 	"DrFinder/src/dataSource"
-	"DrFinder/src/models/doctor"
+	"DrFinder/src/models/doctorModel"
 )
 
 type DoctorService interface {
-	Add(doctor *doctor.Doctor) bool
+	Add(doctor *doctorModel.Doctor) bool
+	GetDoctorById(id int) *doctorModel.Doctor
 }
 
 type doctorService struct {
@@ -20,8 +21,12 @@ func NewDoctorService() DoctorService {
 	}
 }
 
-func (s *doctorService) Add(doctor *doctor.Doctor) bool {
+func (s *doctorService) Add(doctor *doctorModel.Doctor) bool {
 	ok := s.dao.Add(doctor)
 
 	return ok
+}
+
+func (s *doctorService) GetDoctorById(id int) (info *doctorModel.Doctor)  {
+	return s.dao.GetDoctorById(id)
 }
