@@ -1,34 +1,46 @@
 package controllers
 
 import (
-	"fmt"
+	"DrFinder/src/models/doctor"
+	"DrFinder/src/service"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 )
 
 type DoctorController struct {
-	Ctx iris.Context //自动绑定上下文
-}
-
-type User struct {
-	Name string
+	Ctx iris.Context
+	Service service.DoctorService
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle("POST", "/GetDoctorById", "GetDoctorById")
+	b.Handle("POST", "/AddDoctor", "AddDoctor")
 }
 
-func (c *DoctorController) GetDoctorById() string {
-	var user User
+func (c *DoctorController) addDoctor()  {
 
-	if err:= c.Ctx.ReadJSON(&user); err != nil {
-		fmt.Println("failed")
-	}else {
+}
 
-		fmt.Println(user.Name)
+func (c *DoctorController) AddDoctor() error {
+	type doctorParam struct {
+		Name string
 	}
 
-	return user.Name
-}
+	var param doctorParam
 
+	if err:= c.Ctx.ReadJSON(&param); err == nil {
+
+	}else {
+
+	}
+
+	newDoctor:= &doctor.Doctor{
+		FirstName: "YuanJi",
+		LastName: "Zhai",
+		Specialty: "Alengy",
+	}
+
+	err:= c.Service.Add(newDoctor)
+
+	return err
+}
 
