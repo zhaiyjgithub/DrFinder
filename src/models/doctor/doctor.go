@@ -25,5 +25,6 @@ type Doctor struct {
 	BusinessState   string `gorm:"column:business_state"`
 	BusinessZip     string `gorm:"column:business_zip"`
 	BusinessPhone   string `gorm:"column:business_phone"`
+	BusinessFax     string `gorm:"column:business_fax"`
 	Specialty       string `gorm:"column:specialty"`
 }

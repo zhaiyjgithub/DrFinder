@@ -2,21 +2,20 @@ package dao
 
 import (
 	"DrFinder/src/models/doctor"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 )
 
 type DoctorDao struct {
-	engine *xorm.Engine
+	engine *gorm.DB
 }
 
-func NewDoctorDao(engine *xorm.Engine) *DoctorDao {
+func NewDoctorDao(engine *gorm.DB) *DoctorDao {
 	return &DoctorDao{
 		engine:engine,
 	}
 }
 
 func (d *DoctorDao) Add(doctor *doctor.Doctor) error  {
-	_, err := d.engine.Insert(doctor)
-
-	return err
+	db := d.engine.Create(doctor)
+	return db.Error
 }
