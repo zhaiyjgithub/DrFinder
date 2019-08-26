@@ -7,7 +7,7 @@ import (
 )
 
 type DoctorService interface {
-	Add(doctor *doctor.Doctor) error
+	Add(doctor *doctor.Doctor) bool
 }
 
 type doctorService struct {
@@ -20,8 +20,8 @@ func NewDoctorService() DoctorService {
 	}
 }
 
-func (s *doctorService) Add(doctor *doctor.Doctor) error {
-	err:= s.dao.Add(doctor)
+func (s *doctorService) Add(doctor *doctor.Doctor) bool {
+	ok := s.dao.Add(doctor)
 
-	return err
+	return ok
 }

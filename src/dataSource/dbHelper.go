@@ -34,7 +34,6 @@ func InstanceMaster() *gorm.DB {
 	engine, err := gorm.Open(conf.DriverName,
 		driveSource)
 
-	fmt.Print(err)
 	if err != nil {
 		log.Fatal("dbhelper instance error")
 	}

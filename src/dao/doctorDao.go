@@ -15,7 +15,7 @@ func NewDoctorDao(engine *gorm.DB) *DoctorDao {
 	}
 }
 
-func (d *DoctorDao) Add(doctor *doctor.Doctor) error  {
-	db := d.engine.Create(doctor)
-	return db.Error
+func (d *DoctorDao) Add(doctor *doctor.Doctor) bool  {
+	ok := d.engine.NewRecord(doctor)
+	return ok
 }
