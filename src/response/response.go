@@ -11,6 +11,7 @@ const Err = 1
 
 const Successful = "success"
 const ParamErr = "param error"
+const NotFound = "Nor found"
 
 
 
@@ -18,7 +19,7 @@ func Success(ctx iris.Context, msg string, data interface{})  {
 	ctx.JSON(iris.Map{
 		"data": data,
 		"code": Ok,
-		"msg": "successfully",
+		"msg": msg,
 	})
 }
 

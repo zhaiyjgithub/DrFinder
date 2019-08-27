@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"DrFinder/src/Utils"
-	"DrFinder/src/models/doctorModel"
+	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"github.com/kataras/iris"
@@ -51,9 +51,12 @@ func (c *DoctorController) AddDoctor() {
 
 	var param Param
 
-	validateParam(c.Ctx, &param)
+	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
 
-	newDoctor:= &doctorModel.Doctor{
+	newDoctor:= &models.Doctor{
 		Npi: param.Npi,
 		LastName: param.LastName,
 		FirstName: param.FirstName,
@@ -94,29 +97,38 @@ func (c *DoctorController)GetDoctorById() {
 
 	var param Param
 
-	validateParam(c.Ctx, &param)
+	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
 
 	doctor := c.Service.GetDoctorById(param.DoctorId)
 
-	var msg string
 	if  doctor != nil {
-		msg = ""
+		response.Success(c.Ctx, response.Successful, doctor)
 	}else {
-		msg = "Not found"
+		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
 	}
-
-	response.Success(c.Ctx, msg,  doctor)
 }
 
-func validateParam(ctx iris.Context, param interface{})  {
-	if err:= ctx.ReadJSON(&param); err != nil {
-		response.Fail(ctx, response.Err, response.ParamErr, nil)
-		return
+func (c *DoctorController) GetDoctorBySpecialty(specialty string)  {
+	type Param struct {
+		Specialty string `validate:"gt=0"`
 	}
 
-	err:= validate.Struct(&param)
+	var param Param
+	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+
 	if err != nil {
-		response.Fail(ctx, response.Err, err.Error(), nil)
 		return
 	}
+
+	doctor:= c.Service.GetDoctorBySpecialty(param.Specialty)
+
+	if doctor != nil {
+		response.Success(c.Ctx, response.Successful, doctor)
+	}else {
+		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
+	}
 }
+

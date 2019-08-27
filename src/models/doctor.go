@@ -1,4 +1,4 @@
-package doctorModel
+package models
 
 import (
 	"time"
