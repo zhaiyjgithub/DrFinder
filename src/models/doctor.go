@@ -30,3 +30,8 @@ type Doctor struct {
 	BusinessFax     string `gorm:"column:business_fax"`
 	Specialty       string `gorm:"column:specialty"`
 }
+
+// TableName sets the insert table name for this struct type
+func (d *Doctor) TableName() string {
+	return "doctors"
+}

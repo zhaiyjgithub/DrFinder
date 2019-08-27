@@ -16,8 +16,11 @@ func NewDoctorDao(engine *gorm.DB) *DoctorDao {
 }
 
 func (d *DoctorDao) Add(doctor *models.Doctor) bool  {
-	ok := d.engine.NewRecord(doctor)
-	return ok
+	db := d.engine.Create(doctor)
+	if db.Error != nil {
+		return false
+	}
+	return true
 }
 
 func (d *DoctorDao) GetDoctorById(id int)  *models.Doctor  {
