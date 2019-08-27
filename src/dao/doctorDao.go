@@ -20,7 +20,8 @@ func (d *DoctorDao) Add(doctor *doctorModel.Doctor) bool  {
 	return ok
 }
 
-func (d *DoctorDao) GetDoctorById(id int) (info *doctorModel.Doctor)  {
+func (d *DoctorDao) GetDoctorById(id int) *doctorModel.Doctor  {
+	 var info = new(doctorModel.Doctor)
 	 db := d.engine.Where("id =  ?", id).First(info)
 
 	 if db.Error != nil {

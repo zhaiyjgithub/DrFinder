@@ -21,11 +21,12 @@ type DoctorController struct {
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	validate = validator.New()
 	b.Handle(iris.MethodPost, Utils.AddDoctor, "AddDoctor")
+	b.Handle(iris.MethodPost, Utils.GetDoctorById, "GetDoctorById")
 }
 
 func (c *DoctorController) AddDoctor() {
-	type doctorParam struct {
-		Npi             int64  `validate:"gt=0"`
+	type Param struct {
+		Npi             int64  `validate:"gt=0,numeric"`
 		LastName        string `validate:"gt=0"`
 		FirstName       string `validate:"gt=0"`
 		MiddleName      string
@@ -48,18 +49,9 @@ func (c *DoctorController) AddDoctor() {
 		Specialty       string `validate:"gt=0"`
 	}
 
-	var param doctorParam
+	var param Param
 
-	if err:= c.Ctx.ReadJSON(&param); err != nil {
-		response.Fail(c.Ctx, response.Err, response.ParamErr, nil)
-		return
-	}
-
-	err:= validate.Struct(&param)
-	if err != nil {
-		response.Fail(c.Ctx, response.Err, err.Error(), nil)
-		return
-	}
+	validateParam(c.Ctx, &param)
 
 	newDoctor:= &doctorModel.Doctor{
 		Npi: param.Npi,
@@ -95,24 +87,36 @@ func (c *DoctorController) AddDoctor() {
 	}
 }
 
-func (c *DoctorController)GetDoctorById(id int) {
+func (c *DoctorController)GetDoctorById() {
 	type Param struct {
-		ID int
+		DoctorId int `validate:"gt=0,numeric"`
 	}
 
 	var param Param
 
-	if err:= c.Ctx.ReadJSON(&param); err != nil {
-		response.Fail(c.Ctx, response.Err, response.ParamErr, nil)
+	validateParam(c.Ctx, &param)
+
+	doctor := c.Service.GetDoctorById(param.DoctorId)
+
+	var msg string
+	if  doctor != nil {
+		msg = ""
+	}else {
+		msg = "Not found"
+	}
+
+	response.Success(c.Ctx, msg,  doctor)
+}
+
+func validateParam(ctx iris.Context, param interface{})  {
+	if err:= ctx.ReadJSON(&param); err != nil {
+		response.Fail(ctx, response.Err, response.ParamErr, nil)
 		return
 	}
 
 	err:= validate.Struct(&param)
 	if err != nil {
-		response.Fail(c.Ctx, response.Err, err.Error(), nil)
+		response.Fail(ctx, response.Err, err.Error(), nil)
 		return
 	}
-
-	doctor := c.Service.GetDoctorById(id)
-	response.Success(c.Ctx, response.Successful,  doctor)
 }
