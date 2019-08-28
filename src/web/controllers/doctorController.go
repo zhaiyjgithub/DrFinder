@@ -22,6 +22,9 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	validate = validator.New()
 	b.Handle(iris.MethodPost, Utils.AddDoctor, "AddDoctor")
 	b.Handle(iris.MethodPost, Utils.GetDoctorById, "GetDoctorById")
+	b.Handle(iris.MethodPost, Utils.SearchDoctor, "SearchDoctor")
+	b.Handle(iris.MethodPost, Utils.UpdateDoctorById, "UpdateDoctorById")
+	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteDoctorById")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -132,3 +135,78 @@ func (c *DoctorController) GetDoctorBySpecialty(specialty string)  {
 	}
 }
 
+func (c *DoctorController) SearchDoctor()  {
+	type Param struct {
+		FirstName string
+		LastName string
+		Specialty string
+		Gender string `validate:"len=1"`
+		City string
+	}
+
+	var param Param
+	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	var doctor models.Doctor
+	doctor.FirstName = param.FirstName
+	doctor.LastName = param.LastName
+	doctor.Specialty = param.Specialty
+	doctor.Gender = param.Gender
+	doctor.BusinessCity = param.City
+
+	doctors:= c.Service.SearchDoctor(&doctor)
+
+	response.Success(c.Ctx, response.Successful, doctors)
+}
+
+func (c *DoctorController) UpdateDoctorById() {
+	type Param struct {
+		ID        int
+		FirstName string
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	var doctor models.Doctor
+	doctor.FirstName = param.FirstName
+	doctor.ID = param.ID
+
+	err = c.Service.UpdateDoctorById(&doctor)
+
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "update failed", nil)
+	} else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
+}
+
+func (c *DoctorController) DeleteDoctorById()  {
+	type Param struct {
+		ID int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	ok:= c.Service.DeleteDoctorById(param.ID)
+
+	if ok {
+		response.Success(c.Ctx, response.Successful, nil )
+	}else {
+		response.Fail(c.Ctx, response.Err, "delete failed", nil)
+	}
+}
