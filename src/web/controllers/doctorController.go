@@ -9,6 +9,8 @@ import (
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
 	"time"
+
+	_ "github.com/kataras/iris/sessions/sessiondb/boltdb"
 )
 
 var validate *validator.Validate
