@@ -59,7 +59,7 @@ func userMVC(app *mvc.Application)  {
 func registerMVC(app *mvc.Application)  {
 	service := service.NewUserService()
 	app.Register(service)
-	app.Handle(new(controllers.SignInUpController))
+	app.Handle(new(controllers.RegisterController))
 }
 
 func signIn(ctx iris.Context) {

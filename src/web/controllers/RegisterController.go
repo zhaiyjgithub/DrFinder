@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-type SignInUpController struct {
+type RegisterController struct {
 	Ctx iris.Context
 	Service service.UserService
 }
@@ -29,12 +29,12 @@ type Code struct {
 
 var signValidate *validator.Validate
 
-func (c *SignInUpController) BeforeActivation(b mvc.BeforeActivation)  {
+func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
 	signValidate = validator.New()
 	b.Handle(iris.MethodPost, Utils.SendVerificationCode, "SendVerificationCode")
 }
 
-func (c *SignInUpController) SendVerificationCode() {
+func (c *RegisterController) SendVerificationCode() {
 	type Param struct {
 		Email string `validate:"email"`
 	}
