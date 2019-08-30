@@ -3,14 +3,19 @@ package dataSource
 import (
 	"DrFinder/src/conf"
 	"fmt"
+	"github.com/boltdb/bolt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"log"
+	"os"
 	"sync"
 )
 
+const codeBucket = "codeBucket"
+
 var (
 	masterEngine *gorm.DB
+	cacheDB *bolt.DB
 	lock sync.Mutex
 )
 
@@ -41,4 +46,48 @@ func InstanceMaster() *gorm.DB {
 	engine.LogMode(true)
 
 	return engine
+}
+
+func InstanceCacheDB() error {
+	db, err := bolt.Open("./src/dataSource/bolt.db", os.FileMode(0750), nil)
+	cacheDB = db
+
+	if err != nil {
+		return err
+	}
+
+	err = cacheDB.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte(codeBucket))
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return err
+}
+
+func Save(key string, value string) error {
+	err := cacheDB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(codeBucket))
+		err := b.Put([]byte(key), []byte(value))
+
+		return err
+	})
+
+	return err
+}
+
+func Get(key string) []byte {
+	var v []byte
+
+	cacheDB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(codeBucket))
+		v = b.Get([]byte(key))
+
+		return nil
+	})
+
+	return v
 }

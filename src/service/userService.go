@@ -8,6 +8,7 @@ import (
 
 type UserService interface {
 	CreateUser(user *models.User) error
+	GetUserByEmail(email string) *models.User
 }
 
 type userService struct {
@@ -20,4 +21,8 @@ func NewUserService() UserService {
 
 func (s *userService) CreateUser(user *models.User) error {
 	return s.dao.CreateUser(user)
+}
+
+func (s *userService) GetUserByEmail(email string) *models.User {
+	return s.dao.GetUserByEmail(email)
 }

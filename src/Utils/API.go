@@ -14,3 +14,8 @@ var (
 	CreateUser = "/CreateUser"
 )
 
+var (
+	APIRegister = "/Register"
+	SendVerificationCode = "/SendVerificationCode"
+)
+

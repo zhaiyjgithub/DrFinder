@@ -4,9 +4,15 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"os"
+	"time"
 )
 
 const codeBucket = "codeBucket"
+
+type Code struct {
+	date time.Time
+	value string
+}
 
 func main()  {
 	db, err := bolt.Open("./src/dataSource/bolt.db", os.FileMode(0750), nil)

@@ -3,6 +3,7 @@ package main
 import (
 	"DrFinder/src/Utils"
 	"DrFinder/src/conf"
+	"DrFinder/src/dataSource"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
@@ -12,6 +13,12 @@ import (
 )
 
 func main() {
+	err := dataSource.InstanceCacheDB()
+
+	if err != nil {
+		panic(err)
+	}
+
 	j := jwt.New(jwt.Config{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return conf.JWRTSecret, nil
@@ -23,17 +30,36 @@ func main() {
 	})
 
 	app:= iris.New()
+
 	doctorParty := app.Party(Utils.APIDoctor, j.Serve)
 	mvc.Configure(doctorParty, doctorMVC)
+
+	userParty := app.Party(Utils.APIUser)
+	mvc.Configure(userParty, userMVC)
+
+	registerParty := app.Party(Utils.APIRegister)
+	mvc.Configure(registerParty, registerMVC)
 
 	app.Get("/SignIn", signIn)
 	app.Run(iris.Addr(":8090"))
 }
 
 func doctorMVC(app *mvc.Application) {
-	doctorService := service.NewDoctorService()
-	app.Register(doctorService)
+	service := service.NewDoctorService()
+	app.Register(service)
 	app.Handle(new(controllers.DoctorController))
+}
+
+func userMVC(app *mvc.Application)  {
+	service := service.NewUserService()
+	app.Register(service)
+	app.Handle(new(controllers.UserController))
+}
+
+func registerMVC(app *mvc.Application)  {
+	service := service.NewUserService()
+	app.Register(service)
+	app.Handle(new(controllers.SignInUpController))
 }
 
 func signIn(ctx iris.Context) {

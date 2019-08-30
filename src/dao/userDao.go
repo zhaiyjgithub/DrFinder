@@ -28,8 +28,10 @@ func (d *UserDao) GetUserById(id int) *models.User  {
 
 func (d *UserDao) GetUserByEmail(email string) *models.User {
 	var user models.User
-
-	d.engine.Where("email = ?", email).First(&user)
+	db := d.engine.Where("email = ?", email).First(&user)
+	if db.Error != nil {
+		return nil
+	}
 
 	return &user
 }
