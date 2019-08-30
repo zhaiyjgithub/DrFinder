@@ -9,3 +9,8 @@ var (
 	DeleteDoctorById = "/DeleteDoctorById"
 )
 
+var (
+	APIUser = "/User"
+	CreateUser = "/CreateUser"
+)
+
