@@ -12,7 +12,7 @@ import (
 
 type UserController struct {
 	Ctx iris.Context
-	service service.UserService
+	Service service.UserService
 }
 
 var userValidate *validator.Validate
@@ -41,7 +41,7 @@ func (c *UserController) CreateUser() {
 	user.Email = param.Email
 	user.Password = param.Password
 
-	err = c.service.CreateUser(&user)
+	err = c.Service.CreateUser(&user)
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
