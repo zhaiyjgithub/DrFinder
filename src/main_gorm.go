@@ -24,7 +24,7 @@ import (
 
 var (
 	sqlType     = "mysql"
-	sqlConnStr  = "root:123456@tcp(127.0.0.1:3306)/drfinder?"
+	sqlConnStr  = "root:12345678@tcp(127.0.0.1:3306)/drfinder?"
 	sqlTable    = "users"
 
 	packageName = ""
