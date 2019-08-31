@@ -4,6 +4,7 @@ import (
 	"DrFinder/src/Utils"
 	"DrFinder/src/conf"
 	"DrFinder/src/dataSource"
+	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"encoding/json"
@@ -21,17 +22,18 @@ type RegisterController struct {
 	Service service.UserService
 }
 
-type Code struct {
+type VerificationCode struct {
 	Email string `json:"email"`
-	TimeStamp string `json:"date"`
+	DateTime string `json:"date"`
 	Value string `json:"value"`
 }
 
-var signValidate *validator.Validate
+var registerValidate *validator.Validate
 
 func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
-	signValidate = validator.New()
+	registerValidate = validator.New()
 	b.Handle(iris.MethodPost, Utils.SendVerificationCode, "SendVerificationCode")
+	b.Handle(iris.MethodPost, Utils.Register, "Register")
 }
 
 func (c *RegisterController) SendVerificationCode() {
@@ -41,7 +43,7 @@ func (c *RegisterController) SendVerificationCode() {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, signValidate, &param)
+	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
 
 	if err != nil  {
 		return
@@ -54,21 +56,83 @@ func (c *RegisterController) SendVerificationCode() {
 	}else {
 		v := getCode()
 
-		var code = &Code{
+		var vcode = &VerificationCode{
 			Email: param.Email,
-			TimeStamp:  time.Now().Format("20060102150405"),
+			DateTime:  time.Now().Format(conf.TimeFormat),
 			Value: v,
 		}
 
-		cb, _ := json.Marshal(code)
+		cb, _ := json.Marshal(vcode)
 		err = dataSource.Save(param.Email, string(cb))
 
-		err := sendEmail(param.Email, code.Value)
+		err := sendEmail(param.Email, vcode.Value)
 		if err != nil {
 			response.Fail(c.Ctx, response.Err, "send email fail", nil)
 		}else {
 			response.Success(c.Ctx, response.Successful, nil)
 		}
+	}
+}
+
+func (c *RegisterController) Register() {
+	type Param struct {
+		Email string `validate:"email"`
+		Password string `validate:"min=6,max=20"`
+		Code string `validate:len=6`
+		FirstName string `validate:"gt=0"`
+		LastName string `validate:"gt=0"`
+	}
+	
+	var param Param
+	
+	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
+
+	if err != nil {
+		return
+	}
+
+	var code = VerificationCode{}
+
+	cb := dataSource.Get(param.Email)
+
+	if cb == nil {
+		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+		return
+	}
+
+	err = json.Unmarshal(cb, &code)
+
+	t, err := time.Parse(conf.TimeFormat, code.DateTime)
+
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "parse time error", nil)
+		return
+	}
+
+	tstamp := t.Unix()
+	t2, err := time.Parse(conf.TimeFormat, time.Now().Format(conf.TimeFormat))
+	nstamp := t2.Unix()
+
+	if nstamp - tstamp > 60*5 {
+		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+	}else if param.Code != code.Value {
+		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+	}else {
+		//verify success, create user
+		var user models.User
+		user.Email = param.Email
+		user.Password = param.Password
+		user.FirstName = param.FirstName
+		user.LastName = param.LastName
+
+		err := c.Service.CreateUser(&user)
+
+		if err != nil {
+			response.Fail(c.Ctx, response.Err, "create user failed", nil)
+			return
+		}
+
+		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
 

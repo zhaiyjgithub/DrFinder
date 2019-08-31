@@ -6,6 +6,7 @@ import (
 	"github.com/boltdb/bolt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/kataras/iris/core/errors"
 	"log"
 	"os"
 	"sync"
@@ -82,12 +83,20 @@ func Save(key string, value string) error {
 func Get(key string) []byte {
 	var v []byte
 
-	cacheDB.View(func(tx *bolt.Tx) error {
+	 err := cacheDB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(codeBucket))
 		v = b.Get([]byte(key))
 
-		return nil
+		if v != nil {
+			return nil
+		}else {
+			return errors.New("not found")
+		}
 	})
+
+	if err != nil {
+		return nil
+	}
 
 	return v
 }

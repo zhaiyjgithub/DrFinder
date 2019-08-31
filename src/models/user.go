@@ -17,4 +17,5 @@ type User struct {
 	Bio        string `gorm:"column:bio"`
 	HeaderIcon string `gorm:"column:header_icon"`
 	Level      int  `gorm:"column:level"`
+	Password   string `grom:"column:password"`
 }
