@@ -6,7 +6,7 @@ import (
 
 type Doctor struct {
 	ID              int            `gorm:"column:id;primary_key"`
-	Npi             int64  `gorm:"column:npi"`
+	Npi             string  `gorm:"column:npi"`
 	LastName        string `gorm:"column:last_name"`
 	FirstName       string `gorm:"column:first_name"`
 	MiddleName      string `gorm:"column:middle_name"`
@@ -17,12 +17,14 @@ type Doctor struct {
 	Credential      string `gorm:"column:credential"`
 	Gender          string `gorm:"column:gender"`
 	MailingAddress  string `gorm:"column:mailing_address"`
+	MailingAddressDetail  string `gorm:"column:mailing_address_detail"`
 	MailingCity     string `gorm:"column:mailing_city"`
 	MailingState    string `gorm:"column:mailing_state"`
 	MailingZip      string `gorm:"column:mailing_zip"`
 	MailingPhone    string `gorm:"column:mailing_phone"`
 	MailingFax      string `gorm:"column:mailing_fax"`
 	BusinessAddress string `gorm:"column:business_address"`
+	BusinessAddressDetail string `gorm:"column:business_address_detail"`
 	BusinessCity    string `gorm:"column:business_city"`
 	BusinessState   string `gorm:"column:business_state"`
 	BusinessZip     string `gorm:"column:business_zip"`
