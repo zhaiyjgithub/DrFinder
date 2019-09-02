@@ -5,8 +5,8 @@
 </head>
 <body>
 <form enctype="multipart/form-data"
-      action="http://127.0.0.1:8090/upload_manual" method="POST">
-    <input type="file" name="uploadfile" multiple/> <input type="hidden"
+      action="http://127.0.0.1:8090/Utils/UploadFile" method="POST">
+    <input type="file" name="file" multiple/> <input type="hidden"
                                                            name="token" value="{{.}}" /> <input type="submit" value="upload" />
 </form>
 </body>

@@ -21,3 +21,8 @@ var (
 	SignIn = "/SignIn"
 )
 
+var (
+	APIUtils = "/Utils"
+	UploadFile = "/UploadFile"
+)
+
