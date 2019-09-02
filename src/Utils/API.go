@@ -18,5 +18,6 @@ var (
 	APIRegister = "/Register"
 	SendVerificationCode = "/SendVerificationCode"
 	Register = "/Register"
+	SignIn = "/SignIn"
 )
 
