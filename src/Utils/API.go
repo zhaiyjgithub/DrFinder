@@ -26,3 +26,8 @@ var (
 	UploadFile = "/UploadFile"
 )
 
+var (
+	APIAd = "Ad"
+
+)
+

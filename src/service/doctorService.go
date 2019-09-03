@@ -13,7 +13,7 @@ type DoctorService interface {
 	SearchDoctor(doctor *models.Doctor) []models.Doctor
 	UpdateDoctorById(doctor *models.Doctor) error
 	DeleteDoctorById(id int) bool
-	//
+
 }
 
 type doctorService struct {

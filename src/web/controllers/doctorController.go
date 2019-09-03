@@ -31,7 +31,7 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 
 func (c *DoctorController) AddDoctor() {
 	type Param struct {
-		Npi             int64  `validate:"gt=0,numeric"`
+		Npi             string  `validate:"gt=0,numeric"`
 		LastName        string `validate:"gt=0"`
 		FirstName       string `validate:"gt=0"`
 		MiddleName      string

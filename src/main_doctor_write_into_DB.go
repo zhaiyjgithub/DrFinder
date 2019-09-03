@@ -4,7 +4,6 @@ import (
 	"DrFinder/src/models"
 	"DrFinder/src/service"
 	"encoding/csv"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -17,6 +16,8 @@ func main()  {
 		panic(err)
 	}
 	defer csvFile.Close()
+
+	service := service.NewDoctorService()
 
 	csvReader := csv.NewReader(csvFile)
 
@@ -32,10 +33,7 @@ func main()  {
 
 		if count == 0 {
 			//
-		}else if count > 1 {
-			return
 		}else {
-			fmt.Println(len(row))
 
 			var doctor models.Doctor
 			doctor.FirstName = row[4]
@@ -62,25 +60,17 @@ func main()  {
 			doctor.BusinessZip = row[18]
 			doctor.BusinessPhone = row[19]
 			doctor.BusinessFax = row[20]
+
 			doctor.Specialty = fmt.Sprintf("%s %s", row[21], row[22])
 			doctor.CreatedAt = time.Now()
 			doctor.UpdatedAt = time.Now()
 
-			service := service.NewDoctorService()
 
 			service.Add(&doctor)
-
-			dbyte, err := json.Marshal(&doctor)
-
-			if err != nil {
-				panic(err)
-			}
-
-			str := string(dbyte)
-
-			fmt.Println(str)
 		}
 
 		count ++
 	}
+
+	fmt.Printf("sum count: %d", count)
 }

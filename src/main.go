@@ -45,6 +45,9 @@ func main() {
 	adminParty := app.Party(Utils.APIUtils)
 	mvc.Configure(adminParty, adminMVC)
 
+	advertisementParty := app.Party(Utils.APIAd)
+	mvc.Configure(advertisementParty, advertiseMVC)
+
 	app.Run(iris.Addr(":8090"))
 }
 
@@ -68,4 +71,10 @@ func registerMVC(app *mvc.Application)  {
 
 func adminMVC(app *mvc.Application)  {
 	app.Handle(new(controllers.AdminController))
+}
+
+func advertiseMVC(app *mvc.Application)  {
+	service := service.NewAdvertiseService()
+	app.Register(service)
+	app.Handle(new(controllers.AdvertisementController))
 }

@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/jimsmart/schema"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -24,8 +23,8 @@ import (
 
 var (
 	sqlType     = "mysql"
-	sqlConnStr  = "root:12345678@tcp(127.0.0.1:3306)/drfinder?"
-	sqlTable    = "users"
+	sqlConnStr  = "root:123456@tcp(127.0.0.1:3306)/drfinder?"
+	sqlTable    = "ad"
 
 	packageName = ""
 
