@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-const codeBucket = "codeBucket"
+const codeBucket = "CodeBucket"
 
 var (
 	masterEngine *gorm.DB

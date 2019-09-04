@@ -7,6 +7,7 @@ import "github.com/kataras/iris"
 const Ok = 0
 const Err = 1
 const Expire = 2
+const NotExist = 3
 
 
 

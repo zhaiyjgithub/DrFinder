@@ -26,14 +26,14 @@ func (d *UserDao) GetUserById(id int) *models.User  {
 	return &user
 }
 
-func (d *UserDao) GetUserByEmail(email string) *models.User {
+func (d *UserDao) GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
 	db := d.engine.Where("email = ?", email).First(&user)
 	if db.Error != nil {
-		return nil
+		return nil, db.Error
 	}
 
-	return &user
+	return &user, nil
 }
 
 func (d *UserDao) UpdateUser(newUser *models.User) error {

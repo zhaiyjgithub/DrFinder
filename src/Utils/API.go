@@ -13,6 +13,7 @@ var (
 	APIUser = "/User"
 	CreateUser = "/CreateUser"
 	UpdatePassword = "/UpdatePassword"
+	ForgetPassword = "/ForgetPassword"
 )
 
 var (

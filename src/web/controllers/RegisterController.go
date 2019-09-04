@@ -51,9 +51,9 @@ func (c *RegisterController) SendVerificationCode() {
 		return
 	}
 
-	user := c.Service.GetUserByEmail(param.Email)
+	_, error := c.Service.GetUserByEmail(param.Email)
 
-	if user != nil {
+	if error != nil {
 		response.Fail(c.Ctx, response.Err, "This email has been registered", nil)
 	}else {
 		v := getCode()
@@ -150,9 +150,9 @@ func (c *RegisterController) SignIn()  {
 		return
 	}
 
-	user := c.Service.GetUserByEmail(param.Email)
+	user, err := c.Service.GetUserByEmail(param.Email)
 
-	if user == nil {
+	if err != nil {
 		response.Fail(c.Ctx, response.Err, "not exist", nil)
 	}else if user.Password != param.Password {
 		response.Fail(c.Ctx, response.Err, "password is wrong", nil)

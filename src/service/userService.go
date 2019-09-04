@@ -8,7 +8,7 @@ import (
 
 type UserService interface {
 	CreateUser(user *models.User) error
-	GetUserByEmail(email string) *models.User
+	GetUserByEmail(email string) (*models.User, error)
 	UpdatePassword(email string, oldPwd string, newPwd string) error
 }
 
@@ -24,7 +24,7 @@ func (s *userService) CreateUser(user *models.User) error {
 	return s.dao.CreateUser(user)
 }
 
-func (s *userService) GetUserByEmail(email string) *models.User {
+func (s *userService) GetUserByEmail(email string) (*models.User, error) {
 	return s.dao.GetUserByEmail(email)
 }
 
