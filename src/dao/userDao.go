@@ -62,3 +62,18 @@ func (d *UserDao) DeleteUserById(id int) error {
 
 	return db.Error
 }
+
+func (d *UserDao) UpdatePassword(email string, oldPwd string, newPwd string) error {
+	var user models.User
+
+	db := d.engine.Where("email = ? AND password = ?", email, oldPwd).First(&user)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	user.Password = newPwd
+	db = d.engine.Model(&user).Update("password", newPwd)
+
+	return db.Error
+}

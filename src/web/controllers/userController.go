@@ -21,6 +21,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	userValidate = validator.New()
 
 	b.Handle(iris.MethodPost, Utils.CreateUser, "CreateUser")
+	b.Handle(iris.MethodPost, Utils.UpdatePassword, "UpdatePassword")
 }
 
 func (c *UserController) CreateUser() {
@@ -49,3 +50,27 @@ func (c *UserController) CreateUser() {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
+
+func (c *UserController) UpdatePassword() {
+	type Param struct {
+		Email string `validate:"email"`
+		OldPwd string `validate:"min=6,max=20"`
+		NewPwd string `validate:"min=6,max=20"`
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+
+	if err != nil {
+		return
+	}
+
+	err = c.Service.UpdatePassword(param.Email, param.OldPwd, param.NewPwd)
+
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "email or old password is wrong", nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
+}
+

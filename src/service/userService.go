@@ -9,6 +9,7 @@ import (
 type UserService interface {
 	CreateUser(user *models.User) error
 	GetUserByEmail(email string) *models.User
+	UpdatePassword(email string, oldPwd string, newPwd string) error
 }
 
 type userService struct {
@@ -25,4 +26,8 @@ func (s *userService) CreateUser(user *models.User) error {
 
 func (s *userService) GetUserByEmail(email string) *models.User {
 	return s.dao.GetUserByEmail(email)
+}
+
+func (s *userService) UpdatePassword(email string, oldPwd string, newPwd string) error  {
+	return s.dao.UpdatePassword(email, oldPwd, newPwd)
 }
