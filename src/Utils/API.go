@@ -7,6 +7,7 @@ var (
 	SearchDoctor = "/SearchDoctor"
 	UpdateDoctorById = "/UpdateDoctorById"
 	DeleteDoctorById = "/DeleteDoctorById"
+	SearchDoctorByPage = "/SearchDoctorByPage"
 )
 
 var (

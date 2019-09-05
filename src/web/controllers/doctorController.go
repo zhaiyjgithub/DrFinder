@@ -27,6 +27,7 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.SearchDoctor, "SearchDoctor")
 	b.Handle(iris.MethodPost, Utils.UpdateDoctorById, "UpdateDoctorById")
 	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteDoctorById")
+	b.Handle(iris.MethodPost, Utils.SearchDoctorByPage, "SearchDoctorByPage")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -142,7 +143,7 @@ func (c *DoctorController) SearchDoctor()  {
 		FirstName string
 		LastName string
 		Specialty string
-		Gender string `validate:"len=1"`
+		Gender string
 		City string
 	}
 
@@ -211,4 +212,35 @@ func (c *DoctorController) DeleteDoctorById()  {
 	}else {
 		response.Fail(c.Ctx, response.Err, "delete failed", nil)
 	}
+}
+
+func (c *DoctorController) SearchDoctorByPage()  {
+	type Param struct {
+		FirstName string
+		LastName string
+		Specialty string
+		Gender string
+		City string
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	var doctor models.Doctor
+	doctor.FirstName = param.FirstName
+	doctor.LastName = param.LastName
+	doctor.Specialty = param.Specialty
+	doctor.Gender = param.Gender
+	doctor.BusinessCity = param.City
+
+	doctors := c.Service.SearchDoctorByPage(&doctor, param.Page, param.PageSize)
+
+	response.Success(c.Ctx, response.Successful, doctors)
 }

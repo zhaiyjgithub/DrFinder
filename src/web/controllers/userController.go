@@ -81,7 +81,7 @@ func (c *UserController) UpdatePassword() {
 
 func (c *UserController) ForgetPassword()  {
 	type Param struct {
-		Email string `valdate:"email"`
+		Email string `validate:"email"`
 		Code string `validate:"len=6"`
 	}
 
