@@ -13,20 +13,20 @@ var (
 	_ = null.Bool{}
 )
 
-type Ad struct {
+type Post struct {
 	ID          int            `gorm:"column:id;primary_key"`
-	Img         sql.NullString `gorm:"column:img"`
+	Type        sql.NullInt64  `gorm:"column:type"`
+	Priority    sql.NullInt64  `gorm:"column:priority"`
 	Title       sql.NullString `gorm:"column:title"`
+	UsrID       int            `gorm:"column:usr_id"`
 	Description sql.NullString `gorm:"column:description"`
-	Type        sql.NullString `gorm:"column:type"`
-	SubID       sql.NullInt64  `gorm:"column:sub_id"`
+	Favorites   sql.NullInt64  `gorm:"column:favorites"`
+	Likes       sql.NullInt64  `gorm:"column:likes"`
 	CreatedAt   time.Time      `gorm:"column:created_at"`
 	UpdatedAt   time.Time      `gorm:"column:updated_at"`
-	IsShow      sql.NullInt64  `gorm:"column:is_show"`
-	Index       sql.NullInt64  `gorm:"column:index"`
 }
 
 // TableName sets the insert table name for this struct type
-func (a *Ad) TableName() string {
-	return "ad"
+func (p *Post) TableName() string {
+	return "posts"
 }

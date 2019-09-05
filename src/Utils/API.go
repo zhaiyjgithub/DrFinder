@@ -30,7 +30,14 @@ var (
 )
 
 var (
-	APIAd = "Ad"
+	APIAd = "/Ad"
+)
 
+var (
+	APIPost = "/Post"
+	CreatePost = "/CreatePost"
+	DeletePost = "/DeletePost"
+	UpdatePost = "/UpdatePost"
+	GetPostByPage = "/GetPostByPage"
 )
 

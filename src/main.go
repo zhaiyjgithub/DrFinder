@@ -2,9 +2,12 @@ package main
 
 import (
 	"DrFinder/src/Utils"
+	"DrFinder/src/conf"
 	"DrFinder/src/dataSource"
+	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 )
@@ -16,21 +19,21 @@ func main() {
 		panic(err)
 	}
 
-	//j := jwt.New(jwt.Config{
-	//	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-	//		return conf.JWRTSecret, nil
-	//	},
-	//	SigningMethod: jwt.SigningMethodHS256,
-	//	ErrorHandler: func(ctx iris.Context, e error) {
-	//		response.Fail(ctx, response.Expire, e.Error(), nil)
-	//	},
-	//})
+	j := jwt.New(jwt.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return conf.JWRTSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, e error) {
+			response.Fail(ctx, response.Expire, e.Error(), nil)
+		},
+	})
 
 	app:= iris.New()
 
 	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
 
-	doctorParty := app.Party(Utils.APIDoctor)
+	doctorParty := app.Party(Utils.APIDoctor, j.Serve)
 	mvc.Configure(doctorParty, doctorMVC)
 
 	userParty := app.Party(Utils.APIUser)
@@ -44,6 +47,9 @@ func main() {
 
 	advertisementParty := app.Party(Utils.APIAd)
 	mvc.Configure(advertisementParty, advertiseMVC)
+
+	postParty := app.Party(Utils.APIPost)
+	mvc.Configure(postParty, postMVC)
 
 	app.Run(iris.Addr(":8090"))
 }
@@ -74,4 +80,10 @@ func advertiseMVC(app *mvc.Application)  {
 	service := service.NewAdvertiseService()
 	app.Register(service)
 	app.Handle(new(controllers.AdvertisementController))
+}
+
+func postMVC(app *mvc.Application)  {
+	service := service.NewPostService()
+	app.Register(service)
+	app.Handle(new(controllers.PostController))
 }

@@ -44,7 +44,9 @@ func InstanceMaster() *gorm.DB {
 		log.Fatal("dbhelper instance error")
 	}
 
+
 	engine.LogMode(true)
+	masterEngine = engine
 
 	return engine
 }
