@@ -39,5 +39,7 @@ var (
 	DeletePost = "/DeletePost"
 	UpdatePost = "/UpdatePost"
 	GetPostByPage = "/GetPostByPage"
+	AddLikes = "/AddLikes"
+	AddFavor = "/AddFavor"
 )
 

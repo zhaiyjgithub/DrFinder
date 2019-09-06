@@ -40,6 +40,12 @@ func (d *PostDao) Delete(id int) error {
 	return db.Error
 }
 
+func (d *PostDao) DeleteByUser(id int, userId int) error {
+	db := d.engine.Where("id = ? AND user_id = ?", id, userId).Delete(models.Post{})
+
+	return db.Error
+}
+
 func (d *PostDao) Update(newPost *models.Post) error {
 	var post models.Post
 
@@ -50,6 +56,36 @@ func (d *PostDao) Update(newPost *models.Post) error {
 	}
 
 	db = d.engine.Model(&post).Update(newPost)
+
+	return db.Error
+}
+
+func (d *PostDao) AddLike(id int) error {
+	var post models.Post
+
+	db := d.engine.Where("id = ?", id).Find(&post)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	post.Likes = post.Likes + 1
+	db = d.engine.Model(&post).Update("likes", post.Likes)
+
+	return db.Error
+}
+
+func (d *PostDao) AddFavor(id int) error {
+	var post models.Post
+
+	db := d.engine.Where("id = ?", id).Find(&post)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	post.Favorites = post.Favorites + 1
+	db = d.engine.Model(&post).Update("favorites", post.Favorites)
 
 	return db.Error
 }
