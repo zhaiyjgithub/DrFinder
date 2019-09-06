@@ -27,6 +27,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.CreateUser, "CreateUser")
 	b.Handle(iris.MethodPost, Utils.UpdatePassword, "UpdatePassword")
 	b.Handle(iris.MethodPost,Utils.ForgetPassword, "ForgetPassword")
+	b.Handle(iris.MethodPost, Utils.UpdateUserInfo, "UpdateUserInfo")
 }
 
 func (c *UserController) CreateUser() {
@@ -79,8 +80,6 @@ func (c *UserController) UpdatePassword() {
 	}
 }
 
-
-
 func (c *UserController) ForgetPassword()  {
 	type Param struct {
 		Email string `validate:"email"`
@@ -130,5 +129,39 @@ func (c *UserController) ForgetPassword()  {
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *UserController) UpdateUserInfo()  {
+	type Param struct {
+		ID int `validate:"gt=0"`
+		LastName   string `validate:"gt=0"`
+		FirstName  string `validate:"gt=0"`
+		MiddleName string `validate:"gt=0"`
+		Bio        string `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+
+	if err != nil {
+		return
+	}
+
+	var user models.User
+	user.ID = param.ID
+	user.LastName = param.LastName
+	user.FirstName = param.FirstName
+	user.MiddleName = param.MiddleName
+	user.Bio = param.Bio
+
+	err = c.Service.UpdateUser(&user)
+
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "", nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
+
 }
 

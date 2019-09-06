@@ -15,6 +15,7 @@ var (
 	CreateUser = "/CreateUser"
 	UpdatePassword = "/UpdatePassword"
 	ForgetPassword = "/ForgetPassword"
+	UpdateUserInfo = "/UpdateUserInfo"
 )
 
 var (
