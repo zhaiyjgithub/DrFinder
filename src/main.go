@@ -51,6 +51,9 @@ func main() {
 	postParty := app.Party(Utils.APIPost)
 	mvc.Configure(postParty, postMVC)
 
+	answerParty := app.Party(Utils.APIAnswer)
+	mvc.Configure(answerParty, answerMVC)
+
 	app.Run(iris.Addr(":8090"))
 }
 
@@ -86,4 +89,10 @@ func postMVC(app *mvc.Application)  {
 	service := service.NewPostService()
 	app.Register(service)
 	app.Handle(new(controllers.PostController))
+}
+
+func answerMVC(app *mvc.Application)  {
+	service := service.NewAnswerService()
+	app.Register(service)
+	app.Handle(new(controllers.AnswerController))
 }

@@ -43,3 +43,10 @@ var (
 	AddFavor = "/AddFavor"
 )
 
+var (
+	APIAnswer = "Answer"
+	AddAnswer = "/AddAnswer"
+	DeleteAnswer = "/DeleteAnswer"
+	AddAnswerLikes = "/AddAnswerLikes"
+)
+
