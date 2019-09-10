@@ -24,6 +24,7 @@ func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
 func (c *AnswerController) AddAnswer()  {
 	type Param struct {
 		UserID      int  `validate:"gt=0"`
+		PostID      int  `validate:"gt=0"`
 		Description string `validate:"gt=0"`
 	}
 
@@ -37,6 +38,7 @@ func (c *AnswerController) AddAnswer()  {
 
 	var answer models.Answer
 	answer.UserID = param.UserID
+	answer.PostID = param.PostID
 	answer.Description = param.Description
 	answer.Likes = 0
 	answer.CreatedAt = time.Now()
