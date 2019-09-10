@@ -40,3 +40,11 @@ func (d *AnswerDao) AddLikes(id int) error {
 
 	return db.Error
 }
+
+func (d *AnswerDao) GetAnswerListByPage(postId int, page int, pageSize int) []models.Answer {
+	var answers []models.Answer
+
+	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&answers, "post_id = ?", postId)
+
+	return answers
+}

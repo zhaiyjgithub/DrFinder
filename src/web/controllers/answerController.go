@@ -19,6 +19,7 @@ func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.AddAnswer, "AddAnswer")
 	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteById")
 	b.Handle(iris.MethodPost, Utils.AddAnswerLikes, "AddLikes")
+	b.Handle(iris.MethodPost, Utils.GetAnswerListByPage, "GetAnswerListByPage")
 }
 
 func (c *AnswerController) AddAnswer()  {
@@ -97,4 +98,25 @@ func (c *AnswerController) AddLikes()  {
 	}else {
 		response.Success(c.Ctx, response.Successful,  nil)
 	}
+}
+
+func (c *AnswerController) GetAnswerListByPage()  {
+	type Param struct{
+		UserID int `validate:"gt=0"`
+		PostID int `validate:"gt=0"`
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	answers := c.Service.GetAnswerListByPage(param.PostID, param.Page, param.PageSize)
+
+	response.Success(c.Ctx, response.Successful, answers)
 }

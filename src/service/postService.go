@@ -18,6 +18,7 @@ type PostService interface {
 
 type postService struct {
 	dao *dao.PostDao
+
 }
 
 func NewPostService() PostService {

@@ -49,5 +49,6 @@ var (
 	AddAnswer = "/AddAnswer"
 	DeleteAnswer = "/DeleteAnswer"
 	AddAnswerLikes = "/AddAnswerLikes"
+	GetAnswerListByPage = "/GetAnswerListByPage"
 )
 
