@@ -2,11 +2,15 @@ package dataSource
 
 import (
 	"DrFinder/src/conf"
+	"context"
 	"fmt"
 	"github.com/boltdb/bolt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/text/date"
 	"log"
 	"os"
 	"sync"
@@ -17,7 +21,9 @@ const codeBucket = "CodeBucket"
 var (
 	masterEngine *gorm.DB
 	cacheDB *bolt.DB
+	mongoEngine *mongo.Client
 	lock sync.Mutex
+	mongoLock sync.Mutex
 )
 
 func InstanceMaster() *gorm.DB {
@@ -36,7 +42,6 @@ func InstanceMaster() *gorm.DB {
 	driveSource := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		c.User, c.Pwd, c.Host, c.Port, c.DBName)
 
-	fmt.Println(driveSource)
 	engine, err := gorm.Open(conf.DriverName,
 		driveSource)
 
@@ -44,11 +49,41 @@ func InstanceMaster() *gorm.DB {
 		log.Fatal("dbhelper instance error")
 	}
 
-
 	engine.LogMode(true)
 	masterEngine = engine
 
 	return engine
+}
+
+func InstanceMongoDB() *mongo.Client {
+	if mongoEngine != nil {
+		return mongoEngine
+	}
+
+	mongoLock.Lock()
+	defer mongoLock.Unlock()
+
+	if mongoEngine != nil {
+		return mongoEngine
+	}
+
+	conn := fmt.Sprintf("mongodb://%s:%s@%s:%d", conf.MongoDBConf.User, conf.MongoDBConf.Pwd,
+	conf.MongoDBConf.Host, conf.MongoDBConf.Port)
+	clientOptions := options.Client().ApplyURI(conn)
+	client, err := mongo.NewClient(clientOptions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.Connect(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mongoEngine = client
+
+	return client
 }
 
 func InstanceCacheDB() error {

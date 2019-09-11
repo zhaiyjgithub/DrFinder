@@ -7,13 +7,9 @@ import (
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
-	"context"
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 func main() {
@@ -22,9 +18,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	_ = GetClient()
-
 
 	j := jwt.New(jwt.Config{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
@@ -104,16 +97,3 @@ func answerMVC(app *mvc.Application)  {
 	app.Handle(new(controllers.AnswerController))
 }
 
-func GetClient() *mongo.Client {
-	clientOptions := options.Client().ApplyURI("mongodb://production:123456@localhost:27017")
-	client, err := mongo.NewClient(clientOptions)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = client.Connect(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	return client
-}

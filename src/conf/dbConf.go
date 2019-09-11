@@ -17,3 +17,11 @@ var MasterDBConf = DBConf{
 	Pwd: "123456",
 	DBName:"drfinder",
 }
+
+var MongoDBConf = DBConf{
+	Host: "127.0.0.1",
+	Port: 27017,
+	User: "production",
+	Pwd: "123456",
+	DBName: "",
+}
