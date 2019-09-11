@@ -7,6 +7,7 @@ import (
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
+	"fmt"
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -18,6 +19,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	client := dataSource.InstanceMongoDB()
+
+	mDb := client.Database("drfinder").Collection("movie")
+
+	fmt.Print(mDb)
 
 	j := jwt.New(jwt.Config{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {

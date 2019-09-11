@@ -10,7 +10,6 @@ import (
 	"github.com/kataras/iris/core/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"golang.org/x/text/date"
 	"log"
 	"os"
 	"sync"
@@ -67,9 +66,12 @@ func InstanceMongoDB() *mongo.Client {
 		return mongoEngine
 	}
 
+	// mongodb://production:123456@127.0.0.1:27017
 	conn := fmt.Sprintf("mongodb://%s:%s@%s:%d", conf.MongoDBConf.User, conf.MongoDBConf.Pwd,
 	conf.MongoDBConf.Host, conf.MongoDBConf.Port)
-	clientOptions := options.Client().ApplyURI(conn)
+
+	fmt.Println(conn)
+	clientOptions := options.Client().ApplyURI("mongodb://")
 	client, err := mongo.NewClient(clientOptions)
 
 	if err != nil {
