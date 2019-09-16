@@ -22,6 +22,6 @@ var MongoDBConf = DBConf{
 	Host: "localhost",
 	Port: 27017,
 	User: "myTester",
-	Pwd: "12345678",
+	Pwd: "123456",
 	DBName: "test",
 }

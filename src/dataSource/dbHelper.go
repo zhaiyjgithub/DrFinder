@@ -20,7 +20,7 @@ const codeBucket = "CodeBucket"
 var (
 	masterEngine *gorm.DB
 	cacheDB *bolt.DB
-	mongoEngine *mongo.Client
+	mongoEngine *mongo.Database
 	lock sync.Mutex
 	mongoLock sync.Mutex
 )
@@ -54,7 +54,7 @@ func InstanceMaster() *gorm.DB {
 	return engine
 }
 
-func InstanceMongoDB() *mongo.Client {
+func InstanceMongoDB() *mongo.Database {
 	if mongoEngine != nil {
 		return mongoEngine
 	}
@@ -66,26 +66,28 @@ func InstanceMongoDB() *mongo.Client {
 		return mongoEngine
 	}
 
-	// mongodb://production:123456@127.0.0.1:27017
 	conn := fmt.Sprintf("mongodb://%s:%s@%s:%d/%s?", conf.MongoDBConf.User, conf.MongoDBConf.Pwd,
 	conf.MongoDBConf.Host, conf.MongoDBConf.Port, conf.MongoDBConf.DBName)
 
-	fmt.Println(conn)
 	clientOptions := options.Client().ApplyURI(conn)
-	client, err := mongo.NewClient(clientOptions)
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Connect(context.Background())
+	err = client.Ping(context.TODO(), nil)
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mongoEngine = client
+	fmt.Println("Connected to MongoDB!")
 
-	return client
+	db := client.Database("test")
+	mongoEngine = db
+
+	return db
 }
 
 func InstanceCacheDB() error {

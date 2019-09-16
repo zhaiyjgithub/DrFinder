@@ -19,11 +19,11 @@ func (d *PostDao) Add(post *models.Post) error {
 	return db.Error
 }
 
-func (d *PostDao) GetPostListByPage(post *models.Post, page int, pageSize int) []models.Post {
+func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []models.Post {
 	var posts []models.Post
 
-	if post.Type > 0 {
-		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts, "type = ?", post.Type)
+	if postType > 0 {
+		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts, "type = ?", postType)
 	}else {
 		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts)
 	}

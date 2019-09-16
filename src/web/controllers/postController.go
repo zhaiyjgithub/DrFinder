@@ -21,6 +21,7 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost,Utils.AddLikes, "AddLikes")
 	b.Handle(iris.MethodPost, Utils.AddFavor, "AddFavor")
 	b.Handle(iris.MethodPost, Utils.DeletePost, "DeletePost")
+	b.Handle(iris.MethodPost, Utils.GetPostByPage, "GetPostByPage")
 }
 
 func (c *PostController) CreatePost() {
@@ -151,4 +152,23 @@ func (c *PostController) DeletePost()  {
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *PostController) GetPostByPage()  {
+	type Param struct {
+		Type int
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
+
+	response.Success(c.Ctx, response.Successful, posts)
 }

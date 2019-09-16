@@ -12,6 +12,7 @@ import (
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,8 +25,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	testMongoDB()
 
 	j := jwt.New(jwt.Config{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
@@ -63,6 +62,8 @@ func main() {
 	mvc.Configure(answerParty, answerMVC)
 
 	app.Run(iris.Addr(":8090"))
+
+
 }
 
 func doctorMVC(app *mvc.Application) {
@@ -103,6 +104,15 @@ func answerMVC(app *mvc.Application)  {
 	service := service.NewAnswerService()
 	app.Register(service)
 	app.Handle(new(controllers.AnswerController))
+}
+
+func testLog()  {
+	log := logrus.New()
+
+	log.WithFields(logrus.Fields{
+		"animal": "walrus",
+		"size": 10,
+	}).Info("A group of walrus emerges from the ocean")
 }
 
 func testMongoDB() {
