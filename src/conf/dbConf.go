@@ -21,7 +21,7 @@ var MasterDBConf = DBConf{
 var MongoDBConf = DBConf{
 	Host: "localhost",
 	Port: 27017,
-	User: "productionsfsf",
+	User: "myTester",
 	Pwd: "12345678",
-	DBName: "",
+	DBName: "test",
 }

@@ -7,10 +7,15 @@ import (
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
+	"context"
 	"fmt"
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 func main() {
@@ -20,11 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	client := dataSource.InstanceMongoDB()
-
-	mDb := client.Database("drfinder").Collection("movie")
-
-	fmt.Print(mDb)
+	testMongoDB()
 
 	j := jwt.New(jwt.Config{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
@@ -102,5 +103,66 @@ func answerMVC(app *mvc.Application)  {
 	service := service.NewAnswerService()
 	app.Register(service)
 	app.Handle(new(controllers.AnswerController))
+}
+
+func testMongoDB() {
+	type Trainer struct {
+		Name string
+	}
+
+	mongoURI := "mongodb://myTester:123456@localhost:27017/test?"
+
+	// Set client options
+	clientOptions := options.Client().ApplyURI(mongoURI)
+
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Check the connection
+	err = client.Ping(context.TODO(), nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Connected to MongoDB!")
+
+	collection := client.Database("test").Collection("mycol")
+
+	findOptions := options.Find()
+	findOptions.SetLimit(1)
+	cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var results []Trainer
+	for cur.Next(context.TODO()) {
+
+		// create a value into which the single document can be decoded
+		var elem Trainer
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		results = append(results, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Close the cursor once finished
+	cur.Close(context.TODO())
+
+	fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
+
+	fmt.Println(cur)
 }
 
