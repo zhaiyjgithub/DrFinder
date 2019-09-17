@@ -4,10 +4,10 @@ import (
 	"DrFinder/src/conf"
 	"DrFinder/src/response"
 	"encoding/json"
-	"fmt"
 	"github.com/kataras/iris"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
+	"os"
 	"time"
 )
 
@@ -28,7 +28,6 @@ func ValidateParam(ctx iris.Context, validate *validator.Validate, param interfa
 
 	err = validate.Struct(param)
 	if err != nil {
-		fmt.Println(err.Error())
 		response.Fail(ctx, response.Err, err.Error(), nil)
 		go LogRequest(ctx, param, err.Error(), warn)
 		return err
@@ -46,6 +45,13 @@ func LogRequest(ctx iris.Context, v interface{}, error string, level Level)  {
 	p := string(b)
 
 	log := logrus.New()
+
+	file, err := os.OpenFile("./src/web/sources/logrus.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err == nil {
+	 log.Out = file
+	} else {
+	 log.Info("Failed to log to file, using default stderr")
+	}
 
 	if level == warn {
 		log.WithFields(logrus.Fields{

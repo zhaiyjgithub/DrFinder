@@ -1,0 +1,2 @@
+time="2019-09-17T09:26:48+08:00" level=info msg="API Log" error=Success fields.time="2019-09-17 09:26:48" param="{\"Type\":0,\"Page\":1,\"PageSize\":2}" route="POST /Post/GetPostByPage" statusCode=200
+time="2019-09-17T09:27:00+08:00" level=info msg="API Log" error=Success fields.time="2019-09-17 09:27:00" param="{\"Type\":0,\"Page\":1,\"PageSize\":2}" route="POST /Post/GetPostByPage" statusCode=200
