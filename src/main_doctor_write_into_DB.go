@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,37 +36,29 @@ func main()  {
 		if count == 0 {
 			//
 		}else {
-
 			var doctor models.Doctor
 			doctor.FirstName = row[4]
 			doctor.LastName = row[3]
 			doctor.MiddleName = row[5]
 			doctor.Gender = row[6]
-			doctor.Name = fmt.Sprintf("%s %s, %s", doctor.FirstName, doctor.LastName, doctor.MiddleName)
-			doctor.Credential = row[2]
-			doctor.Npi = row[25]
+			doctor.FullName = fmt.Sprintf("%s %s, %s", doctor.FirstName, doctor.MiddleName, doctor.LastName)
+			doctor.Credential = strings.ReplaceAll(row[2], ".", "")
+			npi, err := strconv.Atoi(row[25])
+			if err != nil {
+				continue
+			}
+			doctor.Npi = npi
+			doctor.Address = row[14]
+			doctor.AddressSuit = row[15]
+			doctor.City = row[16]
+			doctor.State = row[17]
+			doctor.Zip = row[18]
+			doctor.Phone = row[19]
+			doctor.Fax = row[20]
 
-			doctor.MailingAddress = row[7]
-			doctor.MailingAddressDetail = row[8]
-			doctor.MailingCity = row[9]
-			doctor.MailingState = row[10]
-			doctor.MailingZip = row[11]
-			doctor.MailingPhone = row[12]
-			doctor.MailingFax = row[13]
-
-			doctor.BusinessAddress = row[14]
-			doctor.BusinessAddressDetail = row[15]
-			doctor.BusinessCity = row[16]
-			doctor.BusinessState = row[16]
-			doctor.BusinessState = row[17]
-			doctor.BusinessZip = row[18]
-			doctor.BusinessPhone = row[19]
-			doctor.BusinessFax = row[20]
-
-			doctor.Specialty = fmt.Sprintf("%s %s", row[21], row[22])
+			doctor.Specialty = row[21]
 			doctor.CreatedAt = time.Now()
 			doctor.UpdatedAt = time.Now()
-
 
 			service.Add(&doctor)
 		}

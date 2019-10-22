@@ -41,6 +41,7 @@ func (c *DoctorController) AddDoctor() {
 		Credential   string `validate:"gt=0"`
 		Gender       string `validate:"len=1"`
 		Address      string `validate:"gt=0"`
+		AddressSuit  string
 		City         string `validate:"gt=0"`
 		State        string `validate:"gt=0"`
 		Zip          string `validate:"gt=0"`

@@ -17,6 +17,7 @@ type Doctor struct {
 	Credential   string `gorm:"column:credential"`
 	Gender       string `gorm:"column:gender"`
 	Address      string `gorm:"column:address"`
+	AddressSuit  string `gorm:"column:address_suit"`
 	City         string `gorm:"column:city"`
 	State        string `gorm:"column:state"`
 	Zip          string `gorm:"column:zip"`
