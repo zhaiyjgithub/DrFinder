@@ -45,7 +45,7 @@ func main()  {
 			doctor.Credential = strings.ReplaceAll(row[2], ".", "")
 			npi, err := strconv.Atoi(row[25])
 			if err != nil {
-				continue
+				return
 			}
 			doctor.Npi = npi
 			doctor.Address = row[14]
