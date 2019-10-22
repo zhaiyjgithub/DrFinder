@@ -8,8 +8,22 @@ import (
 	"strings"
 )
 
+
 func main() {
-	res, err := http.Get("https://www.doximity.com/pub/richard-xu-md")
+	type DoxInfo struct {
+		Url string
+		FirstName string
+		MiddleName string
+		LastName string
+		Credentials string
+		SubSpecialty string
+		JobTitle string
+		OfficePhone string
+		Summary string
+	}
+
+	var dox DoxInfo
+	res, err := http.Get("https://www.doximity.com/pub/krystal-cascetta-md")
 
 	if err!= nil {
 		log.Fatal(err)
@@ -29,15 +43,17 @@ func main() {
 	doc.Find(".profile-head").Find("img").Each(func(i int, selection *goquery.Selection) {
 		url, _ := selection.Attr("src")
 		fmt.Println(url)
+		dox.Url = url
 	})
 
 	doc.Find(".profile-head").Each(func(i int, selection *goquery.Selection) {
-		fmt.Println(selection.Find(".user-name-first").Text())
+		fmt.Println()
 		fmt.Println(selection.Find(".user-name-middle").Text())
 		fmt.Println(selection.Find(".user-name-last").Text())
 		fmt.Println(selection.Find(".user-name-credentials").Text())
 		fmt.Println(selection.Find(".user-subspecialty").Text())
 		fmt.Println(selection.Find(".user-job-title").Text())
+		dox.FirstName = selection.Find(".user-name-middle").Text()
 	})
 
 	doc.Find(".address-info").Each(func(i int, selection *goquery.Selection) {
@@ -48,11 +64,12 @@ func main() {
 		phone = strings.Replace(phone, ")", "", -1)
 		phone = strings.Replace(phone, "-", "", -1)
 		fmt.Println(phone)
-
+		dox.OfficePhone = phone
 	})
 
 	doc.Find(".summary-info").Each(func(i int, selection *goquery.Selection) {
 		fmt.Println(selection.Text())
+		dox.Summary = selection.Text()
 	})
 
 	doc.Find(".education-info").Each(func(i int, selection *goquery.Selection) {
@@ -68,4 +85,6 @@ func main() {
 			fmt.Println(selection.Find("span").Text())
 		})
 	})
+
+	fmt.Println(dox)
 }

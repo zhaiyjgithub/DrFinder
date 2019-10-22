@@ -32,27 +32,24 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 
 func (c *DoctorController) AddDoctor() {
 	type Param struct {
-		Npi             string  `validate:"gt=0,numeric"`
-		LastName        string `validate:"gt=0"`
-		FirstName       string `validate:"gt=0"`
-		MiddleName      string
-		Name            string
-		NamePrefix      string
-		Credential      string `validate:"gt=0"`
-		Gender          string `validate:"len=1"`
-		MailingAddress  string `validate:"gt=0"`
-		MailingCity     string `validate:"gt=0"`
-		MailingState    string `validate:"gt=0"`
-		MailingZip      string `validate:"gt=0"`
-		MailingPhone    string
-		MailingFax      string
-		BusinessAddress string `validate:"gt=0"`
-		BusinessCity    string `validate:"gt=0"`
-		BusinessState   string `validate:"gt=0"`
-		BusinessZip     string `validate:"gt=0"`
-		BusinessPhone   string `validate:"gt=0"`
-		BusinessFax     string
-		Specialty       string `validate:"gt=0"`
+		Npi          int  `validate:"gt=0,numeric"`
+		LastName     string `validate:"gt=0"`
+		FirstName    string `validate:"gt=0"`
+		MiddleName   string
+		FullName     string `validate:"gt=0"`
+		NamePrefix   string
+		Credential   string `validate:"gt=0"`
+		Gender       string `validate:"len=1"`
+		Address      string `validate:"gt=0"`
+		City         string `validate:"gt=0"`
+		State        string `validate:"gt=0"`
+		Zip          string `validate:"gt=0"`
+		Phone        string
+		Fax 		 string
+		Specialty    string `validate:"gt=0"`
+		SubSpecialty string
+		JobTitle     string
+		Summary      string
 	}
 
 	var param Param
@@ -69,22 +66,19 @@ func (c *DoctorController) AddDoctor() {
 		MiddleName: param.MiddleName,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Name: "",
+		FullName: param.FullName,
 		NamePrefix: param.NamePrefix,
 		Gender: param.Gender,
-		MailingAddress: param.MailingAddress,
-		MailingCity: param.MailingCity,
-		MailingState: param.MailingState,
-		MailingZip: param.BusinessZip,
-		MailingPhone: param.MailingPhone,
-		MailingFax: param.MailingFax,
-		BusinessAddress: param.BusinessAddress,
-		BusinessCity: param.BusinessCity,
-		BusinessState: param.BusinessState,
-		BusinessZip: param.BusinessZip,
-		BusinessPhone: param.BusinessPhone,
-		BusinessFax: param.BusinessFax,
+		Address: param.Address,
+		City: param.City,
+		State: param.State,
+		Zip: param.Zip,
+		Phone: param.Phone,
+		Fax: param.Fax,
 		Specialty: param.Specialty,
+		SubSpecialty: param.SubSpecialty,
+		JobTitle: param.JobTitle,
+		Summary: param.Summary,
 	}
 
 	ok := c.Service.Add(newDoctor)
@@ -159,7 +153,7 @@ func (c *DoctorController) SearchDoctor()  {
 	doctor.LastName = param.LastName
 	doctor.Specialty = param.Specialty
 	doctor.Gender = param.Gender
-	doctor.BusinessCity = param.City
+	doctor.City = param.City
 
 	doctors:= c.Service.SearchDoctor(&doctor)
 
@@ -238,7 +232,7 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	doctor.LastName = param.LastName
 	doctor.Specialty = param.Specialty
 	doctor.Gender = param.Gender
-	doctor.BusinessCity = param.City
+	doctor.City = param.City
 
 	doctors := c.Service.SearchDoctorByPage(&doctor, param.Page, param.PageSize)
 

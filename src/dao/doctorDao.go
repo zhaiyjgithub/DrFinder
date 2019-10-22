@@ -90,7 +90,7 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 	lastName := fmt.Sprintf("%%%s%%", doctor.LastName)
 	specialty := fmt.Sprintf("%%%s%%", doctor.Specialty)
 	gender := fmt.Sprintf("%%%s%%", doctor.Gender)
-	businessCity := fmt.Sprintf("%%%s%%", doctor.BusinessCity)
+	businessCity := fmt.Sprintf("%%%s%%", doctor.City)
 
 	d.engine.Limit(pageSize).Offset((page -1)*pageSize).Find(&doctors, "first_Name LIKE ? " +
 		"AND last_name LIKE ? " +

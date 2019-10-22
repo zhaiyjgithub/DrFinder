@@ -5,32 +5,27 @@ import (
 )
 
 type Doctor struct {
-	ID              int            `gorm:"column:id;primary_key"`
-	Npi             string  `gorm:"column:npi"`
-	LastName        string `gorm:"column:last_name"`
-	FirstName       string `gorm:"column:first_name"`
-	MiddleName      string `gorm:"column:middle_name"`
-	CreatedAt       time.Time      `gorm:"column:created_at"`
-	UpdatedAt       time.Time      `gorm:"column:updated_at"`
-	Name            string `gorm:"column:name"`
-	NamePrefix      string `gorm:"column:name_prefix"`
-	Credential      string `gorm:"column:credential"`
-	Gender          string `gorm:"column:gender"`
-	MailingAddress  string `gorm:"column:mailing_address"`
-	MailingAddressDetail  string `gorm:"column:mailing_address_detail"`
-	MailingCity     string `gorm:"column:mailing_city"`
-	MailingState    string `gorm:"column:mailing_state"`
-	MailingZip      string `gorm:"column:mailing_zip"`
-	MailingPhone    string `gorm:"column:mailing_phone"`
-	MailingFax      string `gorm:"column:mailing_fax"`
-	BusinessAddress string `gorm:"column:business_address"`
-	BusinessAddressDetail string `gorm:"column:business_address_detail"`
-	BusinessCity    string `gorm:"column:business_city"`
-	BusinessState   string `gorm:"column:business_state"`
-	BusinessZip     string `gorm:"column:business_zip"`
-	BusinessPhone   string `gorm:"column:business_phone"`
-	BusinessFax     string `gorm:"column:business_fax"`
-	Specialty       string `gorm:"column:specialty"`
+	ID           int            `gorm:"column:id;primary_key"`
+	Npi          int  `gorm:"column:npi"`
+	LastName     string `gorm:"column:last_name"`
+	FirstName    string `gorm:"column:first_name"`
+	MiddleName   string `gorm:"column:middle_name"`
+	CreatedAt    time.Time      `gorm:"column:created_at"`
+	UpdatedAt    time.Time      `gorm:"column:updated_at"`
+	FullName     string `gorm:"column:full_name"`
+	NamePrefix   string `gorm:"column:name_prefix"`
+	Credential   string `gorm:"column:credential"`
+	Gender       string `gorm:"column:gender"`
+	Address      string `gorm:"column:address"`
+	City         string `gorm:"column:city"`
+	State        string `gorm:"column:state"`
+	Zip          string `gorm:"column:zip"`
+	Phone        string `gorm:"column:phone"`
+	Fax 		 string `gorm:"column:fax"`
+	Specialty    string `gorm:"column:specialty"`
+	SubSpecialty string `gorm:"column:sub_specialty"`
+	JobTitle     string `gorm:"column:job_title"`
+	Summary      string `gorm:"column:summary"`
 }
 
 // TableName sets the insert table name for this struct type
