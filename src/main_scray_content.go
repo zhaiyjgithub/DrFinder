@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+type DoxInfo struct {
+	doctor models.Doctor
+
+}
+
 
 func main() {
 	var doctor models.Doctor
