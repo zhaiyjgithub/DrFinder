@@ -100,3 +100,11 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 
 	return doctors
 }
+
+func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
+	var doctors []models.Doctor
+
+	d.engine.Limit(pageSize).Offset(page - 1).Find(&doctors)
+
+	return doctors
+}

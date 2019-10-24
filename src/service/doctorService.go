@@ -14,7 +14,7 @@ type DoctorService interface {
 	UpdateDoctorById(doctor *models.Doctor) error
 	DeleteDoctorById(id int) bool
 	SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor
-
+	GetDoctorByPage(page int, pageSize int) []models.Doctor
 }
 
 type doctorService struct {
@@ -41,7 +41,7 @@ func (s *doctorService) GetDoctorBySpecialty(specialty string) *models.Doctor  {
 	return s.dao.GetDoctorBySpecialty(specialty)
 }
 
-func (s *doctorService)  SearchDoctor(doctor *models.Doctor) []models.Doctor {
+func (s *doctorService) SearchDoctor(doctor *models.Doctor) []models.Doctor {
 	return s.dao.SearchDoctor(doctor)
 }
 
@@ -55,4 +55,8 @@ func (s *doctorService) DeleteDoctorById(id int) bool  {
 
 func (s *doctorService) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor  {
 	return s.dao.SearchDoctorByPage(doctor, page, pageSize)
+}
+
+func (s *doctorService) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
+	return s.dao.GetDoctorByPage(page, pageSize)
 }
