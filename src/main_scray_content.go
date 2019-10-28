@@ -40,7 +40,7 @@ func main() {
 			return
 		}
 
-		page = pa
+		page = page + 1
 
 		wg := sync.WaitGroup{}
 		cin := make(chan *DoxInfo)
@@ -66,7 +66,7 @@ func main() {
 			fmt.Println(x)
 		}
 
-		time.Sleep(20*time.Second)
+		time.Sleep(30*time.Second)
 	}
 }
 
@@ -84,7 +84,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		fmt.Printf("first name: %s, npi: %d,  200", doctor.FirstName, doctor.Npi)
+		fmt.Printf("name: %s-%s-%s npi: %d,  200", doctor.FirstName, doctor.LastName, doctor.Credential, doctor.Npi)
 		return nil
 	}
 
