@@ -56,8 +56,6 @@ func main() {
 	mvc.Configure(answerParty, answerMVC)
 
 	app.Run(iris.Addr(":8090"))
-
-
 }
 
 func doctorMVC(app *mvc.Application) {

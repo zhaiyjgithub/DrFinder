@@ -25,14 +25,22 @@ type DoxInfo struct {
 
 
 func main() {
-	service := service.NewDoctorService()
+	doctorService := service.NewDoctorService()
+	affiliationService := service.NewAffiliationService()
+	awardService := service.NewAwardService()
+	cerService := service.NewCertificationService()
+	clnService := service.NewClinicalService()
+	eduService := service.NewEducationService()
+	langService := service.NewLangService()
+	memService := service.NewMembershipService()
+
 
 	page := 1
 	pageSize := 5
 
 	start := time.Now().Unix()
 	for {
-		doctors := service.GetDoctorByPage(page, pageSize)
+		doctors := doctorService.GetDoctorByPage(page, pageSize)
 
 		if len(doctors) == 0 {
 			end := time.Now().Unix()
@@ -62,11 +70,84 @@ func main() {
 			close(cin)
 		}()
 
-		for x := range cin {
-			fmt.Println(x)
+		for dox := range cin {
+			if dox != nil {
+				// update doctor info
+				info := models.Doctor{
+					ID: dox.doctor.ID,
+					JobTitle: dox.doctor.JobTitle,
+					SubSpecialty: dox.doctor.SubSpecialty,
+					Summary: dox.doctor.Summary,
+				}
+
+				doctorService.UpdateDoctorInfo(&info)
+
+				for i := 0; i < len(dox.affiliations); i ++ {
+					aff := dox.affiliations[i]
+					err := affiliationService.Add(aff)
+
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.awards); i ++ {
+					award := dox.awards[i]
+
+					err := awardService.Add(award)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.certifications); i ++ {
+					cer := dox.certifications[i]
+
+					err := cerService.Add(cer)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.clinicals); i ++ {
+					cln := dox.clinicals[i]
+
+					err := clnService.Add(cln)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.educations); i ++ {
+					edu := dox.educations[i]
+
+					err := eduService.Add(edu)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.langs); i ++ {
+					lang := dox.langs[i]
+
+					err := langService.Add(lang)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+
+				for i := 0; i < len(dox.memberships); i ++ {
+					mem := dox.memberships[i]
+
+					err := memService.Add(mem)
+					if err != nil {
+						fmt.Println(err)
+					}
+				}
+			}
 		}
 
-		time.Sleep(30*time.Second)
+		time.Sleep(20*time.Second)
 	}
 }
 
@@ -134,6 +215,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 			var edu models.Education
 			edu.Name = selection.Find("strong").Text()
 			edu.Desc = selection.Find("span").Text()
+			edu.Npi = doctor.Npi
 			dox.educations = append(dox.educations, &edu)
 			//fmt.Println(selection.Find("strong").Text())
 			//fmt.Println(selection.Find("span").Text())
@@ -145,6 +227,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 			var cer models.Certification
 			cer.Name = selection.Find("strong").Text()
 			cer.Desc = selection.Find("span").Text()
+			cer.Npi = doctor.Npi
 			dox.certifications = append(dox.certifications, &cer)
 			//fmt.Println(selection.Find("strong").Text())
 			//fmt.Println(selection.Find("span").Text())
@@ -157,6 +240,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 			var cln  models.Clinical
 			cln.Name = selection.Find("strong").Text()
 			cln.Desc = selection.Find("span").Text()
+			cln.Npi = doctor.Npi
 			dox.clinicals = append(dox.clinicals, &cln)
 			//fmt.Println(selection.Find("strong").Text())
 			//fmt.Println(selection.Find("span").Text())
@@ -169,6 +253,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 			var mem models.Membership
 			mem.Name = selection.Find("strong").Text()
 			mem.Desc = selection.Find(".br").Text()
+			mem.Npi = doctor.Npi
 			dox.memberships = append(dox.memberships, &mem)
 			//fmt.Println(selection.Find("strong").Text())
 			//fmt.Println(selection.Find(".br").Text())
@@ -180,6 +265,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 		//fmt.Println(selection.Find("ul").Find("li").Text())
 		var lang models.Lang
 		lang.Lang = selection.Find("ul").Find("li").Text()
+		lang.Npi = doctor.Npi
 		dox.langs = append(dox.langs, &lang)
 	})
 	//hospital-info
@@ -190,7 +276,21 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 			var aff models.Affiliation
 			aff.Name = selection.Find("strong").Text()
 			aff.Desc = selection.Find(".br").Text()
+			aff.Npi = doctor.Npi
 			dox.affiliations = append(dox.affiliations, &aff)
+		})
+	})
+
+	//award-info
+	doc.Find(".award-info").Each(func(i int, selection *goquery.Selection) {
+		selection.Find("ul").Find("li").Each(func(i int, selection *goquery.Selection) {
+			//fmt.Println(selection.Find("strong").Text())
+			//fmt.Println(selection.Find(".br").Text())
+			var award models.Award
+			award.Name = selection.Find("strong").Text()
+			award.Desc = selection.Find(".br").Text()
+			award.Npi = doctor.Npi
+			dox.awards = append(dox.awards, &award)
 		})
 	})
 

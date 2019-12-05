@@ -4,20 +4,20 @@ import (
 "github.com/jinzhu/gorm"
 )
 
-type Membership struct {
+type MembershipDao struct {
 	engine *gorm.DB
 }
 
-func NewMembership(engine *gorm.DB) *Membership {
-	return &Membership{engine:engine}
+func NewMembershipDao(engine *gorm.DB) *MembershipDao {
+	return &MembershipDao{engine:engine}
 }
 
-func (d *Membership) Add(clinic *models.Membership) error {
+func (d *MembershipDao) Add(clinic *models.Membership) error {
 	db := d.engine.Create(clinic)
 	return db.Error
 }
 
-func (d *Membership) GetMemberShipByNpi(npi int) *models.Membership {
+func (d *MembershipDao) GetMemberShipByNpi(npi int) *models.Membership {
 	var MemberShip models.Membership
 
 	db := d.engine.Where("npi = ? ", npi).Find(&MemberShip)

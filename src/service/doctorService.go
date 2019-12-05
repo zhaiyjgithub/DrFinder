@@ -12,6 +12,7 @@ type DoctorService interface {
 	GetDoctorBySpecialty(specialty string) *models.Doctor
 	SearchDoctor(doctor *models.Doctor) []models.Doctor
 	UpdateDoctorById(doctor *models.Doctor) error
+	UpdateDoctorInfo(info *models.Doctor) error
 	DeleteDoctorById(id int) bool
 	SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor
 	GetDoctorByPage(page int, pageSize int) []models.Doctor
@@ -47,6 +48,10 @@ func (s *doctorService) SearchDoctor(doctor *models.Doctor) []models.Doctor {
 
 func (s *doctorService) UpdateDoctorById(doctor *models.Doctor) error  {
 	return s.dao.UpdateDoctorById(doctor)
+}
+
+func (s *doctorService) UpdateDoctorInfo(info *models.Doctor) error  {
+	return s.dao.UpdateDoctorInfo(info)
 }
 
 func (s *doctorService) DeleteDoctorById(id int) bool  {

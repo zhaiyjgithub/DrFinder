@@ -15,7 +15,7 @@ type awardService struct {
 	dao *dao.AwardDao
 }
 
-func (s *awardService) NewAwardService() AwardService {
+func NewAwardService() AwardService {
 	return &awardService{
 		dao:dao.NewAwardDao(dataSource.InstanceMaster()),
 	}

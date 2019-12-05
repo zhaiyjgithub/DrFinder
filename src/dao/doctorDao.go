@@ -66,6 +66,19 @@ func (d *DoctorDao) UpdateDoctorById(newDoctor *models.Doctor) error {
 	return db.Error
 }
 
+func (d *DoctorDao) UpdateDoctorInfo(info *models.Doctor) error  {
+	var doctor models.Doctor
+	db := d.engine.Where("id = ?", info.ID).First(&doctor)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	db = d.engine.Model(&doctor).Update(info)
+
+	return db.Error
+}
+
 func (d *DoctorDao) DeleteDoctorById(id int) bool {
 	var doctor models.Doctor
 	doctor.ID = id

@@ -7,24 +7,24 @@ import (
 )
 
 type Membership interface {
-	Add(edu *models.Lang) error
-	GetLangByNpi(npi int) *models.Lang
+	Add(edu *models.Membership) error
+	//GetLangByNpi(npi int) *models.Lang
 }
 
-type membership struct {
-	dao *dao.LangDao
+type membershipService struct {
+	dao *dao.MembershipDao
 }
 
-func NewMembership() Membership {
-	return &membership{dao:dao.NewLangDao(dataSource.InstanceMaster())}
+func NewMembershipService() Membership {
+	return &membershipService{dao:dao.NewMembershipDao(dataSource.InstanceMaster())}
 }
 
-func (s *membership) Add(edu *models.Lang) error  {
+func (s *membershipService) Add(edu *models.Membership) error  {
 	return s.dao.Add(edu)
 }
 
-func (s *membership) GetLangByNpi(npi int) *models.Lang  {
-	return s.dao.GetLangByNpi(npi)
+func (s *membershipService) GetMemberShipByNpi(npi int) *models.Membership {
+	return s.dao.GetMemberShipByNpi(npi)
 }
 
 
