@@ -165,22 +165,15 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		fmt.Printf("name: %s-%s-%s npi: %d,  200", doctor.FirstName, doctor.LastName, doctor.Credential, doctor.Npi)
+		fmt.Printf("status code error -  : %d,  npi: %d", res.StatusCode, doctor.Npi)
 		return nil
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		//log.Fatal(err)
-		fmt.Printf("first name: %s, npi: %d,  body", doctor.FirstName, doctor.Npi)
+		fmt.Printf("unknow error - doctor npi: %d, error: %v", doctor.Npi, err)
 		return nil
 	}
-
-	//doc.Find(".profile-head").Find("img").Each(func(i int, selection *goquery.Selection) {
-	//	url, _ := selection.Attr("src")
-	//	fmt.Println(url)
-	//	dox.Url = url
-	//})
 
 	isEqual := true
 	doc.Find(".address-info").Each(func(i int, selection *goquery.Selection) {
@@ -192,7 +185,7 @@ func fetchDoctor(doctor *models.Doctor) *DoxInfo {
 		phone = strings.Replace(phone, "-", "", -1)
 
 		if dox.doctor.Phone != phone {
-			fmt.Printf("first name: %s, npi: %d,  phone", doctor.FirstName, doctor.Npi)
+			fmt.Printf("phone error - sql phone: %s VS net phone: %s: npi: %s", doctor.Phone, phone,  doctor.Npi)
 			isEqual = false
 		}else {
 			dox.doctor.Phone = phone
