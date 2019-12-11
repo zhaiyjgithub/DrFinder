@@ -35,11 +35,12 @@ func main() {
 	memService := service.NewMembershipService()
 
 
-	page := 1
+	page := 1186
 	pageSize := 5
 
 	start := time.Now().Unix()
 	for {
+		// SELECT * FROM `doctors`   LIMIT 5 OFFSET 5925
 		doctors := doctorService.GetDoctorByPage(page, pageSize)
 
 		if len(doctors) == 0 {
