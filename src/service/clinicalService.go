@@ -8,7 +8,7 @@ import (
 
 type ClinicalService interface {
 	Add(clinic *models.Clinical) error
-	GetClinicalByNpi(npi int) *models.Clinical
+	GetClinicalByNpi(npi int) []models.Clinical
 }
 
 type clinicService struct {
@@ -23,6 +23,6 @@ func (s *clinicService) Add(clinic *models.Clinical) error  {
 	return s.dao.Add(clinic)
 }
 
-func (s *clinicService) GetClinicalByNpi(npi int) *models.Clinical  {
+func (s *clinicService) GetClinicalByNpi(npi int) []models.Clinical  {
 	return s.dao.GetClinicalByNpi(npi)
 }

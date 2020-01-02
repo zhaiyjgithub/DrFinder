@@ -8,12 +8,12 @@ const Ok = 0
 const Err = 1
 const Expire = 2
 const NotExist = 3
-
-
+const IsExist = 4
 
 const Successful = "success"
 const ParamErr = "param error"
-const NotFound = "Nor found"
+const NotFound = "Not found"
+const IsExisting = "Is existing"
 
 func Success(ctx iris.Context, msg string, data interface{})  {
 	ctx.JSON(iris.Map{

@@ -16,6 +16,8 @@ type DoctorService interface {
 	DeleteDoctorById(id int) bool
 	SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor
 	GetDoctorByPage(page int, pageSize int) []models.Doctor
+	GetHotSearchDoctors() *[]models.Doctor
+	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
 }
 
 type doctorService struct {
@@ -64,4 +66,12 @@ func (s *doctorService) SearchDoctorByPage(doctor *models.Doctor, page int, page
 
 func (s *doctorService) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
 	return s.dao.GetDoctorByPage(page, pageSize)
+}
+
+func (s *doctorService) GetHotSearchDoctors() *[]models.Doctor {
+	return s.dao.GetHotSearchDoctors()
+}
+
+func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
+	return s.dao.GetRelatedDoctors(relateDoctor)
 }

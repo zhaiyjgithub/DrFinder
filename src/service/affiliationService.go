@@ -8,7 +8,7 @@ import (
 
 type AffiliationService interface {
 	Add(affiliation *models.Affiliation) error
-	GetAffiliationByNpi(npi int) *models.Affiliation
+	GetAffiliationByNpi(npi int) []models.Affiliation
 	GetAll(page int, pageSize int) error
 }
 
@@ -26,7 +26,7 @@ func (s *affiliationService)Add(affiliation *models.Affiliation) error  {
 	return s.dao.Add(affiliation)
 }
 
-func (s *affiliationService) GetAffiliationByNpi(npi int) *models.Affiliation  {
+func (s *affiliationService) GetAffiliationByNpi(npi int) []models.Affiliation  {
 	return s.dao.GetAffiliationByNpi(npi)
 }
 

@@ -19,8 +19,8 @@ func (d *EducationDao) Add(edu *models.Education) error {
 	return db.Error
 }
 
-func (d *EducationDao) GetEducationByNpi(npi int) *models.Education {
-	var edu models.Education
+func (d *EducationDao) GetEducationByNpi(npi int) []models.Education {
+	var edu []models.Education
 
 	db := d.engine.Where("npi = ?", npi).Find(&edu)
 
@@ -28,7 +28,7 @@ func (d *EducationDao) GetEducationByNpi(npi int) *models.Education {
 		return nil
 	}
 
-	return &edu
+	return edu
 }
 
 

@@ -17,8 +17,8 @@ func (d *MembershipDao) Add(clinic *models.Membership) error {
 	return db.Error
 }
 
-func (d *MembershipDao) GetMemberShipByNpi(npi int) *models.Membership {
-	var MemberShip models.Membership
+func (d *MembershipDao) GetMemberShipByNpi(npi int) []models.Membership {
+	var MemberShip []models.Membership
 
 	db := d.engine.Where("npi = ? ", npi).Find(&MemberShip)
 
@@ -26,5 +26,5 @@ func (d *MembershipDao) GetMemberShipByNpi(npi int) *models.Membership {
 		return nil
 	}
 
-	return &MemberShip
+	return MemberShip
 }

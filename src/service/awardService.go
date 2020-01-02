@@ -8,7 +8,7 @@ import (
 
 type AwardService interface {
 	Add(award *models.Award) error
-	GetAwardByNpi(npi int) *models.Award
+	GetAwardByNpi(npi int) []models.Award
 }
 
 type awardService struct {
@@ -25,6 +25,6 @@ func (s *awardService) Add(award *models.Award) error  {
 	return s.dao.Add(award)
 }
 
-func (s *awardService) GetAwardByNpi(npi int) *models.Award  {
+func (s *awardService) GetAwardByNpi(npi int) []models.Award  {
 	return s.dao.GetAwardByNpi(npi)
 }

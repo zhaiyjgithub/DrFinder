@@ -2,12 +2,9 @@ package main
 
 import (
 	"DrFinder/src/Utils"
-	"DrFinder/src/conf"
 	"DrFinder/src/dataSource"
-	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/web/controllers"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/sirupsen/logrus"
@@ -20,21 +17,22 @@ func main() {
 		panic(err)
 	}
 
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
+	//j := jwt.New(jwt.Config{
+	//	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+	//		return conf.JWRTSecret, nil
+	//	},
+	//	SigningMethod: jwt.SigningMethodHS256,
+	//	ErrorHandler: func(ctx iris.Context, e error) {
+	//		response.Fail(ctx, response.Expire, e.Error(), nil)
+	//	},
+	//})
 
 	app:= iris.New()
 
 	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
 
-	doctorParty := app.Party(Utils.APIDoctor, j.Serve)
+	//doctorParty := app.Party(Utils.APIDoctor, j.Serve)
+	doctorParty := app.Party(Utils.APIDoctor)
 	mvc.Configure(doctorParty, doctorMVC)
 
 	userParty := app.Party(Utils.APIUser)
@@ -59,8 +57,29 @@ func main() {
 }
 
 func doctorMVC(app *mvc.Application) {
-	service := service.NewDoctorService()
-	app.Register(service)
+	doctorService := service.NewDoctorService()
+	geoService := service.NewGeoService()
+	affiliationService := service.NewAffiliationService()
+	awardService := service.NewAwardService()
+	cerService := service.NewCertificationService()
+	clinicService := service.NewClinicalService()
+	eduService := service.NewEducationService()
+	langService := service.NewLangService()
+	memberShipService := service.NewMembershipService()
+	collectionService := service.NewCollectionService()
+
+	app.Register(
+		doctorService,
+		affiliationService,
+		awardService,
+		cerService,
+		clinicService,
+		eduService,
+		geoService,
+		langService,
+		memberShipService,
+		collectionService,
+		)
 	app.Handle(new(controllers.DoctorController))
 }
 

@@ -121,3 +121,22 @@ func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
 
 	return doctors
 }
+
+func (d *DoctorDao) GetHotSearchDoctors() *[]models.Doctor {
+	var doctors []models.Doctor
+
+	d.engine.Limit(50).Offset(0).Find(&doctors)
+
+	return &doctors
+}
+
+func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
+	var doctors []models.Doctor
+
+	d.engine.Limit(10).Offset(100).Find(&doctors)
+	return &doctors
+}
+
+func (d *DoctorDao) GetDoctorStarStatus(userId int, npi int) bool {
+	return false
+}

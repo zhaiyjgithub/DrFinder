@@ -19,8 +19,8 @@ func (d *CertificationDao) Add(cer *models.Certification) error {
 	return db.Error
 }
 
-func (d *CertificationDao) GetCertificationByNpi(npi int) *models.Certification {
-	var cer models.Certification
+func (d *CertificationDao) GetCertificationByNpi(npi int) []models.Certification {
+	var cer []models.Certification
 
 	db := d.engine.Where("npi = ?", npi).Find(&cer)
 
@@ -28,5 +28,5 @@ func (d *CertificationDao) GetCertificationByNpi(npi int) *models.Certification 
 		return nil
 	}
 
-	return &cer
+	return cer
 }

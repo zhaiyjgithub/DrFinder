@@ -18,6 +18,15 @@ var validate *validator.Validate
 type DoctorController struct {
 	Ctx     iris.Context
 	Service service.DoctorService
+	GeoService service.GeoService
+	AffiliationService service.AffiliationService
+	AwardService service.AwardService
+	CerService service.CertificationService
+	ClinicService service.ClinicalService
+	EduService service.EducationService
+	LangService service.LangService
+	MemberService service.MembershipService
+	CollectionService service.CollectionService
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -28,6 +37,12 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.UpdateDoctorById, "UpdateDoctorById")
 	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteDoctorById")
 	b.Handle(iris.MethodPost, Utils.SearchDoctorByPage, "SearchDoctorByPage")
+	b.Handle(iris.MethodPost, Utils.GetHotSearchDoctors, "GetHotSearchDoctors")
+	b.Handle(iris.MethodPost, Utils.GetDoctorInfoWithNpi, "GetDoctorInfoWithNpi")
+	b.Handle(iris.MethodPost, Utils.GetRelatedDoctors, "GetRelatedDoctors")
+	b.Handle(iris.MethodPost, Utils.AddCollection, "AddCollection")
+	b.Handle(iris.MethodPost, Utils.GetCollections, "GetCollections")
+	b.Handle(iris.MethodPost, Utils.GetCollectionStatus, "GetCollectionStatus")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -221,7 +236,6 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	}
 
 	var param Param
-
 	err := Utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
@@ -238,4 +252,138 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	doctors := c.Service.SearchDoctorByPage(&doctor, param.Page, param.PageSize)
 
 	response.Success(c.Ctx, response.Successful, doctors)
+}
+
+func (c *DoctorController) GetHotSearchDoctors()  {
+	doctors := c.Service.GetHotSearchDoctors()
+
+	response.Success(c.Ctx, response.Successful, doctors)
+}
+
+func (c *DoctorController) GetRelatedDoctors()  {
+	doctors := c.Service.GetRelatedDoctors(nil)
+	response.Success(c.Ctx, response.Successful, doctors)
+}
+
+func (c *DoctorController) GetDoctorInfoWithNpi()  {
+	type Param struct {
+		Npi int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	aff := c.AffiliationService.GetAffiliationByNpi(param.Npi)
+	award := c.AwardService.GetAwardByNpi(param.Npi)
+	cer := c.CerService.GetCertificationByNpi(param.Npi)
+	clinic := c.ClinicService.GetClinicalByNpi(param.Npi)
+	edu := c.EduService.GetEducationByNpi(param.Npi)
+	geo := c.GeoService.GetGeoInfoByNpi(param.Npi)
+	lang := c.LangService.GetLangByNpi(param.Npi)
+	member := c.MemberService.GetMemberShipByNpi(param.Npi)
+
+	type DoctorInfo struct {
+		Npi int
+		Affiliation []models.Affiliation
+		Award []models.Award
+		Certification []models.Certification
+		Clinic []models.Clinical
+		Education []models.Education
+		Geo models.Geo
+		Lang models.Lang
+		MemberShip []models.Membership
+	}
+
+	var info = &DoctorInfo{
+		Npi:param.Npi,
+		Affiliation:aff,
+		Award:award,
+		Certification:cer,
+		Clinic:clinic,
+		Education:edu,
+		MemberShip:member,
+	}
+
+	if geo != nil {
+		info.Geo = *geo
+	}
+
+	if lang != nil {
+		info.Lang = *lang
+	}
+
+	response.Success(c.Ctx, response.Successful, info)
+}
+
+func (c *DoctorController) AddCollection()  {
+	type Param struct {
+		UserId int
+		Npi int
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	err = c.CollectionService.Add(param.UserId, param.Npi)
+
+	if err != nil {
+		errCode := response.Err
+		if err.Error() == "is existing" {
+			errCode = response.IsExist
+		}
+
+		response.Fail(c.Ctx, errCode, err.Error(), nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
+}
+
+func (c *DoctorController) GetCollections()  {
+	type Param struct {
+		UserId int
+	}
+
+	var param Param
+
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	collections := c.CollectionService.GetCollections(param.UserId)
+
+	response.Success(c.Ctx, response.Successful, collections)
+}
+
+func (c *DoctorController) GetCollectionStatus()  {
+	type Param struct {
+		UserId int
+		Npi int
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	err = c.CollectionService.GetIsHasCollected(param.UserId, param.Npi)
+
+	isExist := true
+	if err != nil {
+		isExist = false
+	}
+
+	response.Success(c.Ctx, response.Successful, isExist)
 }

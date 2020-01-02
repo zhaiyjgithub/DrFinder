@@ -18,8 +18,8 @@ func (d *ClinicalDao) Add(clinic *models.Clinical) error {
 	return db.Error
 }
 
-func (d *ClinicalDao) GetClinicalByNpi(npi int) *models.Clinical {
-	var clinical models.Clinical
+func (d *ClinicalDao) GetClinicalByNpi(npi int) []models.Clinical {
+	var clinical []models.Clinical
 
 	db := d.engine.Where("npi = ? ", npi).Find(&clinical)
 
@@ -27,5 +27,5 @@ func (d *ClinicalDao) GetClinicalByNpi(npi int) *models.Clinical {
 		return nil
 	}
 
-	return &clinical
+	return clinical
 }

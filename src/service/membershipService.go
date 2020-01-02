@@ -6,16 +6,16 @@ import (
 	"DrFinder/src/models"
 )
 
-type Membership interface {
+type MembershipService interface {
 	Add(edu *models.Membership) error
-	//GetLangByNpi(npi int) *models.Lang
+	GetMemberShipByNpi(npi int) []models.Membership
 }
 
 type membershipService struct {
 	dao *dao.MembershipDao
 }
 
-func NewMembershipService() Membership {
+func NewMembershipService() MembershipService {
 	return &membershipService{dao:dao.NewMembershipDao(dataSource.InstanceMaster())}
 }
 
@@ -23,7 +23,7 @@ func (s *membershipService) Add(edu *models.Membership) error  {
 	return s.dao.Add(edu)
 }
 
-func (s *membershipService) GetMemberShipByNpi(npi int) *models.Membership {
+func (s *membershipService) GetMemberShipByNpi(npi int) []models.Membership {
 	return s.dao.GetMemberShipByNpi(npi)
 }
 

@@ -5,7 +5,7 @@ import (
 )
 
 type Post struct {
-	ID          int            `gorm:"column:id;primary_key"`
+	ID          int            `gorm:"column:id;primary_key" json:"-"`
 	Type        int  `gorm:"column:type"`
 	Priority    int  `gorm:"column:priority"`
 	Title       string `gorm:"column:title"`
@@ -13,6 +13,6 @@ type Post struct {
 	Description string `gorm:"column:description"`
 	Favorites   int  `gorm:"column:favorites"`
 	Likes       int  `gorm:"column:likes"`
-	CreatedAt   time.Time      `gorm:"column:created_at"`
-	UpdatedAt   time.Time      `gorm:"column:updated_at"`
+	CreatedAt   time.Time      `gorm:"column:created_at" json:"-"`
+	UpdatedAt   time.Time      `gorm:"column:updated_at" json:"-"`
 }

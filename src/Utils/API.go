@@ -8,6 +8,12 @@ var (
 	UpdateDoctorById = "/UpdateDoctorById"
 	DeleteDoctorById = "/DeleteDoctorById"
 	SearchDoctorByPage = "/SearchDoctorByPage"
+	GetHotSearchDoctors = "/GetHotSearchDoctors"
+	GetDoctorInfoWithNpi = "/GetDoctorInfoWithNpi"
+	GetRelatedDoctors = "/GetRelatedDoctors"
+	AddCollection = "/AddCollection"
+	GetCollections = "/GetCollections"
+	GetCollectionStatus = "/GetCollectionStatus"
 )
 
 var (
