@@ -43,6 +43,7 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.AddCollection, "AddCollection")
 	b.Handle(iris.MethodPost, Utils.GetCollections, "GetCollections")
 	b.Handle(iris.MethodPost, Utils.GetCollectionStatus, "GetCollectionStatus")
+	b.Handle(iris.MethodPost, Utils.DeleteCollection, "DeleteCollection")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -386,4 +387,26 @@ func (c *DoctorController) GetCollectionStatus()  {
 	}
 
 	response.Success(c.Ctx, response.Successful, isExist)
+}
+
+func (c *DoctorController) DeleteCollection()  {
+	type Param struct {
+		UserId int
+		Npi int
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	err = c.CollectionService.Delete(param.UserId, param.Npi)
+
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, response.UnknownErr, nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
 }

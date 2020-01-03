@@ -14,6 +14,7 @@ const Successful = "success"
 const ParamErr = "param error"
 const NotFound = "Not found"
 const IsExisting = "Is existing"
+const UnknownErr = "Unknown error"
 
 func Success(ctx iris.Context, msg string, data interface{})  {
 	ctx.JSON(iris.Map{

@@ -14,6 +14,7 @@ var (
 	AddCollection = "/AddCollection"
 	GetCollections = "/GetCollections"
 	GetCollectionStatus = "/GetCollectionStatus"
+	DeleteCollection = "/DeleteCollection"
 )
 
 var (

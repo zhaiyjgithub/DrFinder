@@ -10,6 +10,7 @@ type CollectionService interface {
 	Add(userId int, npi int) error
 	GetCollections(userId int) []models.Collection
 	GetIsHasCollected(userId int, npi int) error
+	Delete(userId int, npi int) error
 }
 
 type collectionService struct {
@@ -30,4 +31,8 @@ func (s *collectionService) GetCollections(userId int) []models.Collection  {
 
 func (s *collectionService) GetIsHasCollected(userId int, npi int) error  {
 	return s.dao.GetIsHasCollected(userId, npi)
+}
+
+func (s *collectionService) Delete(userId int, npi int) error  {
+	return s.dao.Delete(userId, npi)
 }

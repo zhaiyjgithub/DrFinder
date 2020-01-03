@@ -46,3 +46,16 @@ func (d *CollectionDao) GetIsHasCollected(userId int, npi int) error {
 	return db.Error
 }
 
+func (d *CollectionDao) Delete(userId int, npi int) error {
+	var collection models.Collection
+
+	db := d.engine.Where(&models.Collection{UserID: userId, Npi: npi}).Find(&collection)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	db = db.Delete(&collection)
+
+	return db.Error
+}
