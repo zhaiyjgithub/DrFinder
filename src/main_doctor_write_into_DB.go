@@ -3,16 +3,22 @@ package main
 import (
 	"DrFinder/src/models"
 	"DrFinder/src/service"
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
 func main()  {
+	parseCity()
+}
+
+func readDoctorCsv()  {
 	csvFile, err := os.Open("./src/web/sources/physicians_al.csv")
 	if err != nil {
 		panic(err)
@@ -67,4 +73,93 @@ func main()  {
 	}
 
 	fmt.Printf("sum count: %d", count)
+}
+
+func readSpecialEn()  {
+	type void struct {
+
+	}
+
+	var member void
+	set := make(map[string] void)
+
+
+	file, err := os.Open("./src/web/sources/specialty-en.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	br := bufio.NewReader(file)
+
+	for {
+		a, _, c := br.ReadLine()
+
+		if c == io.EOF {
+			break
+		}
+		set[string(a)] = member
+	}
+
+	var specialty []string
+	for k, _ := range set {
+		specialty = append(specialty, k)
+	}
+
+	sort.Slice(specialty, func(i, j int) bool {
+		a := []rune(specialty[i])[0]
+		b := []rune(specialty[j])[0]
+		return a < b
+	})
+	
+	for i:=0; i < len(specialty); i ++ {
+		fmt.Printf("{section: 0, name: \"%s\"}, \n", specialty[i])
+	}
+}
+
+func parseCity()  {
+	service := service.NewDoctorService()
+
+	page := 1
+	pageSize := 500
+
+	type void struct {
+	}
+
+	var member void
+
+	set := make(map[string]void)
+
+	for {
+		doctors := service.GetDoctorByPage(page, pageSize)
+
+		if len(doctors) == 0 {
+			var cities []string
+			for k, _ := range set {
+				//fmt.Printf("\"%s\"  lent: %d\n", k, len(k))
+				cities = append(cities, k)
+			}
+			fmt.Println("finish..")
+
+			sort.Slice(cities, func(i, j int) bool {
+				a := []rune(cities[i])[0]
+				b := []rune(cities[j])[0]
+				return a < b
+			})
+
+			for _, v := range cities {
+				fmt.Printf("\"%s\",\n", v)
+			}
+
+			return
+		}
+
+		for i := 0; i < len(doctors); i ++ {
+			set[doctors[i].City] = member
+		}
+
+		page = page + 1
+	}
 }
