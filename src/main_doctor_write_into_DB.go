@@ -15,7 +15,7 @@ import (
 )
 
 func main()  {
-	parseCity()
+	parseState()
 }
 
 func readDoctorCsv()  {
@@ -143,11 +143,13 @@ func parseCity()  {
 			}
 			fmt.Println("finish..")
 
-			sort.Slice(cities, func(i, j int) bool {
-				a := []rune(cities[i])[0]
-				b := []rune(cities[j])[0]
-				return a < b
-			})
+			//sort.Slice(cities, func(i, j int) bool {
+			//	a := []rune(cities[i])[0]
+			//	b := []rune(cities[j])[0]
+			//	return a < b
+			//})
+
+			sort.Sort(sort.StringSlice(cities))
 
 			for _, v := range cities {
 				fmt.Printf("\"%s\",\n", v)
@@ -162,4 +164,32 @@ func parseCity()  {
 
 		page = page + 1
 	}
+}
+
+func parseState()  {
+	fs, err := os.Open("./src/web/sources/specialty-en.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	defer fs.Close()
+
+	br := bufio.NewReader(fs)
+
+	for {
+		a, _, c := br.ReadLine()
+
+		if c == io.EOF {
+			break
+		}
+
+		fullName := string(a)
+		code := string([]rune(string(fullName))[0:2])
+		name := string([]rune(string(fullName))[3: len(fullName) - 1])
+
+		fmt.Printf("{code: \"%s\", name: \"%s\"},\n", code, name)
+	}
+
+
+
 }

@@ -104,12 +104,12 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 	specialty := fmt.Sprintf("%%%s%%", doctor.Specialty)
 	gender := fmt.Sprintf("%%%s%%", doctor.Gender)
 	city := fmt.Sprintf("%%%s%%", doctor.City)
+	state := fmt.Sprintf("%%%s%%", doctor.State)
 
-	d.engine.Limit(pageSize).Offset((page -1)*pageSize).Find(&doctors, "first_Name LIKE ? " +
-		"AND last_name LIKE ? " +
-		"AND specialty LIKE ? " +
-		"AND gender LIKE ? " +
-		"AND city LIKE ?", firstName, lastName, specialty, gender, city)
+	d.engine.Raw("select * from doctors WHERE id in " +
+		"(SELECT id from doctors where " +
+		"(last_name like ? or first_name like ? or specialty like ?)" +
+		" and gender like ? and city like ? and state like ? group by id) order by specialty", lastName, firstName, specialty, gender, city, state).Scan(&doctors)
 
 	return doctors
 }
