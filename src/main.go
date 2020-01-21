@@ -32,6 +32,7 @@ func main() {
 	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
 
 	//doctorParty := app.Party(Utils.APIDoctor, j.Serve)
+
 	doctorParty := app.Party(Utils.APIDoctor)
 	mvc.Configure(doctorParty, doctorMVC)
 

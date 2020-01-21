@@ -15,7 +15,7 @@ import (
 )
 
 func main()  {
-	parseState()
+
 }
 
 func readDoctorCsv()  {
@@ -189,7 +189,4 @@ func parseState()  {
 
 		fmt.Printf("{code: \"%s\", name: \"%s\"},\n", code, name)
 	}
-
-
-
 }
