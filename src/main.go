@@ -54,7 +54,7 @@ func main() {
 	answerParty := app.Party(Utils.APIAnswer)
 	mvc.Configure(answerParty, answerMVC)
 
-	app.Run(iris.Addr(":8090"))
+	_ = app.Run(iris.Addr(":8090"), iris.WithPostMaxMemory(32<<20)) //max = 32M
 }
 
 func doctorMVC(app *mvc.Application) {

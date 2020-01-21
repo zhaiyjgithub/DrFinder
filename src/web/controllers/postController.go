@@ -5,8 +5,15 @@ import (
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"io"
+	"mime/multipart"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -34,11 +41,33 @@ func (c *PostController) CreatePost() {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	maxSize := c.Ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
+	err := c.Ctx.Request().ParseMultipartForm(maxSize)
+	form := c.Ctx.Request().MultipartForm
 
-	if err != nil {
-		return
+	files := form.File["file"]
+
+
+	err = Utils.ValidateParam(c.Ctx, validate, &param)
+
+
+
+	failures := 0
+
+	for _, file := range files {
+		newFileName := fmt.Sprintf("%s-%s", generateFileName(5), file.Filename)
+		_, err = saveFile(file, "./src/upload/", newFileName)
+
+		if err != nil {
+			failures = failures + 1
+		}
 	}
+
+	fmt.Printf("insert fail: %d", failures)
+
+	//if err != nil {
+	//	return
+	//}
 
 	var post models.Post
 	post.Type = param.Type
@@ -59,6 +88,8 @@ func (c *PostController) CreatePost() {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
+
+
 
 func (c *PostController) UpdatePost()  {
 	type Param struct {
@@ -171,4 +202,32 @@ func (c *PostController) GetPostByPage()  {
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
 
 	response.Success(c.Ctx, response.Successful, posts)
+}
+
+func saveFile(fh *multipart.FileHeader, destDir string, fileName string) (int64, error)  {
+	src, err := fh.Open()
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer src.Close()
+
+	out, err := os.OpenFile(filepath.Join(destDir, fileName), os.O_WRONLY | os.O_CREATE , os.FileMode(0666))
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer out.Close()
+
+	return io.Copy(out, src)
+}
+
+func generateFileName(userId int) string {
+	data := []byte(fmt.Sprintf("%d-%d", userId, time.Now().Unix()))
+	md5er := md5.New()
+	md5er.Write(data)
+
+	return hex.EncodeToString(md5er.Sum(nil))
 }
