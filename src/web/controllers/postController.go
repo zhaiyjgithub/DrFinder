@@ -14,6 +14,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -39,19 +40,35 @@ func (c *PostController) CreatePost() {
 		Description string `validate:"gt=0"`
 	}
 
-	var param Param
-
 	maxSize := c.Ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
-	err := c.Ctx.Request().ParseMultipartForm(maxSize)
-	form := c.Ctx.Request().MultipartForm
+	req := c.Ctx.Request()
+	err := req.ParseMultipartForm(maxSize)
 
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "Max size", nil)
+		return
+	}
+
+	userId, _ := strconv.Atoi(req.FormValue("UserID"))
+	postType, _ := strconv.Atoi(req.FormValue("Type"))
+	title := req.FormValue("Title")
+	desc := req.FormValue("Description")
+
+	var post models.Post
+	post.Type = postType
+	post.UserID = userId
+	post.Title = title
+	post.Description = desc
+	post.Favorites = 0
+	post.Likes = 0
+	post.Priority = 0
+	post.CreatedAt = time.Now()
+	post.UpdatedAt = time.Now()
+
+	err = c.Service.Add(&post)
+
+	form := req.MultipartForm
 	files := form.File["file"]
-
-
-	err = Utils.ValidateParam(c.Ctx, validate, &param)
-
-
-
 	failures := 0
 
 	for _, file := range files {
@@ -63,24 +80,10 @@ func (c *PostController) CreatePost() {
 		}
 	}
 
-	fmt.Printf("insert fail: %d", failures)
-
-	//if err != nil {
-	//	return
-	//}
-
-	var post models.Post
-	post.Type = param.Type
-	post.UserID = param.UserID
-	post.Title = param.Title
-	post.Description = param.Description
-	post.Favorites = 0
-	post.Likes = 0
-	post.Priority = 0
-	post.CreatedAt = time.Now()
-	post.UpdatedAt = time.Now()
-
-	err = c.Service.Add(&post)
+	if failures == len(files) {
+		response.Fail(c.Ctx, response.Err, "save files fail", nil)
+		return
+	}
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "create post fail", nil)
