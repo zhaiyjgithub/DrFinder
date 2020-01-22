@@ -106,7 +106,7 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 	city := fmt.Sprintf("%%%s%%", doctor.City)
 	state := fmt.Sprintf("%%%s%%", doctor.State)
 
-	d.engine.Raw("select * from doctors WHERE id in " +
+	d.engine.Limit(pageSize).Offset((page -1)*pageSize).Raw("select * from doctors WHERE id in " +
 		"(SELECT id from doctors where " +
 		"(last_name like ? or first_name like ? or specialty like ?)" +
 		" and gender like ? and city like ? and state like ? group by id) order by specialty", lastName, firstName, specialty, gender, city, state).Scan(&doctors)
