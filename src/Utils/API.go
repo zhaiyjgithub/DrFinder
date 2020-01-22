@@ -1,6 +1,6 @@
 package Utils
 
-var (
+const (
 	APIDoctor = "/Doctor"
 	AddDoctor = "/AddDoctor"
 	GetDoctorById = "/GetDoctorById"
@@ -17,7 +17,7 @@ var (
 	DeleteCollection = "/DeleteCollection"
 )
 
-var (
+const (
 	APIUser = "/User"
 	CreateUser = "/CreateUser"
 	UpdatePassword = "/UpdatePassword"
@@ -25,23 +25,23 @@ var (
 	UpdateUserInfo = "/UpdateUserInfo"
 )
 
-var (
+const (
 	APIRegister = "/Register"
 	SendVerificationCode = "/SendVerificationCode"
 	Register = "/Register"
 	SignIn = "/SignIn"
 )
 
-var (
+const (
 	APIUtils = "/Utils"
 	UploadFile = "/UploadFile"
 )
 
-var (
+const (
 	APIAd = "/Ad"
 )
 
-var (
+ const (
 	APIPost = "/Post"
 	CreatePost = "/CreatePost"
 	DeletePost = "/DeletePost"
@@ -49,9 +49,10 @@ var (
 	GetPostByPage = "/GetPostByPage"
 	AddLikes = "/AddLikes"
 	AddFavor = "/AddFavor"
+	ImgPost = "/ImgPost"
 )
 
-var (
+const (
 	APIAnswer = "Answer"
 	AddAnswer = "/AddAnswer"
 	DeleteAnswer = "/DeleteAnswer"

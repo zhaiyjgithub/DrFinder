@@ -30,16 +30,10 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.AddFavor, "AddFavor")
 	b.Handle(iris.MethodPost, Utils.DeletePost, "DeletePost")
 	b.Handle(iris.MethodPost, Utils.GetPostByPage, "GetPostByPage")
+	b.Handle(iris.MethodGet, Utils.ImgPost, "ImgPost")
 }
 
 func (c *PostController) CreatePost() {
-	type Param struct {
-		UserID int `validate:"gt=0"`
-		Type  int
-		Title string `validate:"gt=0"`
-		Description string `validate:"gt=0"`
-	}
-
 	maxSize := c.Ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
 	req := c.Ctx.Request()
 	err := req.ParseMultipartForm(maxSize)
@@ -91,8 +85,6 @@ func (c *PostController) CreatePost() {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
-
-
 
 func (c *PostController) UpdatePost()  {
 	type Param struct {
@@ -205,6 +197,13 @@ func (c *PostController) GetPostByPage()  {
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
 
 	response.Success(c.Ctx, response.Successful, posts)
+}
+
+func (c *PostController) ImgPost()  {
+	fileName := c.Ctx.URLParam("name")
+
+	filePath := fmt.Sprintf("./src/upload/" + fileName)
+	_ = c.Ctx.ServeFile(filePath, true)
 }
 
 func saveFile(fh *multipart.FileHeader, destDir string, fileName string) (int64, error)  {
