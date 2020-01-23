@@ -16,7 +16,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	//j := jwt.New(jwt.Config{
 	//	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 	//		return conf.JWRTSecret, nil
