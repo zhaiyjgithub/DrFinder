@@ -6,11 +6,13 @@ import (
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -31,6 +33,7 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.DeletePost, "DeletePost")
 	b.Handle(iris.MethodPost, Utils.GetPostByPage, "GetPostByPage")
 	b.Handle(iris.MethodGet, Utils.ImgPost, "ImgPost")
+	b.Handle(iris.MethodPost, Utils.UploadFile, "UploadFile")
 }
 
 func (c *PostController) CreatePost() {
@@ -206,15 +209,39 @@ func (c *PostController) ImgPost()  {
 	_ = c.Ctx.ServeFile(filePath, true)
 }
 
-func saveFile(fh *multipart.FileHeader, destDir string, fileName string) (int64, error)  {
-	src, err := fh.Open()
-
-	if err != nil {
-		return 0, err
+func (c *AdminController) UploadFile()  {
+	type Param struct { //`validate:"gt=0"`
+		UserID int `validate:"gt=0"`
+		Title string `validate:"gt=0"`
+		Description string `validate:"gt=0"`
+		Files []string //base64 string image
 	}
 
-	defer src.Close()
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
 
+	if err != nil {
+		return
+	}
+
+	files := param.Files
+	failure := 0
+	for _, file := range files {
+		fileName := generateFileName(param.UserID)
+		_, err = saveFile(file, "./src/web/sources", fileName)
+		if err != nil {
+			failure ++
+		}
+	}
+
+	if len(files) - failure > 0 {
+		response.Success(c.Ctx, response.Successful, nil)
+	}else {
+		response.Fail(c.Ctx, response.Err, "parse file failed", nil)
+	}
+}
+
+func saveFile(imgBase64 string, destDir string, fileName string) (int64, error)  {
 	out, err := os.OpenFile(filepath.Join(destDir, fileName), os.O_WRONLY | os.O_CREATE , os.FileMode(0666))
 
 	if err != nil {
@@ -223,7 +250,22 @@ func saveFile(fh *multipart.FileHeader, destDir string, fileName string) (int64,
 
 	defer out.Close()
 
-	return io.Copy(out, src)
+	imgBuffer, err  := base64.StdEncoding.DecodeString(imgBase64)
+
+	if err != nil {
+		fmt.Println("decode img base64 error")
+
+		return 1, err
+	}
+
+	filePath := filepath.Join(destDir, fileName)
+	err = ioutil.WriteFile(filePath, imgBuffer, 0666)
+
+	if err != nil {
+		return 1, err
+	}
+
+	return 0, nil
 }
 
 func generateFileName(userId int) string {
