@@ -23,9 +23,9 @@ func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []mode
 	var posts []models.Post
 
 	if postType > 0 {
-		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts, "type = ?", postType)
+		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts, "type = ?", postType).Order("created_at")
 	}else {
-		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts)
+		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Find(&posts).Order("created_at")
 	}
 
 	return posts

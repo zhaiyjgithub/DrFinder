@@ -141,8 +141,8 @@ func (c *PostController) GetPostByPage()  {
 	}
 
 	type PostInfo struct {
-		post *models.Post
-		answer *models.Answer
+		Post *models.Post
+		Answer *models.Answer
 	}
 
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
@@ -152,11 +152,11 @@ func (c *PostController) GetPostByPage()  {
 		post := &posts[i]
 		answer := c.AnswerService.GetLastAnswer(post.ID)
 
-		postInfos = append(postInfos, PostInfo{post:post, answer:answer})
+		postInfos = append(postInfos, PostInfo{Post:post, Answer:answer})
 	}
 
 	fmt.Println(postInfos)
-	response.Success(c.Ctx, response.Successful, posts)
+	response.Success(c.Ctx, response.Successful, postInfos)
 }
 
 func (c *PostController) ImgPost()  {
