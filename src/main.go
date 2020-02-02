@@ -106,8 +106,12 @@ func advertiseMVC(app *mvc.Application)  {
 }
 
 func postMVC(app *mvc.Application)  {
-	service := service.NewPostService()
-	app.Register(service)
+	postService := service.NewPostService()
+	answerService := service.NewAnswerService()
+	app.Register(
+		postService,
+		answerService,
+		)
 	app.Handle(new(controllers.PostController))
 }
 

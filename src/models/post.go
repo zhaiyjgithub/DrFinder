@@ -5,7 +5,7 @@ import (
 )
 
 type Post struct {
-	ID          int            `gorm:"column:id;primary_key" json:"-"`
+	ID          int            `gorm:"column:id;primary_key"`
 	Type        int  `gorm:"column:type"`
 	Priority    int  `gorm:"column:priority"`
 	Title       string `gorm:"column:title"`

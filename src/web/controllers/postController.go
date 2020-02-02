@@ -19,6 +19,7 @@ import (
 type PostController struct {
 	Ctx iris.Context
 	Service service.PostService
+	AnswerService service.AnswerService
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -139,15 +140,29 @@ func (c *PostController) GetPostByPage()  {
 		return
 	}
 
+	type PostInfo struct {
+		post *models.Post
+		answer *models.Answer
+	}
+
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
 
+	var postInfos []PostInfo
+	for i := 0; i < len(posts); i ++  {
+		post := &posts[i]
+		answer := c.AnswerService.GetLastAnswer(post.ID)
+
+		postInfos = append(postInfos, PostInfo{post:post, answer:answer})
+	}
+
+	fmt.Println(postInfos)
 	response.Success(c.Ctx, response.Successful, posts)
 }
 
 func (c *PostController) ImgPost()  {
 	fileName := c.Ctx.URLParam("name")
 
-	filePath := fmt.Sprintf("./src/upload/" + fileName)
+	filePath := fmt.Sprintf("./src/upload/post" + fileName)
 	_ = c.Ctx.ServeFile(filePath, true)
 }
 

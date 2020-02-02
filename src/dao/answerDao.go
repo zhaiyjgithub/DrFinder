@@ -48,3 +48,14 @@ func (d *AnswerDao) GetAnswerListByPage(postId int, page int, pageSize int) []mo
 
 	return answers
 }
+
+func (d *AnswerDao) GetLastAnswer(postId int) *models.Answer {
+	var answer models.Answer
+	d.engine.Find("post_id = ?", postId).Order("created_at").Last(&answer)
+
+	if answer.PostID == postId {
+		return &answer
+	} else {
+		return nil
+	}
+}

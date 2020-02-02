@@ -11,6 +11,7 @@ type AnswerService interface {
 	DeleteByUser(id int, userId int) error
 	AddLikes(id int) error
 	GetAnswerListByPage(postId int, page int, pageSize int) []models.Answer
+	GetLastAnswer(postId int) *models.Answer
 }
 
 type answerService struct {
@@ -35,4 +36,8 @@ func (s *answerService) AddLikes(id int) error   {
 
 func (s *answerService) GetAnswerListByPage(postId int, page int, pageSize int) []models.Answer  {
 	return s.dao.GetAnswerListByPage(postId, page, pageSize)
+}
+
+func (s *answerService) GetLastAnswer(postId int) *models.Answer  {
+	return s.dao.GetLastAnswer(postId)
 }
