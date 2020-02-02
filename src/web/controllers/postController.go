@@ -11,12 +11,8 @@ import (
 	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"io"
 	"io/ioutil"
-	"mime/multipart"
-	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -33,60 +29,6 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.DeletePost, "DeletePost")
 	b.Handle(iris.MethodPost, Utils.GetPostByPage, "GetPostByPage")
 	b.Handle(iris.MethodGet, Utils.ImgPost, "ImgPost")
-	b.Handle(iris.MethodPost, Utils.UploadFile, "UploadFile")
-}
-
-func (c *PostController) CreatePost() {
-	maxSize := c.Ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
-	req := c.Ctx.Request()
-	err := req.ParseMultipartForm(maxSize)
-
-	if err != nil {
-		response.Fail(c.Ctx, response.Err, "Max size", nil)
-		return
-	}
-
-	userId, _ := strconv.Atoi(req.FormValue("UserID"))
-	postType, _ := strconv.Atoi(req.FormValue("Type"))
-	title := req.FormValue("Title")
-	desc := req.FormValue("Description")
-
-	var post models.Post
-	post.Type = postType
-	post.UserID = userId
-	post.Title = title
-	post.Description = desc
-	post.Favorites = 0
-	post.Likes = 0
-	post.Priority = 0
-	post.CreatedAt = time.Now()
-	post.UpdatedAt = time.Now()
-
-	err = c.Service.Add(&post)
-
-	form := req.MultipartForm
-	files := form.File["file"]
-	failures := 0
-
-	for _, file := range files {
-		newFileName := fmt.Sprintf("%s-%s", generateFileName(5), file.Filename)
-		_, err = saveFile(file, "./src/upload/", newFileName)
-
-		if err != nil {
-			failures = failures + 1
-		}
-	}
-
-	if failures == len(files) {
-		response.Fail(c.Ctx, response.Err, "save files fail", nil)
-		return
-	}
-
-	if err != nil {
-		response.Fail(c.Ctx, response.Err, "create post fail", nil)
-	}else {
-		response.Success(c.Ctx, response.Successful, nil)
-	}
 }
 
 func (c *PostController) UpdatePost()  {
@@ -110,7 +52,7 @@ func (c *PostController) UpdatePost()  {
 	err = c.Service.Update(&post)
 
 	if err != nil {
-		response.Fail(c.Ctx, response.Err, "update post faiel", nil)
+		response.Fail(c.Ctx, response.Err, "update post fail", nil)
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
@@ -209,12 +151,16 @@ func (c *PostController) ImgPost()  {
 	_ = c.Ctx.ServeFile(filePath, true)
 }
 
-func (c *AdminController) UploadFile()  {
+func (c *PostController) CreatePost()  {
 	type Param struct { //`validate:"gt=0"`
 		UserID int `validate:"gt=0"`
+		Type int `validate:"numeric"`
 		Title string `validate:"gt=0"`
 		Description string `validate:"gt=0"`
-		Files []string //base64 string image
+		Files []struct{
+			Ext string `validate:"gt=0"`
+			Base64Data string `validate:"base64"`
+		}
 	}
 
 	var param Param
@@ -227,14 +173,32 @@ func (c *AdminController) UploadFile()  {
 	files := param.Files
 	failure := 0
 	for _, file := range files {
-		fileName := generateFileName(param.UserID)
-		_, err = saveFile(file, "./src/web/sources", fileName)
+		fileName := fmt.Sprintf("%s.%s", generateFileName(param.UserID), file.Ext)
+		_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
 		if err != nil {
 			failure ++
 		}
 	}
 
-	if len(files) - failure > 0 {
+	if failure == 0 {
+		var post models.Post
+		post.Type = param.Type
+		post.UserID = param.UserID
+		post.Title = param.Title
+		post.Description = param.Description
+		post.Favorites = 0
+		post.Likes = 0
+		post.Priority = 0
+		post.CreatedAt = time.Now()
+		post.UpdatedAt = time.Now()
+
+		err = c.Service.Add(&post)
+
+		if err != nil {
+			response.Fail(c.Ctx, response.Err, err.Error(), nil)
+			return
+		}
+
 		response.Success(c.Ctx, response.Successful, nil)
 	}else {
 		response.Fail(c.Ctx, response.Err, "parse file failed", nil)
@@ -242,14 +206,6 @@ func (c *AdminController) UploadFile()  {
 }
 
 func saveFile(imgBase64 string, destDir string, fileName string) (int64, error)  {
-	out, err := os.OpenFile(filepath.Join(destDir, fileName), os.O_WRONLY | os.O_CREATE , os.FileMode(0666))
-
-	if err != nil {
-		return 0, err
-	}
-
-	defer out.Close()
-
 	imgBuffer, err  := base64.StdEncoding.DecodeString(imgBase64)
 
 	if err != nil {
