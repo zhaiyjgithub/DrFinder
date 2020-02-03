@@ -142,12 +142,15 @@ func (c *PostController) GetPostByPage()  {
 	}
 
 	type PostInfo struct {
-		Post *models.Post
-		Answer struct{
-			Count int
-			LastAnswerName string
-			LastAnswerDate time.Time
-		}
+		PostID int
+		UserIcon string
+		UserName string
+		Type int
+		Title string
+		Likes int
+		AnswerCount int
+		LastAnswerName string
+		LastAnswerDate time.Time
 	}
 
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
@@ -155,22 +158,28 @@ func (c *PostController) GetPostByPage()  {
 	var postInfos []PostInfo
 	for i := 0; i < len(posts); i ++  {
 		post := &posts[i]
+		postUser := c.UserService.GetUserById(post.UserID)
 		answer, count := c.AnswerService.GetLastAnswer(post.ID)
 
-		var userName string
+		var answerName string
 		var lastCreateAt time.Time
 
 		if answer != nil {
 			user := c.UserService.GetUserById(answer.UserID)
-			userName = user.Name
+			answerName = user.Name
 			lastCreateAt = answer.CreatedAt
 		}
 
 		var postInfo PostInfo
-		postInfo.Post = post
-		postInfo.Answer.Count = count
-		postInfo.Answer.LastAnswerName = userName
-		postInfo.Answer.LastAnswerDate = lastCreateAt
+		postInfo.PostID = post.ID
+		postInfo.UserIcon = postUser.HeaderIcon
+		postInfo.UserName = postUser.LastName
+		postInfo.Type = post.Type
+		postInfo.Title = post.Title
+		postInfo.Likes = post.Likes
+		postInfo.AnswerCount = count
+		postInfo.LastAnswerName = answerName
+		postInfo.LastAnswerDate = lastCreateAt
 		postInfos = append(postInfos, postInfo)
 	}
 
