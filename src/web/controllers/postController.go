@@ -20,6 +20,7 @@ type PostController struct {
 	Ctx iris.Context
 	Service service.PostService
 	AnswerService service.AnswerService
+	UserService service.UserService
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -142,7 +143,11 @@ func (c *PostController) GetPostByPage()  {
 
 	type PostInfo struct {
 		Post *models.Post
-		Answer *models.Answer
+		Answer struct{
+			Count int
+			LastAnswerName string
+			LastAnswerDate time.Time
+		}
 	}
 
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
@@ -150,12 +155,25 @@ func (c *PostController) GetPostByPage()  {
 	var postInfos []PostInfo
 	for i := 0; i < len(posts); i ++  {
 		post := &posts[i]
-		answer := c.AnswerService.GetLastAnswer(post.ID)
+		answer, count := c.AnswerService.GetLastAnswer(post.ID)
 
-		postInfos = append(postInfos, PostInfo{Post:post, Answer:answer})
+		var userName string
+		var lastCreateAt time.Time
+
+		if answer != nil {
+			user := c.UserService.GetUserById(answer.UserID)
+			userName = user.Name
+			lastCreateAt = answer.CreatedAt
+		}
+
+		var postInfo PostInfo
+		postInfo.Post = post
+		postInfo.Answer.Count = count
+		postInfo.Answer.LastAnswerName = userName
+		postInfo.Answer.LastAnswerDate = lastCreateAt
+		postInfos = append(postInfos, postInfo)
 	}
 
-	fmt.Println(postInfos)
 	response.Success(c.Ctx, response.Successful, postInfos)
 }
 

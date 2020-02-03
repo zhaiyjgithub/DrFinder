@@ -11,6 +11,7 @@ type UserService interface {
 	GetUserByEmail(email string) (*models.User, error)
 	UpdatePassword(email string, oldPwd string, newPwd string) error
 	UpdateUser(newUser *models.User) error
+	GetUserById(id int) *models.User
 }
 
 type userService struct {
@@ -35,4 +36,8 @@ func (s *userService) UpdatePassword(email string, oldPwd string, newPwd string)
 
 func (s *userService) UpdateUser(newUser *models.User) error  {
 	return s.dao.UpdateUser(newUser)
+}
+
+func (s *userService) GetUserById(id int) *models.User  {
+	return s.dao.GetUserById(id)
 }
