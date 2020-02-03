@@ -7,7 +7,7 @@ import (
 )
 
 type PostService interface {
-	Add(post *models.Post) error
+	Add(post *models.Post) (error, int)
 	GetPostListByPage(postType int, page int, pageSize int) []models.Post
 	Delete(id int) error
 	Update(newPost *models.Post) error
@@ -25,7 +25,7 @@ func NewPostService() PostService {
 	return &postService{dao: dao.NewPostDao(dataSource.InstanceMaster())}
 }
 
-func (s *postService) Add(post *models.Post) error  {
+func (s *postService) Add(post *models.Post) (error, int)  {
 	return s.dao.Add(post)
 }
 

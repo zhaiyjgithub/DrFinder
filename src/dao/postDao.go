@@ -13,10 +13,10 @@ func NewPostDao(engine *gorm.DB) *PostDao {
 	return &PostDao{engine: engine}
 }
 
-func (d *PostDao) Add(post *models.Post) error {
+func (d *PostDao) Add(post *models.Post) (error, int) {
 	db := d.engine.Create(post)
 
-	return db.Error
+	return db.Error, post.ID
 }
 
 func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []models.Post {

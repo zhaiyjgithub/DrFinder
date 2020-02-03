@@ -21,6 +21,7 @@ type PostController struct {
 	Service service.PostService
 	AnswerService service.AnswerService
 	UserService service.UserService
+	PostImageService service.PostImageService
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -147,10 +148,12 @@ func (c *PostController) GetPostByPage()  {
 		UserName string
 		Type int
 		Title string
+		Description string
 		Likes int
 		AnswerCount int
 		LastAnswerName string
 		LastAnswerDate time.Time
+		URLs []string
 	}
 
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
@@ -170,16 +173,25 @@ func (c *PostController) GetPostByPage()  {
 			lastCreateAt = answer.CreatedAt
 		}
 
+		postImgs := c.PostImageService.GetImageByPostId(post.ID)
+
+		urls := make([]string, 0)
+		for _, img:= range postImgs {
+			urls = append(urls, img.URL)
+		}
+
 		var postInfo PostInfo
 		postInfo.PostID = post.ID
 		postInfo.UserIcon = postUser.HeaderIcon
 		postInfo.UserName = postUser.LastName
 		postInfo.Type = post.Type
 		postInfo.Title = post.Title
+		postInfo.Description = post.Description
 		postInfo.Likes = post.Likes
 		postInfo.AnswerCount = count
 		postInfo.LastAnswerName = answerName
 		postInfo.LastAnswerDate = lastCreateAt
+		postInfo.URLs = urls
 		postInfos = append(postInfos, postInfo)
 	}
 
@@ -189,7 +201,7 @@ func (c *PostController) GetPostByPage()  {
 func (c *PostController) ImgPost()  {
 	fileName := c.Ctx.URLParam("name")
 
-	filePath := fmt.Sprintf("./src/upload/post" + fileName)
+	filePath := fmt.Sprintf("./src/upload/post/" + fileName)
 	_ = c.Ctx.ServeFile(filePath, true)
 }
 
@@ -212,6 +224,19 @@ func (c *PostController) CreatePost()  {
 		return
 	}
 
+	var post models.Post
+	post.Type = param.Type
+	post.UserID = param.UserID
+	post.Title = param.Title
+	post.Description = param.Description
+	post.Favorites = 0
+	post.Likes = 0
+	post.Priority = 0
+	post.CreatedAt = time.Now()
+	post.UpdatedAt = time.Now()
+
+	err, postId := c.Service.Add(&post)
+
 	files := param.Files
 	failure := 0
 	for _, file := range files {
@@ -219,31 +244,16 @@ func (c *PostController) CreatePost()  {
 		_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
 		if err != nil {
 			failure ++
+		}else {
+			postImg := models.PostImage{PostID:postId, URL: fileName}
+			_ = c.PostImageService.CreatePostImage(postImg)
 		}
 	}
 
-	if failure == 0 {
-		var post models.Post
-		post.Type = param.Type
-		post.UserID = param.UserID
-		post.Title = param.Title
-		post.Description = param.Description
-		post.Favorites = 0
-		post.Likes = 0
-		post.Priority = 0
-		post.CreatedAt = time.Now()
-		post.UpdatedAt = time.Now()
-
-		err = c.Service.Add(&post)
-
-		if err != nil {
-			response.Fail(c.Ctx, response.Err, err.Error(), nil)
-			return
-		}
-
-		response.Success(c.Ctx, response.Successful, nil)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
-		response.Fail(c.Ctx, response.Err, "parse file failed", nil)
+		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
 
