@@ -7,7 +7,6 @@ import (
 	"DrFinder/src/service"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"time"
 )
 
 type AnswerController struct {
@@ -42,13 +41,11 @@ func (c *AnswerController) AddAnswer()  {
 	answer.PostID = param.PostID
 	answer.Description = param.Description
 	answer.Likes = 0
-	answer.CreatedAt = time.Now()
-	answer.UpdatedAt = time.Now()
 
 	err = c.Service.AddAnswer(&answer)
 
 	if err != nil {
-		response.Fail(c.Ctx, response.Err, "", nil)
+		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
 		response.Success(c.Ctx, response.Successful,  nil)
 	}

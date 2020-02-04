@@ -23,7 +23,7 @@ func NewAnswerService() AnswerService {
 }
 
 func (s *answerService) AddAnswer(answer *models.Answer) error  {
-	return s.AddAnswer(answer)
+	return s.dao.AddAnswer(answer)
 }
 
 func (s *answerService) DeleteByUser(id int, userId int) error  {
