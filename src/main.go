@@ -120,8 +120,12 @@ func postMVC(app *mvc.Application)  {
 }
 
 func answerMVC(app *mvc.Application)  {
-	service := service.NewAnswerService()
-	app.Register(service)
+	answerService := service.NewAnswerService()
+	userService := service.NewUserService()
+	app.Register(
+			answerService,
+			userService,
+		)
 	app.Handle(new(controllers.AnswerController))
 }
 

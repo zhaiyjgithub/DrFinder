@@ -7,17 +7,19 @@ import (
 	"DrFinder/src/service"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"time"
 )
 
 type AnswerController struct {
 	Ctx iris.Context
 	Service service.AnswerService
+	UserService service.UserService
 }
 
 func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.AddAnswer, "AddAnswer")
 	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteById")
-	b.Handle(iris.MethodPost, Utils.AddAnswerLikes, "AddLikes")
+	b.Handle(iris.MethodPost, Utils.AddAnswerLikes, "AddAnswerLikes")
 	b.Handle(iris.MethodPost, Utils.GetAnswerListByPage, "GetAnswerListByPage")
 }
 
@@ -74,9 +76,9 @@ func (c *AnswerController) DeleteById()  {
 	}
 }
 
-func (c *AnswerController) AddLikes()  {
+func (c *AnswerController) AddAnswerLikes()  {
 	type Param struct {
-		ID int `validate:"gt=0"`
+		AnswerID int `validate:"gt=0"`
 		UserID int `validate:"gt=0"`
 	}
 
@@ -88,7 +90,7 @@ func (c *AnswerController) AddLikes()  {
 		return
 	}
 
-	err = c.Service.AddLikes(param.ID)
+	err = c.Service.AddLikes(param.AnswerID)
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "", nil)
@@ -113,7 +115,38 @@ func (c *AnswerController) GetAnswerListByPage()  {
 		return
 	}
 
+	type AnswerInfo struct {
+		ID int
+		UserIcon string
+		UserID int
+		UserName string
+		AnswerDate time.Time
+		Description string
+		PostID int
+		Likes int
+	}
+
+	answerInfos := make([]AnswerInfo, 0, 0)
 	answers := c.Service.GetAnswerListByPage(param.PostID, param.Page, param.PageSize)
 
-	response.Success(c.Ctx, response.Successful, answers)
+	for _, answer := range answers {
+		var answerInfo AnswerInfo
+		answerInfo.ID = answer.ID
+		answerInfo.UserID = answer.UserID
+		answerInfo.AnswerDate = answer.CreatedAt
+		answerInfo.Description = answer.Description
+		answerInfo.PostID = answer.PostID
+		answerInfo.Likes = answer.Likes
+
+		userIno := c.UserService.GetUserById(answer.UserID)
+
+		if userIno != nil {
+			answerInfo.UserName = userIno.FirstName
+			answerInfo.UserIcon = userIno.HeaderIcon
+		}
+
+		answerInfos = append(answerInfos, answerInfo)
+	}
+
+	response.Success(c.Ctx, response.Successful, answerInfos)
 }
