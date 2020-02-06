@@ -44,17 +44,18 @@ func (c *RegisterController) SendVerificationCode() {
 	}
 
 	var param Param
-
 	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
 
 	if err != nil  {
 		return
 	}
 
-	_, error := c.Service.GetUserByEmail(param.Email)
+	user, err := c.Service.GetUserByEmail(param.Email)
 
-	if error != nil {
-		response.Fail(c.Ctx, response.Err, "This email has been registered", nil)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err,  err.Error(), nil)
+	} else if user != nil {
+		response.Fail(c.Ctx, response.IsExist, "This email has been registered", nil)
 	}else {
 		v := getCode()
 
@@ -162,7 +163,16 @@ func (c *RegisterController) SignIn()  {
 		})
 
 		tokenString, _ := token.SignedString(conf.JWRTSecret)
-		response.Success(c.Ctx, "login success", tokenString)
+
+		type UserInfo struct {
+			User models.User
+			Token string
+		}
+
+		var userInfo UserInfo
+		userInfo.User = *user
+		userInfo.Token = tokenString
+		response.Success(c.Ctx, "login success", userInfo)
 	}
 }
 
