@@ -51,7 +51,7 @@ func (d *AnswerDao) GetAnswerListByPage(postId int, page int, pageSize int) []mo
 
 func (d *AnswerDao) GetLastAnswer(postId int) (*models.Answer, int) {
 	var answers []models.Answer
-	d.engine.Find("post_id = ?", postId).Order("created_at").Find(&answers)
+	d.engine.Where("post_id = ?", postId).Order("created_at").Find(&answers)
 
 	if len(answers) == 0 {
 		return nil, 0

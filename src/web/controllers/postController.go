@@ -63,7 +63,8 @@ func (c *PostController) UpdatePost()  {
 
 func (c *PostController) AddLikes()  {
 	type Param struct {
-		ID int `validate:"gt=0"`
+		UserID int `validate:"gt=0"`
+		PostID int `validate:"gt=0"`
 	}
 
 	var param Param
@@ -74,7 +75,7 @@ func (c *PostController) AddLikes()  {
 		return
 	}
 
-	err = c.Service.AddLike(param.ID)
+	err = c.Service.AddLike(param.PostID)
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
@@ -85,7 +86,8 @@ func (c *PostController) AddLikes()  {
 
 func (c *PostController) AddFavor()  {
 	type Param struct {
-		ID int `validate:"gt=0"`
+		UserID int `validate:"gt=0"`
+		PostID int `validate:"gt=0"`
 	}
 
 	var param Param
@@ -96,7 +98,7 @@ func (c *PostController) AddFavor()  {
 		return
 	}
 
-	err = c.Service.AddFavor(param.ID)
+	err = c.Service.AddFavor(param.PostID)
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
@@ -150,6 +152,7 @@ func (c *PostController) GetPostByPage()  {
 		Title string
 		Description string
 		Likes int
+		PostDate time.Time
 		AnswerCount int
 		LastAnswerName string
 		LastAnswerDate time.Time
@@ -169,7 +172,7 @@ func (c *PostController) GetPostByPage()  {
 
 		if answer != nil {
 			user := c.UserService.GetUserById(answer.UserID)
-			answerName = user.Name
+			answerName = user.FirstName
 			lastCreateAt = answer.CreatedAt
 		}
 
@@ -188,6 +191,7 @@ func (c *PostController) GetPostByPage()  {
 		postInfo.Title = post.Title
 		postInfo.Description = post.Description
 		postInfo.Likes = post.Likes
+		postInfo.PostDate = post.CreatedAt
 		postInfo.AnswerCount = count
 		postInfo.LastAnswerName = answerName
 		postInfo.LastAnswerDate = lastCreateAt
