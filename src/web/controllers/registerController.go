@@ -36,6 +36,8 @@ func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, Utils.SendVerificationCode, "SendVerificationCode")
 	b.Handle(iris.MethodPost, Utils.Register, "Register")
 	b.Handle(iris.MethodPost, Utils.SignIn, "SignIn")
+	b.Handle(iris.MethodPost,Utils.ResetPassword, "ResetPassword")
+	b.Handle(iris.MethodPost, Utils.VerifyEmail, "VerifyEmail")
 }
 
 func (c *RegisterController) SendVerificationCode() {
@@ -50,30 +52,21 @@ func (c *RegisterController) SendVerificationCode() {
 		return
 	}
 
-	user, err := c.Service.GetUserByEmail(param.Email)
+	v := getCode()
+	var vcode = &VerificationCode{
+		Email: param.Email,
+		DateTime:  time.Now().Format(conf.TimeFormat),
+		Value: v,
+	}
 
+	cb, _ := json.Marshal(vcode)
+	err = dataSource.Save(param.Email, string(cb))
+
+	err = sendEmail(param.Email, vcode.Value)
 	if err != nil {
-		response.Fail(c.Ctx, response.Err,  err.Error(), nil)
-	} else if user != nil {
-		response.Fail(c.Ctx, response.IsExist, "This email has been registered", nil)
+		response.Fail(c.Ctx, response.Err, "send email fail", nil)
 	}else {
-		v := getCode()
-
-		var vcode = &VerificationCode{
-			Email: param.Email,
-			DateTime:  time.Now().Format(conf.TimeFormat),
-			Value: v,
-		}
-
-		cb, _ := json.Marshal(vcode)
-		err = dataSource.Save(param.Email, string(cb))
-
-		err := sendEmail(param.Email, vcode.Value)
-		if err != nil {
-			response.Fail(c.Ctx, response.Err, "send email fail", nil)
-		}else {
-			response.Success(c.Ctx, response.Successful, nil)
-		}
+		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
 
@@ -81,32 +74,31 @@ func (c *RegisterController) Register() {
 	type Param struct {
 		Email string `validate:"email"`
 		Password string `validate:"min=6,max=20"`
-		Code string `validate:"len=6"`
-		FirstName string `validate:"gt=0"`
-		LastName string `validate:"gt=0"`
+		VerificationCode string `validate:"len=6"`
 	}
 	
 	var param Param
-	
 	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
 
 	if err != nil {
 		return
 	}
 
+	_, err = c.Service.GetUserByEmail(param.Email)
+
+	if err == nil {
+		response.Fail(c.Ctx, response.IsExist, "This email has been registered", nil)
+	}
+
 	var code = VerificationCode{}
-
 	cb := dataSource.Get(param.Email)
-
 	if cb == nil {
 		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
 		return
 	}
 
 	err = json.Unmarshal(cb, &code)
-
 	t, err := time.Parse(conf.TimeFormat, code.DateTime)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "parse time error", nil)
 		return
@@ -118,15 +110,13 @@ func (c *RegisterController) Register() {
 
 	if nstamp - tstamp > 60*10 {
 		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
-	}else if param.Code != code.Value {
-		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+	}else if param.VerificationCode != code.Value {
+		response.Fail(c.Ctx, response.Err, "verification code is wrong", nil)
 	}else {
 		//verify success, create user
 		var user models.User
 		user.Email = param.Email
 		user.Password = param.Password
-		user.FirstName = param.FirstName
-		user.LastName = param.LastName
 
 		err := c.Service.CreateUser(&user)
 
@@ -173,6 +163,70 @@ func (c *RegisterController) SignIn()  {
 		userInfo.User = *user
 		userInfo.Token = tokenString
 		response.Success(c.Ctx, "login success", userInfo)
+	}
+}
+
+func (c * RegisterController) VerifyEmail()  {
+	type Param struct {
+		Email string `validate:"email"`
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	user, err := c.Service.GetUserByEmail(param.Email)
+	if err == nil {
+		response.Success(c.Ctx, "", user)
+	}else {
+		response.Success(c.Ctx, err.Error(), nil)
+	}
+}
+
+func (c *RegisterController) ResetPassword()  {
+	type Param struct {
+		Email string `validate:"email"`
+		Password string `validate:"min=6,max=20"`
+		VerificationCode string `validate:"len=6"`
+	}
+
+	var param Param
+	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+	if err != nil {
+		return
+	}
+
+	var code = VerificationCode{}
+	cb := dataSource.Get(param.Email)
+	if cb == nil {
+		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+		return
+	}
+
+	err = json.Unmarshal(cb, &code)
+	t, err := time.Parse(conf.TimeFormat, code.DateTime)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "parse time error", nil)
+		return
+	}
+
+	tstamp := t.Unix()
+	t2, err := time.Parse(conf.TimeFormat, time.Now().Format(conf.TimeFormat))
+	nstamp := t2.Unix()
+
+	if nstamp - tstamp > 60*10 {
+		response.Fail(c.Ctx, response.Err, "verification code is invalidate", nil)
+	}else if param.VerificationCode != code.Value {
+		response.Fail(c.Ctx, response.Err, "verification code is wrong", nil)
+	}else {
+		err = c.Service.ResetPassword(param.Email, param.Password)
+		if err != nil {
+			response.Fail(c.Ctx, response.Err, "update failed", nil)
+		}else {
+			response.Success(c.Ctx, response.Successful, nil)
+		}
 	}
 }
 

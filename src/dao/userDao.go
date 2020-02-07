@@ -77,3 +77,18 @@ func (d *UserDao) UpdatePassword(email string, oldPwd string, newPwd string) err
 
 	return db.Error
 }
+
+func (d *UserDao) ResetPassword(email string, newPwd string) error {
+	var user models.User
+
+	db := d.engine.Where("email = ?", email).First(&user)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	user.Password = newPwd
+	db = d.engine.Model(&user).Update("password", newPwd)
+
+	return db.Error
+}

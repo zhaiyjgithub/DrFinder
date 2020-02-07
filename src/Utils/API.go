@@ -23,6 +23,7 @@ const (
 	UpdatePassword = "/UpdatePassword"
 	ForgetPassword = "/ForgetPassword"
 	UpdateUserInfo = "/UpdateUserInfo"
+	ResetPassword = "/ResetPassword"
 )
 
 const (
@@ -30,6 +31,7 @@ const (
 	SendVerificationCode = "/SendVerificationCode"
 	Register = "/Register"
 	SignIn = "/SignIn"
+	VerifyEmail = "/VerifyEmail"
 )
 
 const (
