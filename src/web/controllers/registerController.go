@@ -39,6 +39,14 @@ func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.SignIn, "SignIn")
 	b.Handle(iris.MethodPost, utils.ResetPassword, "ResetPassword")
 	b.Handle(iris.MethodPost, utils.VerifyEmail, "VerifyEmail")
+	b.Handle(iris.MethodGet, utils.HeaderImg, "HeaderImg")
+}
+
+func (c *RegisterController) HeaderImg()  {
+	fileName := c.Ctx.URLParam("name")
+
+	filePath := fmt.Sprintf("./src/upload/user/" + fileName)
+	_ = c.Ctx.ServeFile(filePath, true)
 }
 
 func (c *RegisterController) SendVerificationCode() {

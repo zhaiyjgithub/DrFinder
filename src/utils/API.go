@@ -32,6 +32,7 @@ const (
 	Register = "/Register"
 	SignIn = "/SignIn"
 	VerifyEmail = "/VerifyEmail"
+	HeaderImg = "/HeaderImg"
 )
 
 const (
