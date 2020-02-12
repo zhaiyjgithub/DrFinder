@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
@@ -20,9 +20,9 @@ var userValidate *validator.Validate
 func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	userValidate = validator.New()
 
-	b.Handle(iris.MethodPost, Utils.CreateUser, "CreateUser")
-	b.Handle(iris.MethodPost, Utils.UpdatePassword, "UpdatePassword")
-	b.Handle(iris.MethodPost, Utils.UpdateUserInfo, "UpdateUserInfo")
+	b.Handle(iris.MethodPost, utils.CreateUser, "CreateUser")
+	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword")
+	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo")
 }
 
 func (c *UserController) CreateUser() {
@@ -33,7 +33,7 @@ func (c *UserController) CreateUser() {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, userValidate, &param)
 
 	if err != nil {
 		return
@@ -60,7 +60,7 @@ func (c *UserController) UpdatePassword() {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, userValidate, &param)
 
 	if err != nil {
 		return
@@ -88,7 +88,7 @@ func (c *UserController) UpdateUserInfo()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, userValidate, &param)
 
 	if err != nil {
 		return

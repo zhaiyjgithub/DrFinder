@@ -1,7 +1,7 @@
 package main
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/conf"
 	"DrFinder/src/dataSource"
 	"DrFinder/src/response"
@@ -33,27 +33,27 @@ func main() {
 
 	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
 
-	//doctorParty := app.Party(Utils.APIDoctor, j.Serve)
+	//doctorParty := app.Party(utils.APIDoctor, j.Serve)
 
-	doctorParty := app.Party(Utils.APIDoctor)
+	doctorParty := app.Party(utils.APIDoctor)
 	mvc.Configure(doctorParty, doctorMVC)
 
-	userParty := app.Party(Utils.APIUser, j.Serve)
+	userParty := app.Party(utils.APIUser, j.Serve)
 	mvc.Configure(userParty, userMVC)
 
-	registerParty := app.Party(Utils.APIRegister)
+	registerParty := app.Party(utils.APIRegister)
 	mvc.Configure(registerParty, registerMVC)
 
-	adminParty := app.Party(Utils.APIUtils)
+	adminParty := app.Party(utils.APIUtils)
 	mvc.Configure(adminParty, adminMVC)
 
-	advertisementParty := app.Party(Utils.APIAd)
+	advertisementParty := app.Party(utils.APIAd)
 	mvc.Configure(advertisementParty, advertiseMVC)
 
-	postParty := app.Party(Utils.APIPost)
+	postParty := app.Party(utils.APIPost)
 	mvc.Configure(postParty, postMVC)
 
-	answerParty := app.Party(Utils.APIAnswer)
+	answerParty := app.Party(utils.APIAnswer)
 	mvc.Configure(answerParty, answerMVC)
 
 	_ = app.Run(iris.Addr(":8090"), iris.WithPostMaxMemory(32<<20)) //max = 32M

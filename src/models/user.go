@@ -18,4 +18,5 @@ type User struct {
 	HeaderIcon string `gorm:"column:header_icon"`
 	Level      int  `gorm:"column:level"`
 	Password   string `grom:"column:password"`
+	Gender     bool `gorm:"column:gender"`
 }

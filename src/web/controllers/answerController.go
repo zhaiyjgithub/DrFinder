@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
@@ -17,10 +17,10 @@ type AnswerController struct {
 }
 
 func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle(iris.MethodPost, Utils.AddAnswer, "AddAnswer")
-	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteById")
-	b.Handle(iris.MethodPost, Utils.AddAnswerLikes, "AddAnswerLikes")
-	b.Handle(iris.MethodPost, Utils.GetAnswerListByPage, "GetAnswerListByPage")
+	b.Handle(iris.MethodPost, utils.AddAnswer, "AddAnswer")
+	b.Handle(iris.MethodPost, utils.DeleteDoctorById, "DeleteById")
+	b.Handle(iris.MethodPost, utils.AddAnswerLikes, "AddAnswerLikes")
+	b.Handle(iris.MethodPost, utils.GetAnswerListByPage, "GetAnswerListByPage")
 }
 
 func (c *AnswerController) AddAnswer()  {
@@ -32,7 +32,7 @@ func (c *AnswerController) AddAnswer()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func (c *AnswerController) DeleteById()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -84,7 +84,7 @@ func (c *AnswerController) AddAnswerLikes()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -109,7 +109,7 @@ func (c *AnswerController) GetAnswerListByPage()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return

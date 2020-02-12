@@ -46,7 +46,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/microcosm-cc/bluemonday v1.0.2 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
-	github.com/o1egl/govatar v0.3.0 // indirect
+	github.com/o1egl/govatar v0.3.0
 	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 	github.com/sergi/go-diff v1.0.0 // indirect

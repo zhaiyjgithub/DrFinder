@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
@@ -25,13 +25,13 @@ type PostController struct {
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle(iris.MethodPost, Utils.CreatePost, "CreatePost")
-	b.Handle(iris.MethodPost, Utils.UpdatePost, "UpdatePost")
-	b.Handle(iris.MethodPost,Utils.AddLikes, "AddLikes")
-	b.Handle(iris.MethodPost, Utils.AddFavor, "AddFavor")
-	b.Handle(iris.MethodPost, Utils.DeletePost, "DeletePost")
-	b.Handle(iris.MethodPost, Utils.GetPostByPage, "GetPostByPage")
-	b.Handle(iris.MethodGet, Utils.ImgPost, "ImgPost")
+	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost")
+	b.Handle(iris.MethodPost, utils.UpdatePost, "UpdatePost")
+	b.Handle(iris.MethodPost, utils.AddLikes, "AddLikes")
+	b.Handle(iris.MethodPost, utils.AddFavor, "AddFavor")
+	b.Handle(iris.MethodPost, utils.DeletePost, "DeletePost")
+	b.Handle(iris.MethodPost, utils.GetPostByPage, "GetPostByPage")
+	b.Handle(iris.MethodGet, utils.ImgPost, "ImgPost")
 }
 
 func (c *PostController) UpdatePost()  {
@@ -42,7 +42,7 @@ func (c *PostController) UpdatePost()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -69,7 +69,7 @@ func (c *PostController) AddLikes()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -92,7 +92,7 @@ func (c *PostController) AddFavor()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -115,7 +115,7 @@ func (c *PostController) DeletePost()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -139,7 +139,7 @@ func (c *PostController) GetPostByPage()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -222,7 +222,7 @@ func (c *PostController) CreatePost()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return

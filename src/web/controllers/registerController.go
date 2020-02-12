@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/conf"
 	"DrFinder/src/dataSource"
 	"DrFinder/src/models"
@@ -12,6 +12,7 @@ import (
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"github.com/o1egl/govatar"
 	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/gomail.v2"
 	"math/rand"
@@ -33,11 +34,11 @@ var registerValidate *validator.Validate
 
 func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
 	registerValidate = validator.New()
-	b.Handle(iris.MethodPost, Utils.SendVerificationCode, "SendVerificationCode")
-	b.Handle(iris.MethodPost, Utils.Register, "Register")
-	b.Handle(iris.MethodPost, Utils.SignIn, "SignIn")
-	b.Handle(iris.MethodPost,Utils.ResetPassword, "ResetPassword")
-	b.Handle(iris.MethodPost, Utils.VerifyEmail, "VerifyEmail")
+	b.Handle(iris.MethodPost, utils.SendVerificationCode, "SendVerificationCode")
+	b.Handle(iris.MethodPost, utils.Register, "Register")
+	b.Handle(iris.MethodPost, utils.SignIn, "SignIn")
+	b.Handle(iris.MethodPost, utils.ResetPassword, "ResetPassword")
+	b.Handle(iris.MethodPost, utils.VerifyEmail, "VerifyEmail")
 }
 
 func (c *RegisterController) SendVerificationCode() {
@@ -46,7 +47,7 @@ func (c *RegisterController) SendVerificationCode() {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
+	err := utils.ValidateParam(c.Ctx, registerValidate, &param)
 
 	if err != nil  {
 		return
@@ -75,10 +76,12 @@ func (c *RegisterController) Register() {
 		Email string `validate:"email"`
 		Password string `validate:"min=6,max=20"`
 		VerificationCode string `validate:"len=6"`
+		Name string
+		Gender int
 	}
 	
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
+	err := utils.ValidateParam(c.Ctx, registerValidate, &param)
 
 	if err != nil {
 		return
@@ -113,13 +116,20 @@ func (c *RegisterController) Register() {
 	}else if param.VerificationCode != code.Value {
 		response.Fail(c.Ctx, response.Err, "verification code is wrong", nil)
 	}else {
-		//verify success, create user
 		var user models.User
 		user.Email = param.Email
 		user.Password = param.Password
+		user.Name = param.Name
+		//user.Gender = param.Gender
 
-		err := c.Service.CreateUser(&user)
+		fileName := utils.GenerateFileName(1)
+		filePath := fmt.Sprintf("%s%s%s", "./src/upload/user/", fileName, ".jpg")
+		err = govatar.GenerateFile(govatar.MALE, filePath)
+		if err == nil {
+			user.HeaderIcon = fmt.Sprintf("%s%s", fileName, ".jpg")
+		}
 
+		err = c.Service.CreateUser(&user)
 		if err != nil {
 			response.Fail(c.Ctx, response.Err, "create user failed", nil)
 			return
@@ -136,7 +146,7 @@ func (c *RegisterController) SignIn()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, registerValidate, &param)
+	err := utils.ValidateParam(c.Ctx, registerValidate, &param)
 	if err != nil {
 		return
 	}
@@ -172,7 +182,7 @@ func (c * RegisterController) VerifyEmail()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -193,7 +203,7 @@ func (c *RegisterController) ResetPassword()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, userValidate, &param)
 	if err != nil {
 		return
 	}

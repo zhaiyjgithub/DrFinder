@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"DrFinder/src/Utils"
+	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
@@ -31,19 +31,19 @@ type DoctorController struct {
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	validate = validator.New()
-	b.Handle(iris.MethodPost, Utils.AddDoctor, "AddDoctor")
-	b.Handle(iris.MethodPost, Utils.GetDoctorById, "GetDoctorById")
-	b.Handle(iris.MethodPost, Utils.SearchDoctor, "SearchDoctor")
-	b.Handle(iris.MethodPost, Utils.UpdateDoctorById, "UpdateDoctorById")
-	b.Handle(iris.MethodPost, Utils.DeleteDoctorById, "DeleteDoctorById")
-	b.Handle(iris.MethodPost, Utils.SearchDoctorByPage, "SearchDoctorByPage")
-	b.Handle(iris.MethodPost, Utils.GetHotSearchDoctors, "GetHotSearchDoctors")
-	b.Handle(iris.MethodPost, Utils.GetDoctorInfoWithNpi, "GetDoctorInfoWithNpi")
-	b.Handle(iris.MethodPost, Utils.GetRelatedDoctors, "GetRelatedDoctors")
-	b.Handle(iris.MethodPost, Utils.AddCollection, "AddCollection")
-	b.Handle(iris.MethodPost, Utils.GetCollections, "GetCollections")
-	b.Handle(iris.MethodPost, Utils.GetCollectionStatus, "GetCollectionStatus")
-	b.Handle(iris.MethodPost, Utils.DeleteCollection, "DeleteCollection")
+	b.Handle(iris.MethodPost, utils.AddDoctor, "AddDoctor")
+	b.Handle(iris.MethodPost, utils.GetDoctorById, "GetDoctorById")
+	b.Handle(iris.MethodPost, utils.SearchDoctor, "SearchDoctor")
+	b.Handle(iris.MethodPost, utils.UpdateDoctorById, "UpdateDoctorById")
+	b.Handle(iris.MethodPost, utils.DeleteDoctorById, "DeleteDoctorById")
+	b.Handle(iris.MethodPost, utils.SearchDoctorByPage, "SearchDoctorByPage")
+	b.Handle(iris.MethodPost, utils.GetHotSearchDoctors, "GetHotSearchDoctors")
+	b.Handle(iris.MethodPost, utils.GetDoctorInfoWithNpi, "GetDoctorInfoWithNpi")
+	b.Handle(iris.MethodPost, utils.GetRelatedDoctors, "GetRelatedDoctors")
+	b.Handle(iris.MethodPost, utils.AddCollection, "AddCollection")
+	b.Handle(iris.MethodPost, utils.GetCollections, "GetCollections")
+	b.Handle(iris.MethodPost, utils.GetCollectionStatus, "GetCollectionStatus")
+	b.Handle(iris.MethodPost, utils.DeleteCollection, "DeleteCollection")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -71,7 +71,7 @@ func (c *DoctorController) AddDoctor() {
 
 	var param Param
 
-	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -114,7 +114,7 @@ func (c *DoctorController)GetDoctorById() {
 
 	var param Param
 
-	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -134,7 +134,7 @@ func (c *DoctorController) GetDoctorBySpecialty(specialty string)  {
 	}
 
 	var param Param
-	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -159,7 +159,7 @@ func (c *DoctorController) SearchDoctor()  {
 	}
 
 	var param Param
-	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -184,7 +184,7 @@ func (c *DoctorController) UpdateDoctorById() {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -210,7 +210,7 @@ func (c *DoctorController) DeleteDoctorById()  {
 
 	var param Param
 
-	err:= Utils.ValidateParam(c.Ctx, validate, &param)
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -237,7 +237,7 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -273,7 +273,7 @@ func (c *DoctorController) GetDoctorInfoWithNpi()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -329,7 +329,7 @@ func (c *DoctorController) AddCollection()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -355,7 +355,7 @@ func (c *DoctorController) GetCollections()  {
 
 	var param Param
 
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -373,7 +373,7 @@ func (c *DoctorController) GetCollectionStatus()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -396,7 +396,7 @@ func (c *DoctorController) DeleteCollection()  {
 	}
 
 	var param Param
-	err := Utils.ValidateParam(c.Ctx, validate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
