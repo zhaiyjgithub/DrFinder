@@ -21,7 +21,6 @@ func (d *UserDao) CreateUser(user *models.User) error  {
 
 func (d *UserDao) GetUserById(id int) *models.User  {
 	var user models.User
-
 	d.engine.Where("id = ?", id).First(&user)
 	return &user
 }
@@ -40,7 +39,6 @@ func (d *UserDao) UpdateUser(newUser *models.User) error {
 	var user models.User
 
 	db := d.engine.Where("id = ?", newUser.ID).First(&user)
-
 	if db.Error != nil {
 		return db.Error
 	}

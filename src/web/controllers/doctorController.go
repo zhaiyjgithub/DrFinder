@@ -323,8 +323,8 @@ func (c *DoctorController) GetDoctorInfoWithNpi()  {
 
 func (c *DoctorController) AddCollection()  {
 	type Param struct {
-		UserId int
-		ObjectId int
+		UserID int
+		ObjectID int
 		ObjectType int
 	}
 
@@ -335,7 +335,7 @@ func (c *DoctorController) AddCollection()  {
 		return
 	}
 
-	err = c.CollectionService.Add(param.UserId, param.ObjectId, param.ObjectType)
+	err = c.CollectionService.Add(param.UserID, param.ObjectID, param.ObjectType)
 
 	if err != nil {
 		errCode := response.Err
@@ -351,7 +351,7 @@ func (c *DoctorController) AddCollection()  {
 
 func (c *DoctorController) GetCollections()  {
 	type Param struct {
-		UserId int
+		UserID int
 		ObjectType int
 	}
 
@@ -363,15 +363,15 @@ func (c *DoctorController) GetCollections()  {
 		return
 	}
 
-	collections := c.CollectionService.GetCollections(param.UserId, param.ObjectType)
+	collections := c.CollectionService.GetCollections(param.UserID, param.ObjectType)
 
 	response.Success(c.Ctx, response.Successful, collections)
 }
 
 func (c *DoctorController) GetCollectionStatus()  {
 	type Param struct {
-		UserId int
-		ObjectId int
+		UserID int
+		ObjectID int
 		ObjectType int
 	}
 
@@ -382,7 +382,7 @@ func (c *DoctorController) GetCollectionStatus()  {
 		return
 	}
 
-	err = c.CollectionService.GetIsHasCollected(param.UserId, param.ObjectId, param.ObjectType)
+	err = c.CollectionService.GetIsHasCollected(param.UserID, param.ObjectID, param.ObjectType)
 
 	isExist := true
 	if err != nil {
@@ -394,8 +394,8 @@ func (c *DoctorController) GetCollectionStatus()  {
 
 func (c *DoctorController) DeleteCollection()  {
 	type Param struct {
-		UserId int
-		ObjectId int
+		UserID int
+		ObjectID int
 		ObjectType int
 	}
 
@@ -406,7 +406,7 @@ func (c *DoctorController) DeleteCollection()  {
 		return
 	}
 
-	err = c.CollectionService.Delete(param.UserId, param.ObjectId, param.ObjectType)
+	err = c.CollectionService.Delete(param.UserID, param.ObjectID, param.ObjectType)
 
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.UnknownErr, nil)

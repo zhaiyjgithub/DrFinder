@@ -24,6 +24,7 @@ const (
 	ForgetPassword = "/ForgetPassword"
 	UpdateUserInfo = "/UpdateUserInfo"
 	ResetPassword = "/ResetPassword"
+	GetUserInfo = "/GetUserInfo"
 )
 
 const (
