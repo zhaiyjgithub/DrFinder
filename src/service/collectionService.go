@@ -7,10 +7,10 @@ import (
 )
 
 type CollectionService interface {
-	Add(userId int, npi int) error
-	GetCollections(userId int) []models.Collection
-	GetIsHasCollected(userId int, npi int) error
-	Delete(userId int, npi int) error
+	Add(userId int, objectID int, objectType int) error
+	GetCollections(userId int, objectType int) []models.Collection
+	GetIsHasCollected(userId int, objectID int, objectType int) error
+	Delete(userId int, objectID int, objectType int) error
 }
 
 type collectionService struct {
@@ -21,18 +21,18 @@ func NewCollectionService() CollectionService  {
 	return &collectionService{dao: dao.NewCollectionDao(dataSource.InstanceMaster())}
 }
 
-func (s *collectionService) Add(userId int, npi int) error {
-	return s.dao.Add(userId, npi)
+func (s *collectionService) Add(userId int, objectID int, objectType int) error {
+	return s.dao.Add(userId, objectID, objectType)
 }
 
-func (s *collectionService) GetCollections(userId int) []models.Collection  {
-	return s.dao.GetCollections(userId)
+func (s *collectionService) GetCollections(userId int, objectType int) []models.Collection  {
+	return s.dao.GetCollections(userId, objectType)
 }
 
-func (s *collectionService) GetIsHasCollected(userId int, npi int) error  {
-	return s.dao.GetIsHasCollected(userId, npi)
+func (s *collectionService) GetIsHasCollected(userId int, objectID int, objectType int) error  {
+	return s.dao.GetIsHasCollected(userId, objectID, objectType)
 }
 
-func (s *collectionService) Delete(userId int, npi int) error  {
-	return s.dao.Delete(userId, npi)
+func (s *collectionService) Delete(userId int, objectID int, objectType int) error  {
+	return s.dao.Delete(userId, objectID, objectType)
 }

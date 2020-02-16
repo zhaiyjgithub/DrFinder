@@ -92,3 +92,4 @@ func (d *UserDao) ResetPassword(email string, newPwd string) error {
 
 	return db.Error
 }
+
