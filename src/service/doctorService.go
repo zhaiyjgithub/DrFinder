@@ -18,7 +18,6 @@ type DoctorService interface {
 	GetDoctorByPage(page int, pageSize int) []models.Doctor
 	GetHotSearchDoctors() *[]models.Doctor
 	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
-	GetMyFavorite(userId int, objectType int, page int, pageSize int) []models.Doctor
 }
 
 type doctorService struct {
@@ -75,8 +74,4 @@ func (s *doctorService) GetHotSearchDoctors() *[]models.Doctor {
 
 func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
 	return s.dao.GetRelatedDoctors(relateDoctor)
-}
-
-func (s *doctorService) GetMyFavorite(userId int, objectType int, page int, pageSize int) []models.Doctor {
-	return s.dao.GetMyFavorite(userId, objectType, page, pageSize)
 }

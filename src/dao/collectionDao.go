@@ -19,7 +19,7 @@ func (d *CollectionDao) Add(userId int, objectID int, objectType int) error {
 
 	db := d.engine.Where(&models.Collection{UserID: userId, ObjectID: objectID, ObjectType: objectType}).Find(&collection)
 	if db.Error != nil {
-		db = d.engine.Create(&models.Collection{UserID: userId, ObjectID: objectID})
+		db = d.engine.Create(&models.Collection{UserID: userId, ObjectID: objectID, ObjectType: objectType})
 		return db.Error
 	}
 
@@ -58,4 +58,20 @@ func (d *CollectionDao) Delete(userId int, objectID int, objectType int) error {
 	db = db.Delete(&collection)
 
 	return db.Error
+}
+
+func (d *CollectionDao) GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []models.Doctor {
+	var doctors []models.Doctor
+	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("SELECT * from doctors WHERE npi in " +
+		"(SELECT object_id FROM collections WHERE user_id = ? and object_type = ?)", userId, objectType).Find(&doctors)
+
+	return doctors
+}
+
+func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post {
+	var posts []models.Post
+	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("select * from posts where id in " +
+		"(select object_id from collections where user_id = ? and object_type = ?)", userId, objectType).Find(&posts)
+
+	return posts
 }

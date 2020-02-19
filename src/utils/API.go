@@ -11,7 +11,6 @@ const (
 	GetHotSearchDoctors = "/GetHotSearchDoctors"
 	GetDoctorInfoWithNpi = "/GetDoctorInfoWithNpi"
 	GetRelatedDoctors = "/GetRelatedDoctors"
-	AddCollection = "/AddCollection"
 	GetCollections = "/GetCollections"
 	GetCollectionStatus = "/GetCollectionStatus"
 	DeleteCollection = "/DeleteCollection"
@@ -26,6 +25,7 @@ const (
 	ResetPassword = "/ResetPassword"
 	GetUserInfo = "/GetUserInfo"
 	GetMyFavorite = "/GetMyFavorite"
+	AddFavorite = "/AddFavorite"
 )
 
 const (
@@ -63,5 +63,6 @@ const (
 	DeleteAnswer = "/DeleteAnswer"
 	AddAnswerLikes = "/AddAnswerLikes"
 	GetAnswerListByPage = "/GetAnswerListByPage"
+
 )
 

@@ -11,6 +11,8 @@ type CollectionService interface {
 	GetCollections(userId int, objectType int) []models.Collection
 	GetIsHasCollected(userId int, objectID int, objectType int) error
 	Delete(userId int, objectID int, objectType int) error
+	GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []models.Doctor
+	GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post
 }
 
 type collectionService struct {
@@ -35,4 +37,12 @@ func (s *collectionService) GetIsHasCollected(userId int, objectID int, objectTy
 
 func (s *collectionService) Delete(userId int, objectID int, objectType int) error  {
 	return s.dao.Delete(userId, objectID, objectType)
+}
+
+func (s *collectionService) GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []models.Doctor  {
+	return s.dao.GetMyFavoriteDoctors(userId, objectType, page, pageSize)
+}
+
+func (s *collectionService) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post  {
+	return s.dao.GetMyFavoritePosts(userId, objectType, page, pageSize)
 }

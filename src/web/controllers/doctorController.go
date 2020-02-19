@@ -40,7 +40,6 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetHotSearchDoctors, "GetHotSearchDoctors")
 	b.Handle(iris.MethodPost, utils.GetDoctorInfoWithNpi, "GetDoctorInfoWithNpi")
 	b.Handle(iris.MethodPost, utils.GetRelatedDoctors, "GetRelatedDoctors")
-	b.Handle(iris.MethodPost, utils.AddCollection, "AddCollection")
 	b.Handle(iris.MethodPost, utils.GetCollections, "GetCollections")
 	b.Handle(iris.MethodPost, utils.GetCollectionStatus, "GetCollectionStatus")
 	b.Handle(iris.MethodPost, utils.DeleteCollection, "DeleteCollection")
@@ -319,34 +318,6 @@ func (c *DoctorController) GetDoctorInfoWithNpi()  {
 	}
 
 	response.Success(c.Ctx, response.Successful, info)
-}
-
-func (c *DoctorController) AddCollection()  {
-	type Param struct {
-		UserID int
-		ObjectID int
-		ObjectType int
-	}
-
-	var param Param
-
-	err := utils.ValidateParam(c.Ctx, validate, &param)
-	if err != nil {
-		return
-	}
-
-	err = c.CollectionService.Add(param.UserID, param.ObjectID, param.ObjectType)
-
-	if err != nil {
-		errCode := response.Err
-		if err.Error() == "is existing" {
-			errCode = response.IsExist
-		}
-
-		response.Fail(c.Ctx, errCode, err.Error(), nil)
-	}else {
-		response.Success(c.Ctx, response.Successful, nil)
-	}
 }
 
 func (c *DoctorController) GetCollections()  {

@@ -14,6 +14,7 @@ type UserController struct {
 	Ctx iris.Context
 	UserService service.UserService
 	DoctorService service.DoctorService
+	CollectionService service.CollectionService
 }
 
 var userValidate *validator.Validate
@@ -26,6 +27,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo")
 	b.Handle(iris.MethodPost, utils.GetUserInfo, "GetUserInfo")
 	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite")
+	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite")
 }
 
 func (c *UserController) CreateUser() {
@@ -117,6 +119,32 @@ func (c *UserController) GetUserInfo() {
 	response.Success(c.Ctx, response.Successful, *user)
 }
 
+func (c *UserController) AddFavorite()  {
+	type Param struct {
+		UserID int
+		ObjectID int
+		ObjectType int
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	err = c.CollectionService.Add(param.UserID, param.ObjectID, param.ObjectType)
+	if err != nil {
+		errCode := response.Err
+		if err.Error() == "is existing" {
+			errCode = response.IsExist
+		}
+
+		response.Fail(c.Ctx, errCode, err.Error(), nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
+}
+
 func (c *UserController) GetMyFavorite()  {
 	type Param struct {
 		UserID int
@@ -131,6 +159,12 @@ func (c *UserController) GetMyFavorite()  {
 		return
 	}
 
-	favors := c.DoctorService.GetMyFavorite(param.UserID, param.Type, param.Page, param.PageSize)
-	response.Success(c.Ctx, response.Successful, favors)
+	if param.Type == 0 {
+		favors := c.CollectionService.GetMyFavoriteDoctors(param.UserID, param.Type, param.Page, param.PageSize)
+		response.Success(c.Ctx, response.Successful, favors)
+	}else {
+		favors := c.CollectionService.GetMyFavoritePosts(param.UserID, param.Type, param.Page, param.PageSize)
+		response.Success(c.Ctx, response.Successful, favors)
+	}
+
 }
