@@ -25,6 +25,7 @@ const (
 	UpdateUserInfo = "/UpdateUserInfo"
 	ResetPassword = "/ResetPassword"
 	GetUserInfo = "/GetUserInfo"
+	GetMyFavorite = "/GetMyFavorite"
 )
 
 const (

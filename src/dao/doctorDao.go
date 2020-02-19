@@ -145,3 +145,12 @@ func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doc
 func (d *DoctorDao) GetDoctorStarStatus(userId int, npi int) bool {
 	return false
 }
+
+func (d *DoctorDao) GetMyFavorite(userId int, objectType int, page int, pageSize int) []models.Doctor {
+	var doctors []models.Doctor
+
+	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("SELECT * from doctors WHERE npi in " +
+		"(SELECT object_id FROM collections WHERE user_id = ? and object_type = ?)", userId, objectType).Find(&doctors)
+
+	return doctors
+}

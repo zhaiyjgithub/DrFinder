@@ -84,8 +84,12 @@ func doctorMVC(app *mvc.Application) {
 }
 
 func userMVC(app *mvc.Application)  {
-	service := service.NewUserService()
-	app.Register(service)
+	userService := service.NewUserService()
+	doctorService := service.NewDoctorService()
+	app.Register(
+		userService,
+		doctorService,
+		)
 	app.Handle(new(controllers.UserController))
 }
 

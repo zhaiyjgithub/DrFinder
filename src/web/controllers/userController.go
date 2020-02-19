@@ -13,6 +13,7 @@ import (
 type UserController struct {
 	Ctx iris.Context
 	UserService service.UserService
+	DoctorService service.DoctorService
 }
 
 var userValidate *validator.Validate
@@ -24,6 +25,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword")
 	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo")
 	b.Handle(iris.MethodPost, utils.GetUserInfo, "GetUserInfo")
+	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite")
 }
 
 func (c *UserController) CreateUser() {
@@ -115,3 +117,20 @@ func (c *UserController) GetUserInfo() {
 	response.Success(c.Ctx, response.Successful, *user)
 }
 
+func (c *UserController) GetMyFavorite()  {
+	type Param struct {
+		UserID int
+		Type int
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	favors := c.DoctorService.GetMyFavorite(param.UserID, param.Type, param.Page, param.PageSize)
+	response.Success(c.Ctx, response.Successful, favors)
+}
