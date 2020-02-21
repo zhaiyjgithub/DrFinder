@@ -8,6 +8,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
+	"time"
 )
 
 type UserController struct {
@@ -15,6 +16,8 @@ type UserController struct {
 	UserService service.UserService
 	DoctorService service.DoctorService
 	CollectionService service.CollectionService
+	AnswerService service.AnswerService
+	PostImageService service.PostImageService
 }
 
 var userValidate *validator.Validate
@@ -160,11 +163,65 @@ func (c *UserController) GetMyFavorite()  {
 	}
 
 	if param.Type == 0 {
-		favors := c.CollectionService.GetMyFavoriteDoctors(param.UserID, param.Type, param.Page, param.PageSize)
-		response.Success(c.Ctx, response.Successful, favors)
+		doctors := c.CollectionService.GetMyFavoriteDoctors(param.UserID, param.Type, param.Page, param.PageSize)
+		response.Success(c.Ctx, response.Successful, doctors)
 	}else {
-		favors := c.CollectionService.GetMyFavoritePosts(param.UserID, param.Type, param.Page, param.PageSize)
-		response.Success(c.Ctx, response.Successful, favors)
+		type PostInfo struct {
+			PostID int
+			UserIcon string
+			UserName string
+			Type int
+			Title string
+			Description string
+			Likes int
+			PostDate time.Time
+			AnswerCount int
+			LastAnswerName string
+			LastAnswerDate time.Time
+			URLs []string
+		}
+
+		posts := c.CollectionService.GetMyFavoritePosts(param.UserID, param.Type, param.Page, param.PageSize)
+
+		var postInfos []PostInfo
+		for i := 0; i < len(posts); i ++  {
+			post := &posts[i]
+			postUser := c.UserService.GetUserById(post.UserID)
+			answer, count := c.AnswerService.GetLastAnswer(post.ID)
+
+			var answerName string
+			var lastCreateAt time.Time
+
+			if answer != nil {
+				user := c.UserService.GetUserById(answer.UserID)
+				answerName = user.FirstName
+				lastCreateAt = answer.CreatedAt
+			}
+
+			postImgs := c.PostImageService.GetImageByPostId(post.ID)
+
+			urls := make([]string, 0)
+			for _, img:= range postImgs {
+				urls = append(urls, img.URL)
+			}
+
+			var postInfo PostInfo
+			postInfo.PostID = post.ID
+			postInfo.UserIcon = postUser.HeaderIcon
+			postInfo.UserName = postUser.LastName
+			postInfo.Type = post.Type
+			postInfo.Title = post.Title
+			postInfo.Description = post.Description
+			postInfo.Likes = post.Likes
+			postInfo.PostDate = post.CreatedAt
+			postInfo.AnswerCount = count
+			postInfo.LastAnswerName = answerName
+			postInfo.LastAnswerDate = lastCreateAt
+			postInfo.URLs = urls
+			postInfos = append(postInfos, postInfo)
+		}
+
+		response.Success(c.Ctx, response.Successful, postInfos)
 	}
 
 }

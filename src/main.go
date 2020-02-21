@@ -87,10 +87,15 @@ func userMVC(app *mvc.Application)  {
 	userService := service.NewUserService()
 	doctorService := service.NewDoctorService()
 	collectionService := service.NewCollectionService()
+	answerService := service.NewAnswerService()
+	postImageService := service.NewPostImageService()
+
 	app.Register(
 		userService,
 		doctorService,
 		collectionService,
+		answerService,
+		postImageService,
 		)
 	app.Handle(new(controllers.UserController))
 }

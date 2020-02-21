@@ -159,6 +159,7 @@ func (c *PostController) GetPostByPage()  {
 		URLs []string
 	}
 
+	//TO-DO 使用联结查询优化 view-model
 	posts := c.Service.GetPostListByPage(param.Type, param.Page, param.PageSize)
 
 	var postInfos []PostInfo
