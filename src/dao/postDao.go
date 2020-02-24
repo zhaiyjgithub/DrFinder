@@ -31,6 +31,13 @@ func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []mode
 	return posts
 }
 
+func (d *PostDao) GetMyPostListByPage(userId int, page int, pageSize int) []models.Post {
+	var posts []models.Post
+	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Where("user_id = ?", userId).Find(&posts).Order("created_at")
+
+	return posts
+}
+
 func (d *PostDao) Delete(id int) error {
 	var post models.Post
 	post.ID = id

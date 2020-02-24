@@ -14,11 +14,12 @@ type PostService interface {
 	AddLike(id int) error
 	AddFavor(id int) error
 	DeleteByUser(id int, userId int) error
+	GetMyPostListByPage(userId int, page int, pageSize int) []models.Post
 }
+
 
 type postService struct {
 	dao *dao.PostDao
-
 }
 
 func NewPostService() PostService {
@@ -51,4 +52,8 @@ func (s *postService) AddFavor(id int) error  {
 
 func (s *postService) DeleteByUser(id int, userId int) error  {
 	return s.dao.DeleteByUser(id, userId)
+}
+
+func (s *postService) GetMyPostListByPage(userId int, page int, pageSize int) []models.Post {
+	return s.dao.GetMyPostListByPage(userId, page, pageSize)
 }

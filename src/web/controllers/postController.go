@@ -22,6 +22,7 @@ type PostController struct {
 	AnswerService service.AnswerService
 	UserService service.UserService
 	PostImageService service.PostImageService
+	AppendService service.AppendService
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -32,6 +33,7 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.DeletePost, "DeletePost")
 	b.Handle(iris.MethodPost, utils.GetPostByPage, "GetPostByPage")
 	b.Handle(iris.MethodGet, utils.ImgPost, "ImgPost")
+	b.Handle(iris.MethodPost, utils.GetMyPostByPage, "GetMyPostByPage")
 }
 
 func (c *PostController) UpdatePost()  {
@@ -201,6 +203,100 @@ func (c *PostController) GetPostByPage()  {
 	}
 
 	response.Success(c.Ctx, response.Successful, postInfos)
+}
+
+func (c *PostController) GetMyPostByPage()  {
+	type Param struct {
+		UserID int `validate:"gt=0"`
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	type PostInfo struct {
+		PostID int
+		UserIcon string
+		UserName string
+		Type int
+		Title string
+		Description string
+		Likes int
+		PostDate time.Time
+		AnswerCount int
+		LastAnswerName string
+		LastAnswerDate time.Time
+		URLs []string
+	}
+
+	//TO-DO 使用联结查询优化 view-model
+	posts := c.Service.GetMyPostListByPage(param.UserID, param.Page, param.PageSize)
+
+	var postInfos []PostInfo
+	for i := 0; i < len(posts); i ++  {
+		post := &posts[i]
+		postUser := c.UserService.GetUserById(post.UserID)
+		answer, count := c.AnswerService.GetLastAnswer(post.ID)
+
+		var answerName string
+		var lastCreateAt time.Time
+		if answer != nil {
+			user := c.UserService.GetUserById(answer.UserID)
+			answerName = user.FirstName
+			lastCreateAt = answer.CreatedAt
+		}
+
+		postImgs := c.PostImageService.GetImageByPostId(post.ID)
+
+		urls := make([]string, 0)
+		for _, img:= range postImgs {
+			urls = append(urls, img.URL)
+		}
+
+		var postInfo PostInfo
+		postInfo.PostID = post.ID
+		postInfo.UserIcon = postUser.HeaderIcon
+		postInfo.UserName = postUser.LastName
+		postInfo.Type = post.Type
+		postInfo.Title = post.Title
+		postInfo.Description = post.Description
+		postInfo.Likes = post.Likes
+		postInfo.PostDate = post.CreatedAt
+		postInfo.AnswerCount = count
+		postInfo.LastAnswerName = answerName
+		postInfo.LastAnswerDate = lastCreateAt
+		postInfo.URLs = urls
+		postInfos = append(postInfos, postInfo)
+	}
+
+	response.Success(c.Ctx, response.Successful, postInfos)
+}
+
+func (c *PostController) AddAppendToPost()  {
+	type Param struct {
+		PostID int `validate:"gt=0"`
+		Append string `validate:"gt=0"`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	append := models.Append{PostID: param.PostID, Content:param.Append}
+
+	err = c.AppendService.AddAppend(append)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, err.Error(), nil)
+	}else {
+		response.Success(c.Ctx, "", nil)
+	}
 }
 
 func (c *PostController) ImgPost()  {

@@ -121,11 +121,14 @@ func postMVC(app *mvc.Application)  {
 	answerService := service.NewAnswerService()
 	userService := service.NewUserService()
 	postImageService := service.NewPostImageService()
+	appendService := service.NewAppendService()
+
 	app.Register(
 		postService,
 		answerService,
 		userService,
 		postImageService,
+		appendService,
 		)
 	app.Handle(new(controllers.PostController))
 }

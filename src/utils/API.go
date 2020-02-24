@@ -56,6 +56,7 @@ const (
 	AddLikes = "/AddLikes"
 	AddFavor = "/AddFavor"
 	ImgPost = "/ImgPost"
+	GetMyPostByPage = "/GetMyPostByPage"
 )
 
 const (
