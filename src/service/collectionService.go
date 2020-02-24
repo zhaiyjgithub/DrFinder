@@ -13,6 +13,7 @@ type CollectionService interface {
 	Delete(userId int, objectID int, objectType int) error
 	GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []models.Doctor
 	GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post
+	DeleteMyFavorite(userId int, objectIds []int) error
 }
 
 type collectionService struct {
@@ -45,4 +46,8 @@ func (s *collectionService) GetMyFavoriteDoctors(userId int, objectType int, pag
 
 func (s *collectionService) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post  {
 	return s.dao.GetMyFavoritePosts(userId, objectType, page, pageSize)
+}
+
+func (s *collectionService) DeleteMyFavorite(userId int, objectIds []int) error  {
+	return s.dao.DeleteMyFavorite(userId, objectIds)
 }

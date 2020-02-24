@@ -26,6 +26,7 @@ const (
 	GetUserInfo = "/GetUserInfo"
 	GetMyFavorite = "/GetMyFavorite"
 	AddFavorite = "/AddFavorite"
+	DeleteMyFavorite = "/DeleteMyFavorite"
 )
 
 const (

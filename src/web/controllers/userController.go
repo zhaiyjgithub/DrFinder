@@ -31,6 +31,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetUserInfo, "GetUserInfo")
 	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite")
 	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite")
+	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite")
 }
 
 func (c *UserController) CreateUser() {
@@ -223,5 +224,24 @@ func (c *UserController) GetMyFavorite()  {
 
 		response.Success(c.Ctx, response.Successful, postInfos)
 	}
+}
 
+func (c *UserController)DeleteMyFavorite()  {
+	type Param struct {
+		UserID int
+		ObjectIDs []int `validate:'gt=0'`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	err = c.CollectionService.DeleteMyFavorite(param.UserID, param.ObjectIDs)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "", nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
+	}
 }

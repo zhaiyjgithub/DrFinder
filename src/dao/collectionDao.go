@@ -75,3 +75,8 @@ func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int,
 
 	return posts
 }
+
+func (d *CollectionDao) DeleteMyFavorite(userId int, objectIds []int) error {
+	db := d.engine.Where("user_id = ? and object_id in (?)", userId, objectIds).Delete(models.Collection{})
+	return db.Error
+}
