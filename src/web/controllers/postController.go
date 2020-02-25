@@ -45,9 +45,7 @@ func (c *PostController) UpdatePost()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
@@ -57,7 +55,6 @@ func (c *PostController) UpdatePost()  {
 	post.Description = param.Description
 
 	err = c.Service.Update(&post)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "update post fail", nil)
 	}else {

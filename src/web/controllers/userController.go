@@ -18,6 +18,7 @@ type UserController struct {
 	CollectionService service.CollectionService
 	AnswerService service.AnswerService
 	PostImageService service.PostImageService
+	FeedbackService service.FeedbackService
 }
 
 var userValidate *validator.Validate
@@ -32,6 +33,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite")
 	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite")
 	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite")
+	b.Handle(iris.MethodPost, utils.AddNewFeedback, "AddNewFeedback")
 }
 
 func (c *UserController) CreateUser() {
@@ -223,6 +225,30 @@ func (c *UserController) GetMyFavorite()  {
 		}
 
 		response.Success(c.Ctx, response.Successful, postInfos)
+	}
+}
+
+func (c *UserController) AddNewFeedback()  {
+	type Param struct {
+		UserID int `validate:"gt=0"`
+		Feedback string `validate:"gt=0"`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	var fb models.Feedback
+	fb.UserID = param.UserID
+	fb.Content = param.Feedback
+
+	err = c.FeedbackService.AddFeedback(&fb)
+	if err != nil {
+		response.Fail(c.Ctx, response.Err, "", nil)
+	}else {
+		response.Success(c.Ctx, response.Successful, nil)
 	}
 }
 
