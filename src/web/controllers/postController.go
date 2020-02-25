@@ -34,6 +34,8 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetPostByPage, "GetPostByPage")
 	b.Handle(iris.MethodGet, utils.ImgPost, "ImgPost")
 	b.Handle(iris.MethodPost, utils.GetMyPostByPage, "GetMyPostByPage")
+	b.Handle(iris.MethodPost, utils.AddAppendToPost, "AddAppendToPost")
+	b.Handle(iris.MethodPost, utils.GetAppendByPostID, "GetAppendByPostID")
 }
 
 func (c *PostController) UpdatePost()  {
@@ -289,7 +291,7 @@ func (c *PostController) AddAppendToPost()  {
 		return
 	}
 
-	append := models.Append{PostID: param.PostID, Content:param.Append}
+	append := &models.Append{PostID: param.PostID, Content:param.Append}
 
 	err = c.AppendService.AddAppend(append)
 	if err != nil {
@@ -297,6 +299,22 @@ func (c *PostController) AddAppendToPost()  {
 	}else {
 		response.Success(c.Ctx, "", nil)
 	}
+}
+
+func (c *PostController) GetAppendByPostID()  {
+	type Param struct {
+		PostID int `validate:"gt=0"`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	appends := c.AppendService.GetAppends(param.PostID)
+
+	response.Success(c.Ctx, response.Successful, appends)
 }
 
 func (c *PostController) ImgPost()  {

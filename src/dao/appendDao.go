@@ -13,7 +13,7 @@ func NewAppendDao(engine *gorm.DB) *AppendDao {
 	return &AppendDao{engine:engine}
 }
 
-func (d *AppendDao) AddAppend(append models.Append) error {
+func (d *AppendDao) AddAppend(append *models.Append) error {
 	db := d.engine.Create(append)
 
 	return db.Error

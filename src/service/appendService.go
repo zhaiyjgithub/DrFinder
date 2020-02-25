@@ -7,7 +7,7 @@ import (
 )
 
 type AppendService interface {
-	AddAppend(append models.Append) error
+	AddAppend(append *models.Append) error
 	GetAppends(postId int) []models.Append
 }
 
@@ -19,7 +19,7 @@ func NewAppendService() AppendService {
 	return &appendService{dao:dao.NewAppendDao(dataSource.InstanceMaster())}
 }
 
-func (s *appendService)AddAppend(append models.Append) error  {
+func (s *appendService)AddAppend(append *models.Append) error  {
 	return s.dao.AddAppend(append)
 }
 

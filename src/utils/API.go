@@ -57,6 +57,8 @@ const (
 	AddFavor = "/AddFavor"
 	ImgPost = "/ImgPost"
 	GetMyPostByPage = "/GetMyPostByPage"
+	AddAppendToPost = "/AddAppendToPost"
+	 GetAppendByPostID = "/GetAppendByPostID"
 )
 
 const (
