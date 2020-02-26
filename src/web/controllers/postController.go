@@ -174,7 +174,7 @@ func (c *PostController) GetPostByPage()  {
 
 		if answer != nil {
 			user := c.UserService.GetUserById(answer.UserID)
-			answerName = user.FirstName
+			answerName = user.Name
 			lastCreateAt = answer.CreatedAt
 		}
 
@@ -188,7 +188,7 @@ func (c *PostController) GetPostByPage()  {
 		var postInfo PostInfo
 		postInfo.PostID = post.ID
 		postInfo.UserIcon = postUser.HeaderIcon
-		postInfo.UserName = postUser.LastName
+		postInfo.UserName = postUser.Name
 		postInfo.Type = post.Type
 		postInfo.Title = post.Title
 		postInfo.Description = post.Description
@@ -246,7 +246,7 @@ func (c *PostController) GetMyPostByPage()  {
 		var lastCreateAt time.Time
 		if answer != nil {
 			user := c.UserService.GetUserById(answer.UserID)
-			answerName = user.FirstName
+			answerName = user.Name
 			lastCreateAt = answer.CreatedAt
 		}
 
@@ -260,7 +260,7 @@ func (c *PostController) GetMyPostByPage()  {
 		var postInfo PostInfo
 		postInfo.PostID = post.ID
 		postInfo.UserIcon = postUser.HeaderIcon
-		postInfo.UserName = postUser.LastName
+		postInfo.UserName = postUser.Name
 		postInfo.Type = post.Type
 		postInfo.Title = post.Title
 		postInfo.Description = post.Description

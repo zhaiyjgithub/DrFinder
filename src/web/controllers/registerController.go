@@ -150,7 +150,7 @@ func (c *RegisterController) Register() {
 func (c *RegisterController) SignIn()  {
 	type Param struct {
 		Email string `validate:"email"`
-		Password string `validate:"min=6,max=20"`
+		Password string `validate:"gt=6"`
 	}
 
 	var param Param
