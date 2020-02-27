@@ -15,7 +15,23 @@ import (
 )
 
 func main()  {
+	getSpecialty()
+}
 
+func getSpecialty()  {
+	spMap := make(map[string]string)
+	drService := service.NewDoctorService()
+
+	sps := drService.GetSpecialty()
+	for _, sp := range sps {
+		if len(spMap[sp]) == 0{
+			spMap[sp] = sp
+		}
+	}
+
+	for k, _ := range spMap {
+		fmt.Println(k)
+	}
 }
 
 func readDoctorCsv()  {

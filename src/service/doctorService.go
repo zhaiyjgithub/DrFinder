@@ -18,6 +18,7 @@ type DoctorService interface {
 	GetDoctorByPage(page int, pageSize int) []models.Doctor
 	GetHotSearchDoctors() *[]models.Doctor
 	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
+	GetSpecialty() []string
 }
 
 type doctorService struct {
@@ -74,4 +75,8 @@ func (s *doctorService) GetHotSearchDoctors() *[]models.Doctor {
 
 func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
 	return s.dao.GetRelatedDoctors(relateDoctor)
+}
+
+func (s *doctorService) GetSpecialty() []string {
+	return s.dao.GetSpecialty()
 }

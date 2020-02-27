@@ -145,3 +145,18 @@ func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doc
 func (d *DoctorDao) GetDoctorStarStatus(userId int, npi int) bool {
 	return false
 }
+
+func (d *DoctorDao) GetSpecialty() []string {
+	var sps []string
+
+	rows, _ := d.engine.Raw("select specialty from doctors").Rows()
+
+	for rows.Next() {
+		var name string
+		rows.Scan(&name)
+
+		sps = append(sps, name)
+	}
+
+	return sps
+}
