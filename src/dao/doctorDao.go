@@ -111,6 +111,9 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 		groupBy = "specialty"
 	}
 
+	//$sql='select * from users_location where latitude > '.$lat.'-1 and latitude < '.$lat.'+1 and longitude > '.$lon.'-1 and longitude < '.$lon.'+1 order by ACOS(SIN(('.$lat.' * 3.1415) / 180 ) *SIN((latitude * 3.1415) / 180 ) +COS(('.$lat.' * 3.1415) / 180 ) * COS((latitude * 3.1415) / 180 ) *COS(('.$lon.'* 3.1415) / 180 - (longitude * 3.1415) / 180 ) ) * 6380 asc limit 10';
+	//select npi, lat, lng, ACOS(SIN((33.506493 * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((33.506493 * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((-86.77556* 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance  from geos where lat > (33.506493 - 1) and lat < (33.506493 + 1) and lng > (-86.77556 - 1) and lng < (-86.77556 + 1)  order by distance asc LIMIT 100 OFFSET 0
+	//使用高级联结查询 UNION
 	d.engine.Limit(pageSize).Offset((page -1)*pageSize).Raw("select * from doctors WHERE id in " +
 		"(SELECT id from doctors where " +
 		"(last_name like ? or first_name like ?) and specialty like ?" +
@@ -150,6 +153,7 @@ func (d *DoctorDao) GetSpecialty() []string {
 	var sps []string
 
 	rows, _ := d.engine.Raw("select specialty from doctors").Rows()
+	defer rows.Close()
 
 	for rows.Next() {
 		var name string
