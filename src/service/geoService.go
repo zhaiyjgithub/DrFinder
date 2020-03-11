@@ -9,6 +9,8 @@ import (
 type GeoService interface {
 	Add(geo *models.Geo) error
 	GetGeoInfoByNpi(npi int) *models.Geo
+	GetNearByDoctorGeoInfo(lat float64, lng float64, page int, pageSize int) []models.GeoDistance
+	GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []int) []models.GeoDistance
 }
 
 type geoService struct {
@@ -25,4 +27,12 @@ func (s *geoService) Add(geo *models.Geo) error {
 
 func (s *geoService) GetGeoInfoByNpi(npi int) *models.Geo {
 	return s.dao.GetGeoInfoByNpi(npi)
+}
+
+func (s *geoService) GetNearByDoctorGeoInfo(lat float64, lng float64, page int, pageSize int) []models.GeoDistance  {
+	return s.dao.GetNearByDoctorGeoInfo(lat, lng, page, pageSize)
+}
+
+func (s *geoService) GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []int) []models.GeoDistance  {
+	return s.dao.GetDoctorGeoInfoByNpiList(lat, lng, npiList)
 }

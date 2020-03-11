@@ -19,6 +19,7 @@ type DoctorService interface {
 	GetHotSearchDoctors() *[]models.Doctor
 	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
 	GetSpecialty() []string
+	SearchDoctorsByNpiList(npiList []int) []models.Doctor
 }
 
 type doctorService struct {
@@ -79,4 +80,8 @@ func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models
 
 func (s *doctorService) GetSpecialty() []string {
 	return s.dao.GetSpecialty()
+}
+
+func (s *doctorService) SearchDoctorsByNpiList(npiList []int) []models.Doctor  {
+	return s.dao.SearchDoctorsByNpiList(npiList)
 }
