@@ -116,6 +116,40 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 	return doctors
 }
 
+func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo  {
+	var doctorGeos []models.DoctorGeo
+
+	firstName := fmt.Sprintf("%%%s%%", doctor.FirstName)
+	lastName := fmt.Sprintf("%%%s%%", doctor.LastName)
+	specialty := fmt.Sprintf("%%%s%%", doctor.Specialty)
+	var genderList []string
+	if len(doctor.Specialty) == 0 {
+		genderList = append(genderList, "F", "M")
+	}else {
+		genderList = append(genderList, doctor.Specialty)
+	}
+
+	if len(doctor.FirstName) == 0 && len(doctor.LastName) == 0 && len(doctor.Specialty) == 0 {
+		d.engine.Raw("select G.lat, G.lng, G.distance, D.* from " +
+			"(select geos.npi as npi, geos.lat as lat, geos.lng as lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance from geos " +
+			"order by distance  LIMIT ? offset ?) G , " +
+			"doctors D  where G.npi = D.npi and gender in (?) and specialty like ? and city = ? and state = ? order by distance",
+			lat, lat, lng,
+			pageSize, (page - 1)*pageSize,
+			genderList, specialty, doctor.City, doctor.State).Scan(&doctorGeos)
+	}else {
+		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, D.* " +
+			"from (select * from doctors where (last_name like ? or first_name like ?) and specialty like ? and gender in (?) and city = ? and state = ?" +
+			" limit ? offset ?) D," +
+			" geos G WHERE D.npi = G.npi order by last_name, distance asc",
+			lat, lat, lng,
+			lastName, firstName, specialty, genderList, doctor.City, doctor.State,
+			pageSize, (page - 1)*pageSize,).Scan(&doctorGeos)
+	}
+
+	return doctorGeos
+}
+
 func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
 	var doctors []models.Doctor
 

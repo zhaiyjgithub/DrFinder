@@ -250,55 +250,66 @@ func (c *DoctorController) SearchDoctorByPage()  {
 		Geo models.GeoDistance
 	}
 
-	if len(param.FirstName) == 0 && len(param.LastName) == 0 && len(param.Specialty) == 0 { // 没有任何的搜索条件
-		geos := c.GeoService.GetNearByDoctorGeoInfo(param.Lat, param.Lng, param.Page, param.PageSize)
+	doctors := c.Service.FindDoctorByPage(&models.Doctor{
+		FirstName: param.FirstName,
+		LastName: param.LastName,
+		Specialty: param.Specialty,
+		Gender: param.Gender,
+		City: param.City,
+		State: param.State,
+		}, param.Lat, param.Lng, param.Page, param.PageSize)
 
-		var npiList []int
-		nMap := make(map[int]models.GeoDistance)
-		for i:= 0; i < len(geos); i ++ {
-			npiList = append(npiList, geos[i].Npi)
-			nMap[geos[i].Npi] = geos[i]
-		}
+	response.Success(c.Ctx, response.Successful, doctors)
 
-		doctors := c.Service.SearchDoctorsByNpiList(npiList)
-
-		var dgList []*DoctorGeo
-		for i := 0; i < len(doctors); i ++ {
-			dr := doctors[i]
-			dgList = append(dgList, &DoctorGeo{Doctor: dr, Geo: nMap[dr.Npi]})
-		}
-
-		response.Success(c.Ctx, response.Successful, dgList)
-	}else {
-		var doctor models.Doctor
-		doctor.FirstName = param.FirstName
-		doctor.LastName = param.LastName
-		doctor.Specialty = param.Specialty
-		doctor.Gender = param.Gender
-		doctor.City = param.City
-		doctor.State = param.State
-
-		doctors := c.Service.SearchDoctorByPage(&doctor, param.Page, param.PageSize)
-
-		var npiList []int
-		nMap := make(map[int] models.Doctor)
-
-		for i := 0; i < len(doctors); i ++ {
-			dr := doctors[i]
-			npiList = append(npiList, dr.Npi)
-			nMap[dr.Npi] = dr
-		}
-
-		geos := c.GeoService.GetDoctorGeoInfoByNpiList(param.Lat, param.Lng, npiList)
-
-		var dgList []*DoctorGeo
-		for i := 0; i < len(geos); i ++ {
-			geo := geos[i]
-			dgList = append(dgList, &DoctorGeo{Doctor:nMap[geo.Npi], Geo:geo})
-		}
-
-		response.Success(c.Ctx, response.Successful, dgList)
-	}
+	//if len(param.FirstName) == 0 && len(param.LastName) == 0 && len(param.Specialty) == 0 { // 没有任何的搜索条件
+	//	geos := c.GeoService.GetNearByDoctorGeoInfo(param.Lat, param.Lng, param.Page, param.PageSize)
+	//
+	//	var npiList []int
+	//	nMap := make(map[int]models.GeoDistance)
+	//	for i:= 0; i < len(geos); i ++ {
+	//		npiList = append(npiList, geos[i].Npi)
+	//		nMap[geos[i].Npi] = geos[i]
+	//	}
+	//
+	//	doctors := c.Service.SearchDoctorsByNpiList(npiList)
+	//
+	//	var dgList []*DoctorGeo
+	//	for i := 0; i < len(doctors); i ++ {
+	//		dr := doctors[i]
+	//		dgList = append(dgList, &DoctorGeo{Doctor: dr, Geo: nMap[dr.Npi]})
+	//	}
+	//
+	//	response.Success(c.Ctx, response.Successful, dgList)
+	//}else {
+	//	var doctor models.Doctor
+	//	doctor.FirstName = param.FirstName
+	//	doctor.LastName = param.LastName
+	//	doctor.Specialty = param.Specialty
+	//	doctor.Gender = param.Gender
+	//	doctor.City = param.City
+	//	doctor.State = param.State
+	//
+	//	doctors := c.Service.SearchDoctorByPage(&doctor, param.Page, param.PageSize)
+	//
+	//	var npiList []int
+	//	nMap := make(map[int] models.Doctor)
+	//
+	//	for i := 0; i < len(doctors); i ++ {
+	//		dr := doctors[i]
+	//		npiList = append(npiList, dr.Npi)
+	//		nMap[dr.Npi] = dr
+	//	}
+	//
+	//	geos := c.GeoService.GetDoctorGeoInfoByNpiList(param.Lat, param.Lng, npiList)
+	//
+	//	var dgList []*DoctorGeo
+	//	for i := 0; i < len(geos); i ++ {
+	//		geo := geos[i]
+	//		dgList = append(dgList, &DoctorGeo{Doctor:nMap[geo.Npi], Geo:geo})
+	//	}
+	//
+	//	response.Success(c.Ctx, response.Successful, dgList)
+	//}
 }
 
 func (c *DoctorController) GetHotSearchDoctors()  {

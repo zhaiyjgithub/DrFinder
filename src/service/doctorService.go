@@ -20,6 +20,7 @@ type DoctorService interface {
 	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
 	GetSpecialty() []string
 	SearchDoctorsByNpiList(npiList []int) []models.Doctor
+	FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo
 }
 
 type doctorService struct {
@@ -84,4 +85,8 @@ func (s *doctorService) GetSpecialty() []string {
 
 func (s *doctorService) SearchDoctorsByNpiList(npiList []int) []models.Doctor  {
 	return s.dao.SearchDoctorsByNpiList(npiList)
+}
+
+func (s *doctorService) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo   {
+	return s.dao.FindDoctorByPage(doctor, lat, lng, page, pageSize)
 }
