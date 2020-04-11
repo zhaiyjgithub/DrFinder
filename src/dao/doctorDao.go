@@ -123,10 +123,10 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 	lastName := fmt.Sprintf("%%%s%%", doctor.LastName)
 	specialty := fmt.Sprintf("%%%s%%", doctor.Specialty)
 	var genderList []string
-	if len(doctor.Specialty) == 0 {
+	if len(doctor.Gender) == 0 {
 		genderList = append(genderList, "F", "M")
 	}else {
-		genderList = append(genderList, doctor.Specialty)
+		genderList = append(genderList, doctor.Gender)
 	}
 
 	if len(doctor.FirstName) == 0 && len(doctor.LastName) == 0 && len(doctor.Specialty) == 0 {

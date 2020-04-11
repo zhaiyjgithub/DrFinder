@@ -43,7 +43,6 @@ func (c *UserController) CreateUser() {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, userValidate, &param)
 
 	if err != nil {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"DrFinder/src/dao"
 	"DrFinder/src/dataSource"
 	"context"
 	"fmt"
@@ -9,12 +10,32 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 func main()  {
-	testMongoDB()
+	//testMongoDB()
 
 	//findOne()
+
+	type Event struct {
+		Name string
+		Time time.Time
+	}
+
+	dao := dao.NewMongoDao(dataSource.InstanceMongoDB())
+	//event := Event{Name: "Login", Time: time.Now()}
+	//
+	//err := dao.InsertOne("event", event)
+	//if err != nil {
+	//	fmt.Println("insert failed")
+	//}else {
+	//	fmt.Println("insert success")
+	//}
+
+	res, err := dao.FindOne("event", bson.M{"name": "Login"})
+	fmt.Println(res)
+	fmt.Println(err)
 }
 
 func testMongoDB() {
@@ -23,10 +44,22 @@ func testMongoDB() {
 		Name string `bson:"name"`
 	}
 
-	mongoURI := "mongodb://myTester:123456@localhost:27017/test?"
+	//mongoURI := "mongodb://myTester:123456@localhost:27017"
+
+	//credential := options.Credential{
+	//	Username: "myUserAdmin",
+	//	Password: "123456",
+	//	AuthSource: "admin",
+	//}
 
 	// Set client options
+
+	//mongo userTrack -u myUserAdmin -p 123456 --authenticationDatabase admin
+	//setAuth 就是使用admin user  to login other database.
+
+	mongoURI := "mongodb://myTester:123456@localhost:27017/test?"
 	clientOptions := options.Client().ApplyURI(mongoURI)
+
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -52,7 +85,7 @@ func testMongoDB() {
 	//var t Trainer
 	//t.Name = "Mary"
 
-	cur, err := collection.Find(context.TODO(), bson.D{{"name", "Mary"}, {"address", ""}}, findOptions)
+	cur, err := collection.Find(context.TODO(), findOptions)
 
 	if err != nil {
 		log.Fatal(err)
@@ -95,7 +128,7 @@ func addOne()  {
 	col := dataSource.InstanceMongoDB().Collection("mycol")
 
 	var t Trainer
-	t.Name = "Mary col"
+	t.Name = "Mary col123"
 
 	res, err := col.InsertOne(context.TODO(), t)
 

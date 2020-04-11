@@ -10,9 +10,11 @@ import (
 	"github.com/kataras/iris/core/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
 	"os"
 	"sync"
+	"time"
 )
 
 const codeBucket = "CodeBucket"
@@ -70,21 +72,22 @@ func InstanceMongoDB() *mongo.Database {
 	conf.MongoDBConf.Host, conf.MongoDBConf.Port, conf.MongoDBConf.DBName)
 
 	clientOptions := options.Client().ApplyURI(conn)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
 
+	ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(context.TODO(), nil)
 
+	ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("Connected to MongoDB!")
-
-	db := client.Database("test")
+	db := client.Database(conf.MongoDBConf.DBName)
 	mongoEngine = db
 
 	return db

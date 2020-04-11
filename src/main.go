@@ -53,6 +53,9 @@ func main() {
 	answerParty := app.Party(utils.APIAnswer)
 	mvc.Configure(answerParty, answerMVC)
 
+	userTrackParty := app.Party(utils.APIUserTrack)
+	mvc.Configure(userTrackParty, userTrackMVC)
+
 	_ = app.Run(iris.Addr(":8090"), iris.WithPostMaxMemory(32<<20)) //max = 32M
 }
 
@@ -143,6 +146,14 @@ func answerMVC(app *mvc.Application)  {
 			userService,
 		)
 	app.Handle(new(controllers.AnswerController))
+}
+func userTrackMVC(app *mvc.Application)  {
+	userTrackService := service.NewUserTrackService()
+	app.Register(
+			userTrackService,
+		)
+
+	app.Handle(new(controllers.UserTrackController))
 }
 
 func testLog()  {

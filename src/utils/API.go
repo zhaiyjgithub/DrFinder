@@ -68,6 +68,10 @@ const (
 	DeleteAnswer = "/DeleteAnswer"
 	AddAnswerLikes = "/AddAnswerLikes"
 	GetAnswerListByPage = "/GetAnswerListByPage"
+)
 
+const (
+	APIUserTrack = "Track"
+	APIAddEvent = "/AddEvent"
 )
 
