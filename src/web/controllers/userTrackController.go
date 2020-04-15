@@ -20,8 +20,8 @@ func (c *UserTrackController) BeforeActivation(b mvc.BeforeActivation)   {
 
 func (c *UserTrackController) AddTrackEvent()  {
 	type Param struct {
-		Action *models.UserAction
-		View *models.UserView
+		Actions []models.UserAction
+		Views []models.UserView
 	}
 
 	var param Param
@@ -30,14 +30,21 @@ func (c *UserTrackController) AddTrackEvent()  {
 		return
 	}
 
-	if param.Action == nil {
-		response.Fail(c.Ctx, response.Err, err.Error(), nil)
-	}else {
-		err = c.UserTrackService.AddActionEvent(param.Action)
-		if err != nil {
+	if len(param.Actions) != 0 {
+		err  = c.UserTrackService.AddManyActionEvent(param.Actions)
+		if err != nil  {
 			response.Fail(c.Ctx, response.Err, err.Error(), nil)
-		}else {
-			response.Success(c.Ctx, response.Successful, nil)
+			return
 		}
 	}
+
+	if len(param.Views) != 0 {
+		err = c.UserTrackService.AddManyViewTimeEvent(param.Views)
+		if err != nil {
+			response.Fail(c.Ctx, response.Err, err.Error(), nil)
+			return
+		}
+	}
+
+	response.Success(c.Ctx, response.Successful, nil)
 }

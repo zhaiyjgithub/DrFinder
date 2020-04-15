@@ -3,7 +3,6 @@ package models
 import "time"
 
 type UserAction struct {
-	ID int `bson:"_id"`
 	Platform string `bson:"platform"`
 	Lat float64	`bson:"lat"`
 	Lng float64 `bson:"lng"`
@@ -14,7 +13,6 @@ type UserAction struct {
 }
 
 type UserView struct {
-	ID int `bson:"_id"`
 	Platform string `bson:"platform"`
 	Lat float64	`bson:"lat"`
 	Lng float64 `bson:"lng"`

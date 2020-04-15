@@ -7,8 +7,11 @@ import (
 )
 
 type UserTrackService interface {
-	AddActionEvent(actEvent *models.UserAction) error
+	AddActionEvent(event *models.UserAction) error
 	FindActionEvent(filter interface{}) []models.UserAction
+	AddManyActionEvent(events []models.UserAction) error
+	AddViewEvent(event *models.UserView) error
+	AddManyViewTimeEvent(events []models.UserView) error
 }
 
 type userTrackService struct {
@@ -19,8 +22,20 @@ func NewUserTrackService() UserTrackService {
 	return &userTrackService{dao:dao.NewUserTrackDao(dataSource.InstanceMongoDB())}
 }
 
-func (s *userTrackService) AddActionEvent(actEvent *models.UserAction) error  {
-	return s.dao.AddActionEvent(actEvent)
+func (s *userTrackService) AddActionEvent(event *models.UserAction) error  {
+	return s.dao.AddActionEvent(event)
+}
+
+func (s *userTrackService) AddManyActionEvent(events []models.UserAction) error {
+	return s.dao.AddManyActionEvent(events)
+}
+
+func (s *userTrackService) AddViewEvent(event *models.UserView) error {
+	return s.dao.AddViewEvent(event)
+}
+
+func (s *userTrackService) AddManyViewTimeEvent(events []models.UserView) error {
+	return s.dao.AddManyViewTimeEvent(events)
 }
 
 func (s *userTrackService) FindActionEvent(filter interface{}) []models.UserAction  {
