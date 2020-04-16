@@ -1,14 +1,16 @@
 package controllers
 
 import (
-	"DrFinder/src/utils"
+	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
+	"DrFinder/src/utils"
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"io/ioutil"
@@ -26,16 +28,27 @@ type PostController struct {
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost")
-	b.Handle(iris.MethodPost, utils.UpdatePost, "UpdatePost")
-	b.Handle(iris.MethodPost, utils.AddLikes, "AddLikes")
-	b.Handle(iris.MethodPost, utils.AddFavor, "AddFavor")
-	b.Handle(iris.MethodPost, utils.DeletePost, "DeletePost")
-	b.Handle(iris.MethodPost, utils.GetPostByPage, "GetPostByPage")
-	b.Handle(iris.MethodGet, utils.ImgPost, "ImgPost")
-	b.Handle(iris.MethodPost, utils.GetMyPostByPage, "GetMyPostByPage")
-	b.Handle(iris.MethodPost, utils.AddAppendToPost, "AddAppendToPost")
-	b.Handle(iris.MethodPost, utils.GetAppendByPostID, "GetAppendByPostID")
+
+	j := jwt.New(jwt.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return conf.JWRTSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, e error) {
+			response.Fail(ctx, response.Expire, e.Error(), nil)
+		},
+	})
+
+	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost", j.Serve)
+	b.Handle(iris.MethodPost, utils.UpdatePost, "UpdatePost", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddLikes, "AddLikes", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddFavor, "AddFavor", j.Serve)
+	b.Handle(iris.MethodPost, utils.DeletePost, "DeletePost", j.Serve)
+	b.Handle(iris.MethodPost, utils.GetPostByPage, "GetPostByPage", j.Serve)
+	b.Handle(iris.MethodGet, utils.ImgPost, "ImgPost", j.Serve)
+	b.Handle(iris.MethodPost, utils.GetMyPostByPage, "GetMyPostByPage", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddAppendToPost, "AddAppendToPost", j.Serve)
+	b.Handle(iris.MethodPost, utils.GetAppendByPostID, "GetAppendByPostID", j.Serve)
 }
 
 func (c *PostController) UpdatePost()  {

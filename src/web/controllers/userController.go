@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"DrFinder/src/utils"
+	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
+	"DrFinder/src/utils"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
@@ -26,14 +28,24 @@ var userValidate *validator.Validate
 func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	userValidate = validator.New()
 
+	j := jwt.New(jwt.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return conf.JWRTSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, e error) {
+			response.Fail(ctx, response.Expire, e.Error(), nil)
+		},
+	})
+
 	b.Handle(iris.MethodPost, utils.CreateUser, "CreateUser")
-	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword")
-	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo")
+	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword", j.Serve)
+	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo", j.Serve)
 	b.Handle(iris.MethodPost, utils.GetUserInfo, "GetUserInfo")
-	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite")
-	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite")
-	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite")
-	b.Handle(iris.MethodPost, utils.AddNewFeedback, "AddNewFeedback")
+	b.Handle(iris.MethodPost, utils.GetMyFavorite, "GetMyFavorite", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite", j.Serve)
+	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddNewFeedback, "AddNewFeedback", j.Serve)
 }
 
 func (c *UserController) CreateUser() {

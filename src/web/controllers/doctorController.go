@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"DrFinder/src/conf"
 	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
@@ -31,6 +33,17 @@ type DoctorController struct {
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	validate = validator.New()
+
+	j := jwt.New(jwt.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return conf.JWRTSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, e error) {
+			response.Fail(ctx, response.Expire, e.Error(), nil)
+		},
+	})
+
 	b.Handle(iris.MethodPost, utils.AddDoctor, "AddDoctor")
 	b.Handle(iris.MethodPost, utils.GetDoctorById, "GetDoctorById")
 	b.Handle(iris.MethodPost, utils.SearchDoctor, "SearchDoctor")
@@ -40,9 +53,9 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetHotSearchDoctors, "GetHotSearchDoctors")
 	b.Handle(iris.MethodPost, utils.GetDoctorInfoWithNpi, "GetDoctorInfoWithNpi")
 	b.Handle(iris.MethodPost, utils.GetRelatedDoctors, "GetRelatedDoctors")
-	b.Handle(iris.MethodPost, utils.GetCollections, "GetCollections")
-	b.Handle(iris.MethodPost, utils.GetCollectionStatus, "GetCollectionStatus")
-	b.Handle(iris.MethodPost, utils.DeleteCollection, "DeleteCollection")
+	b.Handle(iris.MethodPost, utils.GetCollections, "GetCollections", j.Serve)
+	b.Handle(iris.MethodPost, utils.GetCollectionStatus, "GetCollectionStatus", j.Serve)
+	b.Handle(iris.MethodPost, utils.DeleteCollection, "DeleteCollection", j.Serve)
 }
 
 func (c *DoctorController) AddDoctor() {

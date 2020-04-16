@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"DrFinder/src/conf"
 	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"time"
@@ -17,10 +19,20 @@ type AnswerController struct {
 }
 
 func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle(iris.MethodPost, utils.AddAnswer, "AddAnswer")
-	b.Handle(iris.MethodPost, utils.DeleteDoctorById, "DeleteById")
-	b.Handle(iris.MethodPost, utils.AddAnswerLikes, "AddAnswerLikes")
-	b.Handle(iris.MethodPost, utils.GetAnswerListByPage, "GetAnswerListByPage")
+	j := jwt.New(jwt.Config{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return conf.JWRTSecret, nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, e error) {
+			response.Fail(ctx, response.Expire, e.Error(), nil)
+		},
+	})
+
+	b.Handle(iris.MethodPost, utils.AddAnswer, "AddAnswer", j.Serve)
+	b.Handle(iris.MethodPost, utils.DeleteDoctorById, "DeleteById", j.Serve)
+	b.Handle(iris.MethodPost, utils.AddAnswerLikes, "AddAnswerLikes", j.Serve)
+	b.Handle(iris.MethodPost, utils.GetAnswerListByPage, "GetAnswerListByPage", j.Serve)
 }
 
 func (c *AnswerController) AddAnswer()  {
