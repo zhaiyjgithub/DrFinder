@@ -8,6 +8,7 @@ import (
 
 const UserActionColName = "useraction"
 const UserViewTimeColName = "userviewtime"
+const UserSearchDrsRecord = "usersearchdrsrecord"
 
 type UserTrackDao struct {
 	engine *mongo.Database
@@ -45,6 +46,12 @@ func (d *UserTrackDao) AddManyViewTimeEvent(events []models.UserView) error {
 		tmps = append(tmps, events[i])
 	}
 	_, err := d.engine.Collection(UserViewTimeColName).InsertMany(context.TODO(), tmps)
+
+	return err
+}
+
+func (d *UserTrackDao) AddSearchDrsRecord(record *models.UserSearchDrRecord) error {
+	_, err := d.engine.Collection(UserSearchDrsRecord).InsertOne(context.TODO(), record)
 
 	return err
 }

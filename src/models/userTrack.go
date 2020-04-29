@@ -22,3 +22,18 @@ type UserView struct {
 	BeginTime time.Time `bson:"beginTime"`
 	EndTime time.Time	`bson:"endTime"`
 }
+
+type UserSearchDrRecord struct {
+	LastName string `bson:"lastName"`
+	Specialty string `bson:"specialty"`
+	Gender string `bson:"gender"`
+	City string `bson:"city"`
+	State string `bson:"state"`
+	Lat float64 `bson:"lat"`
+	Lng float64 `bson:"lng"`
+	Page int `bson:"page"`
+	PageSize int `bson:"pageSize"`
+	Platform string `bson:"platform"`
+	UserID int `bson:"userId"`
+	CreatedDate time.Time `bson:"createDate"`
+}

@@ -29,6 +29,7 @@ type DoctorController struct {
 	LangService service.LangService
 	MemberService service.MembershipService
 	CollectionService service.CollectionService
+	UserTrackService service.UserTrackService
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -248,6 +249,8 @@ func (c *DoctorController) SearchDoctorByPage()  {
 		Lng float64
 		Page int `validate:"gt=0"`
 		PageSize int `validate:"gt=0"`
+		Platform string `validate:"-"`
+		UserID int `validate:"-"`
 	}
 
 	var param Param
@@ -271,6 +274,26 @@ func (c *DoctorController) SearchDoctorByPage()  {
 		}, param.Lat, param.Lng, param.Page, param.PageSize)
 
 	response.Success(c.Ctx, response.Successful, doctors)
+
+	loc, _ := time.LoadLocation("UTC")
+	now := time.Now().In(loc)
+
+	record := &models.UserSearchDrRecord{
+		LastName: param.LastName,
+		Specialty: param.Specialty,
+		Gender: param.Gender,
+		City: param.City,
+		State: param.State,
+		Lat: param.Lat,
+		Lng: param.Lng,
+		Page: param.Page,
+		PageSize: param.PageSize,
+		Platform: param.Platform,
+		UserID: param.UserID,
+		CreatedDate: now,
+		}
+
+	_ = c.UserTrackService.AddSearchDrsRecord(record)
 }
 
 func (c *DoctorController) GetHotSearchDoctors()  {
