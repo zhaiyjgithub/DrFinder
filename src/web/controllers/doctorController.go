@@ -240,7 +240,7 @@ func (c *DoctorController) DeleteDoctorById()  {
 
 func (c *DoctorController) SearchDoctorByPage()  {
 	type Param struct {
-		LastName string
+		Name string
 		Specialty string
 		Gender string
 		City string
@@ -266,7 +266,8 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	}
 
 	doctors := c.Service.FindDoctorByPage(&models.Doctor{
-		LastName: param.LastName,
+		LastName: param.Name,
+		FirstName: param.Name,
 		Specialty: param.Specialty,
 		Gender: param.Gender,
 		City: param.City,
@@ -279,7 +280,7 @@ func (c *DoctorController) SearchDoctorByPage()  {
 	now := time.Now().In(loc)
 
 	record := &models.UserSearchDrRecord{
-		LastName: param.LastName,
+		Name: param.Name,
 		Specialty: param.Specialty,
 		Gender: param.Gender,
 		City: param.City,

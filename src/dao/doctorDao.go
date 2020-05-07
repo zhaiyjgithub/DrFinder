@@ -118,39 +118,56 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 
 func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo  {
 	var doctorGeos []models.DoctorGeo
+	var genderList []string
 
 	lastName := fmt.Sprintf("%s%%", doctor.LastName)
-
-	var genderList []string
 	if len(doctor.Gender) == 0 {
 		genderList = append(genderList, "F", "M")
 	}else {
 		genderList = append(genderList, doctor.Gender)
 	}
 
-	if len(doctor.LastName) > 0 && len(doctor.Specialty) > 0 {//most from filter menu
-		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, D.* " +
-			"from (select * from doctors where last_name like ? and specialty = ? and gender in (?) and city = ? and state = ?" +
-			" limit ? offset ?) D," +
-			" geos G WHERE D.npi = G.npi order by last_name, distance asc",
+	if len(doctor.LastName) > 0 && len(doctor.Specialty) > 0{//most from filter menu
+		eachPageSize := pageSize/2
+		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
+			" from (select * from doctors inner join (select id as Did from doctors where last_name like ? and specialty = ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
+			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi union select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
+			" from (select * from doctors inner join (select id as Did from doctors where first_name like ? and specialty = ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
+			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi",
 			lat, lat, lng,
-			lastName, doctor.Specialty, genderList, doctor.City, doctor.State,
-			pageSize, (page - 1)*pageSize,).Scan(&doctorGeos)
-	}else if len(doctor.LastName) > 0 && len(doctor.Specialty) == 0 {//most from filter menu
-		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, D.* " +
-			"from (select * from doctors where last_name like ? and gender in (?) and city = ? and state = ?" +
-			" limit ? offset ?) D," +
-			" geos G WHERE D.npi = G.npi order by last_name, distance asc",
+			lastName, doctor.Specialty,
+			doctor.State, doctor.City, genderList,
+			eachPageSize, (page - 1)*eachPageSize,
 			lat, lat, lng,
-			lastName, genderList, doctor.City, doctor.State,
-			pageSize, (page - 1)*pageSize,).Scan(&doctorGeos)
+			lastName, doctor.Specialty,
+			doctor.State, doctor.City, genderList,
+			eachPageSize, (page - 1)*eachPageSize,
+			).Scan(&doctorGeos)
+	} else if len(doctor.LastName) > 0 && len(doctor.Specialty) == 0 {//most from filter menu
+		eachPageSize := pageSize/2
+		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
+			" from (select * from doctors inner join (select id as Did from doctors where last_name like ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
+			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi union select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
+			" from (select * from doctors inner join (select id as Did from doctors where first_name like ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
+			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi",
+			lat, lat, lng,
+			lastName,
+			doctor.State, doctor.City, genderList,
+			eachPageSize, (page - 1)*eachPageSize,
+			lat, lat, lng,
+			lastName,
+			doctor.State, doctor.City, genderList,
+			eachPageSize, (page - 1)*eachPageSize,
+		).Scan(&doctorGeos)
 	} else if len(doctor.LastName) == 0 && len(doctor.Specialty) > 0 {// most from specialty menu
-		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, D.* " +
-			"from (select * from doctors where specialty = ? and gender in (?) and city = ? and state = ?" +
-			" limit ? offset ?) D," +
-			" geos G WHERE D.npi = G.npi order by last_name, distance asc",
-			lat, lat, lng, doctor.Specialty, genderList, doctor.City, doctor.State,
-			pageSize, (page - 1)*pageSize,).Scan(&doctorGeos)
+		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
+			" from (select * from doctors inner join (select id as Did from doctors where specialty = ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
+			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi",
+			lat, lat, lng,
+			doctor.Specialty,
+			doctor.State, doctor.City, genderList,
+			pageSize, (page - 1)*pageSize,
+		).Scan(&doctorGeos)
 	}else {// near by doctors.
 		d.engine.Raw("select G.lat, G.lng, G.distance, D.* from " +
 			"(select geos.npi as npi, geos.lat as lat, geos.lng as lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) + COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance from geos " +

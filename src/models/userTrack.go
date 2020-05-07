@@ -24,7 +24,7 @@ type UserView struct {
 }
 
 type UserSearchDrRecord struct {
-	LastName string `bson:"lastName"`
+	Name string `bson:"name"`
 	Specialty string `bson:"specialty"`
 	Gender string `bson:"gender"`
 	City string `bson:"city"`
