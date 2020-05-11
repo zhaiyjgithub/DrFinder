@@ -37,3 +37,12 @@ type UserSearchDrRecord struct {
 	UserID int `bson:"userId"`
 	CreatedDate time.Time `bson:"createDate"`
 }
+
+type DrSearchResultRecord struct {
+	Npi int `bson:"npi"`
+	Lat float64 `bson:"lat"`
+	Lng float64 `bson:"lng"`
+	Platform string `bson:"platform"`
+	UserID int `bson:"userId"`
+	CreatedDate time.Time `bson:"createDate"`
+}

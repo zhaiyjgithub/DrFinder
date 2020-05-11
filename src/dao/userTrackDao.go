@@ -9,6 +9,7 @@ import (
 const UserActionColName = "useraction"
 const UserViewTimeColName = "userviewtime"
 const UserSearchDrsRecord = "usersearchdrsrecord"
+const SearchDrResultRecord = "searchdrresultrecord"
 
 type UserTrackDao struct {
 	engine *mongo.Database
@@ -41,11 +42,11 @@ func (d *UserTrackDao) AddViewEvent(event *models.UserView) error {
 }
 
 func (d *UserTrackDao) AddManyViewTimeEvent(events []models.UserView) error {
-	var tmps []interface{}
+	var docs []interface{}
 	for i := 0; i < len(events); i ++ {
-		tmps = append(tmps, events[i])
+		docs = append(docs, events[i])
 	}
-	_, err := d.engine.Collection(UserViewTimeColName).InsertMany(context.TODO(), tmps)
+	_, err := d.engine.Collection(UserViewTimeColName).InsertMany(context.TODO(), docs)
 
 	return err
 }
@@ -75,4 +76,14 @@ func (d *UserTrackDao) FindActionEvent(filter interface{}) []models.UserAction {
 	}
 
 	return results
+}
+
+func (d *UserTrackDao) AddSearchDrResultRecords(records []models.DrSearchResultRecord) error {
+	var docs []interface{}
+	for i := 0; i < len(records); i ++ {
+		docs = append(docs, records[i])
+	}
+
+	_, err := d.engine.Collection(SearchDrResultRecord).InsertMany(context.TODO(), docs)
+	return err
 }

@@ -13,6 +13,7 @@ type UserTrackService interface {
 	AddViewEvent(event *models.UserView) error
 	AddManyViewTimeEvent(events []models.UserView) error
 	AddSearchDrsRecord(record *models.UserSearchDrRecord) error
+	AddSearchDrResultRecords(records []models.DrSearchResultRecord) error
 }
 
 type userTrackService struct {
@@ -45,4 +46,8 @@ func (s *userTrackService) AddSearchDrsRecord(record *models.UserSearchDrRecord)
 
 func (s *userTrackService) FindActionEvent(filter interface{}) []models.UserAction  {
 	return s.dao.FindActionEvent(filter)
+}
+
+func (s *userTrackService) AddSearchDrResultRecords(records []models.DrSearchResultRecord) error  {
+	return s.dao.AddSearchDrResultRecords(records)
 }
