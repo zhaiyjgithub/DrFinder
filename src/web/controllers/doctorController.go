@@ -276,43 +276,41 @@ func (c *DoctorController) SearchDoctorByPage()  {
 
 	response.Success(c.Ctx, response.Successful, doctors)
 
-	go func() {
-		loc, _ := time.LoadLocation("UTC")
-		now := time.Now().In(loc)
+	loc, _ := time.LoadLocation("UTC")
+	now := time.Now().In(loc)
 
-		record := &models.UserSearchDrRecord{
-			Name: param.Name,
-			Specialty: param.Specialty,
-			Gender: param.Gender,
-			City: param.City,
-			State: param.State,
-			Lat: param.Lat,
-			Lng: param.Lng,
-			Page: param.Page,
-			PageSize: param.PageSize,
-			Platform: param.Platform,
-			UserID: param.UserID,
+	record := &models.UserSearchDrRecord{
+		Name: param.Name,
+		Specialty: param.Specialty,
+		Gender: param.Gender,
+		City: param.City,
+		State: param.State,
+		Lat: param.Lat,
+		Lng: param.Lng,
+		Page: param.Page,
+		PageSize: param.PageSize,
+		Platform: param.Platform,
+		UserID: param.UserID,
+		CreatedDate: now,
+	}
+	_ = c.UserTrackService.AddSearchDrsRecord(record)
+
+	var records []models.DrSearchResultRecord
+	for i := 0; i < len(doctors); i ++ {
+		doctor := doctors[i]
+		records = append(records, models.DrSearchResultRecord{
+			Npi:         doctor.Npi,
+			Lat:         doctor.Lat,
+			Lng:         doctor.Lng,
+			Platform:    param.Platform,
+			UserID:      param.UserID,
 			CreatedDate: now,
-		}
-		_ = c.UserTrackService.AddSearchDrsRecord(record)
+		})
+	}
 
-		var records []models.DrSearchResultRecord
-		for i := 0; i < len(doctors); i ++ {
-			doctor := doctors[i]
-			records = append(records, models.DrSearchResultRecord{
-				Npi:         doctor.Npi,
-				Lat:         doctor.Lat,
-				Lng:         doctor.Lng,
-				Platform:    param.Platform,
-				UserID:      param.UserID,
-				CreatedDate: now,
-			})
-		}
-
-		if len(records) > 0 {
-			_ = c.UserTrackService.AddSearchDrResultRecords(records)
-		}
-	}()
+	if len(records) > 0 {
+		_ = c.UserTrackService.AddSearchDrResultRecords(records)
+	}
 }
 
 func (c *DoctorController) GetHotSearchDoctors()  {

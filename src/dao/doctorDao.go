@@ -131,13 +131,7 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 		eachPageSize := pageSize/2
 		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
 			" from (select * from doctors inner join (select id as Did from doctors where last_name like ? and specialty = ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
-			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi union select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
-			" from (select * from doctors inner join (select id as Did from doctors where first_name like ? and specialty = ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
 			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi",
-			lat, lat, lng,
-			lastName, doctor.Specialty,
-			doctor.State, doctor.City, genderList,
-			eachPageSize, (page - 1)*eachPageSize,
 			lat, lat, lng,
 			lastName, doctor.Specialty,
 			doctor.State, doctor.City, genderList,
@@ -147,13 +141,7 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 		eachPageSize := pageSize/2
 		d.engine.Raw("select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
 			" from (select * from doctors inner join (select id as Did from doctors where last_name like ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
-			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi union select G.lat, G.lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance, DL.*" +
-			" from (select * from doctors inner join (select id as Did from doctors where first_name like ? and state = ? and city = ? and gender in (?) limit ? offset ?) as D " +
 			"on D.Did = doctors.id) as DL, geos as G where DL.npi = G.npi",
-			lat, lat, lng,
-			lastName,
-			doctor.State, doctor.City, genderList,
-			eachPageSize, (page - 1)*eachPageSize,
 			lat, lat, lng,
 			lastName,
 			doctor.State, doctor.City, genderList,
