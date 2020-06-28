@@ -220,7 +220,7 @@ func (d *DoctorDao) GetSpecialty() []string {
 }
 
 func (d *DoctorDao) SearchDoctorsByNpiList(npiList []int) []*models.Doctor  {
-	var doctors []models.Doctor
+	var doctors []*models.Doctor
 	d.engine.Raw("select * from doctors where npi in (?)", npiList).Scan(&doctors)
 	return doctors
 }
@@ -237,7 +237,7 @@ func (d *DoctorDao) GetDoctorsNoAddress(page int , pageSize int) []*models.Docto
 	return docs
 }
 
-func (d *DoctorDao) UpdateDoctorAddress(doc models.Doctor) error  {
+func (d *DoctorDao) UpdateDoctorAddress(doc *models.Doctor) error  {
 	db := d.engine.Model(&doc).Update("address", doc.Address)
 	return db.Error
 }

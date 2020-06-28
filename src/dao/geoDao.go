@@ -44,7 +44,7 @@ func (d *GeoDao) GetNearByDoctorGeoInfo(lat float64, lng float64, page int, page
 //
 
 func (d *GeoDao) GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []int) []*models.GeoDistance {
-	var geos []models.GeoDistance
+	var geos []*models.GeoDistance
 	db := d.engine.Raw("select npi, lat, lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) +COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((?* 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance from geos  where npi in (?)", lat,lng, lng, npiList).Scan(&geos)
 
 	if db.Error != nil {
@@ -55,7 +55,7 @@ func (d *GeoDao) GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []i
 }
 
 func (d *GeoDao) GetUnInitList(page int, pageSize int) []*models.Geo {
-	var geos []models.Geo
+	var geos []*models.Geo
 	d.engine.Raw("select * from geos where lng = -100.445882 limit 1 OFFSET ?", (page - 1)*pageSize).Scan(&geos)
 
 	return geos

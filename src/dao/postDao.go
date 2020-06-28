@@ -20,7 +20,7 @@ func (d *PostDao) Add(post *models.Post) (error, int) {
 }
 
 func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []*models.Post {
-	var posts []models.Post
+	var posts []*models.Post
 
 	if postType > 0 {
 		d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Order("created_at desc").Find(&posts, "type = ?", postType)
@@ -32,7 +32,7 @@ func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []*mod
 }
 
 func (d *PostDao) GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post {
-	var posts []models.Post
+	var posts []*models.Post
 	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Where("user_id = ?", userId).Order("title", false).Find(&posts)
 
 	return posts

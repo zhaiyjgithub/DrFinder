@@ -68,8 +68,8 @@ func (d *CollectionDao) GetMyFavoriteDoctors(userId int, objectType int, page in
 	return doctors
 }
 
-func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post {
-	var posts []models.Post
+func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []*models.Post {
+	var posts []*models.Post
 	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("select * from posts where id in " +
 		"(select object_id from collections where user_id = ? and object_type = ?)", userId, objectType).Find(&posts)
 

@@ -175,8 +175,8 @@ func (c *PostController) GetPostByPage()  {
 
 	var postInfos []PostInfo
 	for i := 0; i < len(posts); i ++  {
-		post := &posts[i]
-		postUser := c.UserService.GetUserById(post.UserID)
+		post := posts[i]
+		postUser := c.UserService.GetUserById(post.ID)
 		answer, count := c.AnswerService.GetLastAnswer(post.ID)
 
 		var answerName string
@@ -248,7 +248,7 @@ func (c *PostController) GetMyPostByPage()  {
 
 	var postInfos []PostInfo
 	for i := 0; i < len(posts); i ++  {
-		post := &posts[i]
+		post := posts[i]
 		postUser := c.UserService.GetUserById(post.UserID)
 		answer, count := c.AnswerService.GetLastAnswer(post.ID)
 

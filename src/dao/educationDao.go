@@ -20,7 +20,7 @@ func (d *EducationDao) Add(edu *models.Education) error {
 }
 
 func (d *EducationDao) GetEducationByNpi(npi int) []*models.Education {
-	var edu []models.Education
+	var edu []*models.Education
 	db := d.engine.Where("npi = ?", npi).Find(&edu)
 	if db.Error != nil {
 		return nil

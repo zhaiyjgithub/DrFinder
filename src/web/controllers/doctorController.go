@@ -337,14 +337,14 @@ func (c *DoctorController) GetDoctorInfoWithNpi()  {
 
 	type DoctorInfo struct {
 		Npi int
-		Affiliation []models.Affiliation
-		Award []models.Award
-		Certification []models.Certification
-		Clinic []models.Clinical
-		Education []models.Education
+		Affiliation []*models.Affiliation
+		Award []*models.Award
+		Certification []*models.Certification
+		Clinic []*models.Clinical
+		Education []*models.Education
 		Geo models.Geo
 		Lang models.Lang
-		MemberShip []models.Membership
+		MemberShip []*models.Membership
 	}
 
 	var info = &DoctorInfo{

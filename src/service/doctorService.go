@@ -102,6 +102,6 @@ func (s *doctorService)GetDoctorsNoAddress(page int , pageSize int) []*models.Do
 	return s.dao.GetDoctorsNoAddress(page, pageSize)
 }
 
-func (s *doctorService) UpdateDoctorAddress(doc models.Doctor) error  {
+func (s *doctorService) UpdateDoctorAddress(doc *models.Doctor) error  {
 	return s.dao.UpdateDoctorAddress(doc)
 }

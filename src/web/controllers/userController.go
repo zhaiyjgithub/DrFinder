@@ -180,7 +180,7 @@ func (c *UserController) GetMyFavorite()  {
 
 		var postInfos []PostInfo
 		for i := 0; i < len(posts); i ++  {
-			post := &posts[i]
+			post := posts[i]
 			postUser := c.UserService.GetUserById(post.UserID)
 			answer, count := c.AnswerService.GetLastAnswer(post.ID)
 
