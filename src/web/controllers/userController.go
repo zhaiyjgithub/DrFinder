@@ -1,15 +1,13 @@
 package controllers
 
 import (
-	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/utils"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"gopkg.in/go-playground/validator.v9"
+	"io/ioutil"
 	"time"
 )
 
@@ -23,21 +21,7 @@ type UserController struct {
 	FeedbackService service.FeedbackService
 }
 
-var userValidate *validator.Validate
-
 func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
-	userValidate = validator.New()
-
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
-
 	b.Handle(iris.MethodPost, utils.CreateUser, "CreateUser")
 	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword", j.Serve)
 	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo", j.Serve)
@@ -46,6 +30,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite", j.Serve)
 	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddNewFeedback, "AddNewFeedback", j.Serve)
+	b.Handle(iris.MethodGet, "/GetDoctorList", "GetDoctorList")
 }
 
 func (c *UserController) CreateUser() {
@@ -55,7 +40,7 @@ func (c *UserController) CreateUser() {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -82,7 +67,7 @@ func (c *UserController) UpdatePassword() {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 
 	if err != nil {
 		return
@@ -104,7 +89,7 @@ func (c *UserController) UpdateUserInfo()  {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -281,4 +266,15 @@ func (c *UserController)DeleteMyFavorite()  {
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *UserController) GetDoctorList()  {
+	b, err := ioutil.ReadFile("./src/web/sources/test.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	body := string(b[:])
+
+	c.Ctx.Text(body)
 }

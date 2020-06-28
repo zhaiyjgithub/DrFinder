@@ -211,7 +211,7 @@ func (c *RegisterController) ResetPassword()  {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}

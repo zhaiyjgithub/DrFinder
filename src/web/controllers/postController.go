@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
@@ -10,7 +9,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"io/ioutil"
@@ -28,17 +26,6 @@ type PostController struct {
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
-
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
-
 	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost", j.Serve)
 	b.Handle(iris.MethodPost, utils.UpdatePost, "UpdatePost", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddLikes, "AddLikes", j.Serve)
@@ -49,6 +36,7 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetMyPostByPage, "GetMyPostByPage", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddAppendToPost, "AddAppendToPost", j.Serve)
 	b.Handle(iris.MethodPost, utils.GetAppendByPostID, "GetAppendByPostID", j.Serve)
+	b.Handle(iris.MethodPost, utils.DeletePostByIds, "DeletePostByIds", j.Serve)
 }
 
 func (c *PostController) UpdatePost()  {
@@ -142,6 +130,25 @@ func (c *PostController) DeletePost()  {
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *PostController) DeletePostByIds()  {
+	type Param struct {
+		IDs []int `validate:"gt=0"`
+		UserID int `validate:"gt=0"`
+	}
+
+	var p Param
+	err := utils.ValidateParam(c.Ctx, validate, &p)
+	if err != nil {
+		return
+	}
+
+	for _, ID := range p.IDs {
+		_ = c.Service.DeleteByUser(ID, p.UserID)
+	}
+
+	response.Success(c.Ctx, response.Successful, nil)
 }
 
 func (c *PostController) GetPostByPage()  {

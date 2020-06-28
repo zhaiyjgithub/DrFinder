@@ -59,7 +59,8 @@ const (
 	ImgPost = "/ImgPost"
 	GetMyPostByPage = "/GetMyPostByPage"
 	AddAppendToPost = "/AddAppendToPost"
-	 GetAppendByPostID = "/GetAppendByPostID"
+	GetAppendByPostID = "/GetAppendByPostID"
+	DeletePostByIds = "/DeletePostByIds"
 )
 
 const (

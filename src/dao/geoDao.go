@@ -53,3 +53,10 @@ func (d *GeoDao) GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []i
 
 	return geos
 }
+
+func (d *GeoDao) GetUnInitList(page int, pageSize int) []models.Geo {
+	var geos []models.Geo
+	d.engine.Raw("select * from geos where lng = -100.445882 limit 1 OFFSET ?", (page - 1)*pageSize).Scan(&geos)
+
+	return geos
+}

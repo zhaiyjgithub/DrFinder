@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -16,6 +18,7 @@ var (
 	//帖子路径正则表达式
 	threadItemExp = regexp.MustCompile(`"thread/[0123456789]+"`)
 )
+
 
 //ThreadItem 帖子数据
 type ThreadItem struct {
@@ -175,11 +178,30 @@ func work(url string) {
 }
 
 func main() {
-	// work("http://boards.4chan.org/s/")
-	pages := []string{"2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	for _, index := range pages {
-		work("http://boards.4chan.org/s/" + index + "/")
+	url := "http://localhost:8090/User/GetDoctorList"
+	res, err := http.Get(url)
+
+	if err!= nil {
+		log.Fatal(err)
 	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return
+	}
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		return
+	}
+
+	doc.Find("a").Each(func(i int, selection *goquery.Selection) {
+		apiName, ok := selection.Attr("href")
+		if ok && strings.HasPrefix(apiName, "/doctors/") && !strings.HasPrefix(apiName, "/doctors/search") {
+			fmt.Println(apiName)
+		}
+	})
 }
 
 

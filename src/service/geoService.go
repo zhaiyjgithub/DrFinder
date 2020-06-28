@@ -11,6 +11,7 @@ type GeoService interface {
 	GetGeoInfoByNpi(npi int) *models.Geo
 	GetNearByDoctorGeoInfo(lat float64, lng float64, page int, pageSize int) []models.GeoDistance
 	GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []int) []models.GeoDistance
+	GetUnInitList(page int, pageSize int) []models.Geo
 }
 
 type geoService struct {
@@ -35,4 +36,8 @@ func (s *geoService) GetNearByDoctorGeoInfo(lat float64, lng float64, page int, 
 
 func (s *geoService) GetDoctorGeoInfoByNpiList(lat float64, lng float64, npiList []int) []models.GeoDistance  {
 	return s.dao.GetDoctorGeoInfoByNpiList(lat, lng, npiList)
+}
+
+func (s *geoService) GetUnInitList(page int, pageSize int) []models.Geo  {
+	return s.dao.GetUnInitList(page, pageSize)
 }

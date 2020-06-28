@@ -16,22 +16,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	//j := jwt.New(jwt.Config{
-	//	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-	//		return conf.JWRTSecret, nil
-	//	},
-	//	SigningMethod: jwt.SigningMethodHS256,
-	//	ErrorHandler: func(ctx iris.Context, e error) {
-	//		response.Fail(ctx, response.Expire, e.Error(), nil)
-	//	},
-	//})
 
 	app:= iris.New()
-
-	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
-
-	//doctorParty := app.Party(utils.APIDoctor, j.Serve)
-
 	doctorParty := app.Party(utils.APIDoctor)
 	mvc.Configure(doctorParty, doctorMVC)
 

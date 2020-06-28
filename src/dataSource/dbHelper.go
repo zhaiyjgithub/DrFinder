@@ -23,74 +23,54 @@ var (
 	masterEngine *gorm.DB
 	cacheDB *bolt.DB
 	mongoEngine *mongo.Database
-	lock sync.Mutex
-	mongoLock sync.Mutex
+
+	masterDBOnce sync.Once
+	mongoDBOnce sync.Once
 )
 
 func InstanceMaster() *gorm.DB {
-	if masterEngine != nil {
-		return masterEngine
-	}
+	masterDBOnce.Do(func() {
+		var err error
+		c := conf.MasterDBConf
+		driveSource := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+			c.User, c.Pwd, c.Host, c.Port, c.DBName)
 
-	lock.Lock()
-	defer lock.Unlock()
+		masterEngine, err = gorm.Open(conf.DriverName,
+			driveSource)
 
-	if masterEngine != nil {
-		return masterEngine
-	}
+		if err != nil {
+			log.Fatal("dbhelper instance error")
+		}
 
-	c := conf.MasterDBConf
-	driveSource := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-		c.User, c.Pwd, c.Host, c.Port, c.DBName)
+		masterEngine.LogMode(true)
+	})
 
-	engine, err := gorm.Open(conf.DriverName,
-		driveSource)
-
-	if err != nil {
-		log.Fatal("dbhelper instance error")
-	}
-
-	engine.LogMode(true)
-	masterEngine = engine
-
-	return engine
+	return masterEngine
 }
 
 func InstanceMongoDB() *mongo.Database {
-	if mongoEngine != nil {
-		return mongoEngine
-	}
+	mongoDBOnce.Do(func() {
+		conn := fmt.Sprintf("mongodb://%s:%s@%s:%d/%s?", conf.MongoDBConf.User, conf.MongoDBConf.Pwd,
+			conf.MongoDBConf.Host, conf.MongoDBConf.Port, conf.MongoDBConf.DBName)
+		clientOptions := options.Client().ApplyURI(conn)
 
-	mongoLock.Lock()
-	defer mongoLock.Unlock()
+		ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
+		client, err := mongo.Connect(ctx, clientOptions)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	if mongoEngine != nil {
-		return mongoEngine
-	}
+		ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+		err = client.Ping(ctx, readpref.Primary())
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	conn := fmt.Sprintf("mongodb://%s:%s@%s:%d/%s?", conf.MongoDBConf.User, conf.MongoDBConf.Pwd,
-	conf.MongoDBConf.Host, conf.MongoDBConf.Port, conf.MongoDBConf.DBName)
+		fmt.Println("Connected to MongoDB!")
+		mongoEngine = client.Database(conf.MongoDBConf.DBName)
+	})
 
-	clientOptions := options.Client().ApplyURI(conn)
-
-	ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
-	client, err := mongo.Connect(ctx, clientOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-
-	ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Ping(ctx, readpref.Primary())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Connected to MongoDB!")
-	db := client.Database(conf.MongoDBConf.DBName)
-	mongoEngine = db
-
-	return db
+	return mongoEngine
 }
 
 func InstanceCacheDB() error {

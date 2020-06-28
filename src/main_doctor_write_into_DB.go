@@ -1,6 +1,7 @@
 package main
 
 import (
+	"DrFinder/src/dataSource"
 	"DrFinder/src/models"
 	"DrFinder/src/service"
 	"bufio"
@@ -15,8 +16,20 @@ import (
 )
 
 func main()  {
-	getSpecialty()
+	readNPICsv()
 }
+
+//type PfileDao struct {
+//	engine *gorm.DB
+//}
+//
+//func NewPfileDao(engine *gorm.DB) *PfileDao {
+//	return &PfileDao{engine:engine}
+//}
+//
+//func (d *PfileDao) AddPfile(p *models.Pfile)  {
+//	d.engine.Create(p)
+//}
 
 func getSpecialty()  {
 	spMap := make(map[string]string)
@@ -34,8 +47,72 @@ func getSpecialty()  {
 	}
 }
 
+func readNPICsv()  {
+	dao := NewPfileDao(dataSource.InstanceMaster())
+
+	csvFile, err := os.Open("./src/web/sources/npidata_pfile_20050523-20200510.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer csvFile.Close()
+	csvReader := csv.NewReader(csvFile)
+
+	count := 0
+	fmt.Println(time.Now())
+	for {
+		row, err := csvReader.Read()
+
+		if err == io.EOF {
+			fmt.Println("EOF time: ")
+			fmt.Println(time.Now())
+			break
+		} else if err != nil {
+			fmt.Println("pannic error: ")
+			fmt.Println(time.Now())
+			panic(err)
+		}
+
+		state := row[23]
+		if state == "NY" {
+			count = count + 1
+			npi := row[0]
+			firstName := row[6]
+			lastName := row[5]
+			midName := row[7]
+
+			firstAddr := row[20]
+			secondAddr := row[21]
+			city := row[22]
+			postalCode := row[24]
+			phone := row[26]
+			fax := row[27]
+			gender := row[42]
+
+			var pfile models.Pfile
+			pfile.Npi, _ = strconv.Atoi(npi)
+			pfile.FirstName = firstName
+			pfile.LastName = lastName
+			pfile.MidName = midName
+
+			pfile.FirstAddress = firstAddr
+			pfile.SecondAddress = secondAddr
+			pfile.City = city
+			pfile.State = state
+			pfile.PostalCode = postalCode
+			pfile.Phone = phone
+			pfile.Fax = fax
+			pfile.Gender = gender
+
+			if count > 20000 {
+				// inser many
+			}
+			dao.AddPfile(&pfile)
+		}
+	}
+}
+
 func readDoctorCsv()  {
-	csvFile, err := os.Open("./src/web/sources/physicians_al.csv")
+	csvFile, err := os.Open("./src/web/sources/npidata_pfile_20050523-20200510.csv")
 	if err != nil {
 		panic(err)
 	}

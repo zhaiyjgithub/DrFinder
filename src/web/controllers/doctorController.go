@@ -1,21 +1,16 @@
 package controllers
 
 import (
-	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/utils"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"gopkg.in/go-playground/validator.v9"
 	"time"
 
 	_ "github.com/kataras/iris/sessions/sessiondb/boltdb"
 )
-
-var validate *validator.Validate
 
 type DoctorController struct {
 	Ctx     iris.Context
@@ -33,18 +28,6 @@ type DoctorController struct {
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
-	validate = validator.New()
-
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
-
 	b.Handle(iris.MethodPost, utils.AddDoctor, "AddDoctor")
 	b.Handle(iris.MethodPost, utils.GetDoctorById, "GetDoctorById")
 	b.Handle(iris.MethodPost, utils.SearchDoctor, "SearchDoctor")
@@ -320,7 +303,13 @@ func (c *DoctorController) GetHotSearchDoctors()  {
 }
 
 func (c *DoctorController) GetRelatedDoctors()  {
-	doctors := c.Service.GetRelatedDoctors(nil)
+	var doc models.Doctor
+	err := utils.ValidateParam(c.Ctx, validate, &doc)
+	if err != nil {
+		return
+	}
+
+	doctors := c.Service.GetRelatedDoctors(&doc)
 	response.Success(c.Ctx, response.Successful, doctors)
 }
 

@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"strings"
+	"net/url"
+	"time"
 )
 
 type Address struct {
@@ -31,53 +33,56 @@ type Response struct {
 	} `json:"results"`
 }
 
-
-
 func main()  {
 	doctorService := service.NewDoctorService()
 	geoService := service.NewGeoService()
 
-	page := 1
-	pageSize := 90
+	page := 66489
+	pageSize := 1
 
 	for {
-		doctors := doctorService.GetDoctorByPage(page, pageSize)
-		page = page + 1
+		docs := doctorService.GetDoctorByPage(page, pageSize)
 
-		if len(doctors) == 0 {
+		if len(docs) == 0 {
 			fmt.Printf("finis request:  page Index: %d \n", page, )
-
 			return
 		}
+		doc := docs[0]
+		reverseAddressToGeo(doc, geoService, page)
+		time.Sleep(time.Millisecond*200)
 
-		reverseAddressToGeo(doctors, geoService)
+		page = page + 1
 	}
 }
 
-func reverseAddressToGeo(doctors []models.Doctor, service service.GeoService) {
-	url := "http://open.mapquestapi.com/geocoding/v1/batch?key=R1YKG7Kh243OBaRGeDt4MFwxHD4a47q8"
+func reverseAddressToGeo(doctor models.Doctor, service service.GeoService, page int) {
+//https://www.mapquestapi.com/geocoding/v1/address?key=KEY&inFormat=kvp&outFormat=json&location=1+dakota+dr%2C+Lake+Success%2C+NY%2C+11042&thumbMaps=false
+    doc := doctor
 
-	loc := &Location{}
-	for i := 0; i < len(doctors); i ++ {
-		d := doctors[i]
-		p := Address{
-			Street: d.Address,
-			City:   d.City,
-			State:  d.State,
-		}
-
-		loc.Locations = append(loc.Locations, p)
+    if len(doc.Address) == 0 {
+		return
 	}
 
-	m, _ := json.Marshal(loc)
+	baseUrl, err := url.Parse("https://www.mapquestapi.com/geocoding/v1/address?")
 
-	fmt.Println(string(m))
+	params := url.Values{}
+	params.Add("key", "lYrP4vF3Uk5zgTiGGuEzQGwGIVDGuy24")
+	params.Add("inFormat", "kvp")
+	params.Add("outFormat", "json")
+	params.Add("location",doc.Address)
 
-	res, err := http.Post(url, "application/json", strings.NewReader(string(m)))
+	//params.Add("json", locstr)
+	//params.Add("postalCode", "11042")
+	// Add Query Parameters to the URL
+	baseUrl.RawQuery = params.Encode() // Escape Query Parameters
+
+	fmt.Printf("Encoded URL is %q\n", baseUrl.String())
+	path := baseUrl.String()
+
+	res, err := http.Get(path)
 	if err != nil {
-		fmt.Println("-----------------")
-		fmt.Printf("request error: %v \n", err)
-		fmt.Println("-----------------")
+		fmt.Printf("page index: %d \n", page)
+		log.Fatal(err.Error())
 	}
 	defer res.Body.Close()
 
@@ -91,15 +96,16 @@ func reverseAddressToGeo(doctors []models.Doctor, service service.GeoService) {
 	var response Response
 	json.Unmarshal(body, &response)
 
-	for i := 0; i < len(response.Result); i ++ {
-		npi := doctors[i].Npi
-		fmt.Printf("npi: %d {%f, %f} \n", npi, response.Result[i].Locations[0].Geo.Lat, response.Result[i].Locations[0].Geo.Lng)
+	if len(response.Result) > 0 {
+		npi := doc.Npi
 
 		geo := &models.Geo{}
 		geo.Npi = npi
-		geo.Lat = response.Result[i].Locations[0].Geo.Lat
-		geo.Lng = response.Result[i].Locations[0].Geo.Lng
+		geo.Lat = response.Result[0].Locations[0].Geo.Lat
+		geo.Lng = response.Result[0].Locations[0].Geo.Lng
 
 		service.Add(geo)
+		fmt.Printf("page: %d - addr: %s - %v \n", page, doc.Address, geo)
+		fmt.Println(geo)
 	}
 }

@@ -6,10 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const UserActionColName = "useraction"
-const UserViewTimeColName = "userviewtime"
-const UserSearchDrsRecord = "usersearchdrsrecord"
-const SearchDrResultRecord = "searchdrresultrecord"
+const UserActionColName = "user_action"
+const UserViewTimeColName = "user_view_time"
+const UserSearchDrsRecord = "user_search_drs_record"
+const SearchDrResultRecord = "search_dr_result_record"
 
 type UserTrackDao struct {
 	engine *mongo.Database

@@ -35,4 +35,5 @@ type DoctorGeo struct {
 	SubSpecialty string
 	JobTitle     string
 	Summary      string
+	YearOfExperience string
 }

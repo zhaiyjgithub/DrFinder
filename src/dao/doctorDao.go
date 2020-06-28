@@ -160,10 +160,10 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 		d.engine.Raw("select G.lat, G.lng, G.distance, D.* from " +
 			"(select geos.npi as npi, geos.lat as lat, geos.lng as lng, ACOS(SIN((? * 3.1415) / 180 ) *SIN((lat * 3.1415) / 180 ) + COS((? * 3.1415) / 180 ) * COS((lat * 3.1415) / 180 ) *COS((? * 3.1415) / 180 - (lng * 3.1415) / 180 ) ) * 6380 as distance from geos " +
 			"order by distance  LIMIT ? offset ?) G , " +
-			"doctors D  where G.npi = D.npi and gender in (?) and city = ? and state = ? order by distance",
+			"doctors D  where G.npi = D.npi and gender in (?) and city = ? order by distance",
 			lat, lat, lng,
 			pageSize, (page - 1)*pageSize,
-			genderList, doctor.City, doctor.State).Scan(&doctorGeos)
+			genderList, doctor.City).Scan(&doctorGeos)
 	}
 
 	return doctorGeos
@@ -172,9 +172,26 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
 	var doctors []models.Doctor
 
-	d.engine.Limit(pageSize).Offset((page - 1) * pageSize).Find(&doctors)
+	//d.engine.Limit(pageSize).Offset((page - 1) * pageSize).Find(&doctors)
+	d.engine.Raw("select * from doctors where state = ? limit ? offset ?", "NY", pageSize, (page - 1)*pageSize).Scan(&doctors)
 
 	return doctors
+}
+
+func (d *DoctorDao) GetCity() []string {
+	var sps []string
+
+	rows, _ := d.engine.Raw("select specialty from doctors where state = 'NY' group by city").Rows()
+	defer rows.Close()
+
+	for rows.Next() {
+		var name string
+		rows.Scan(&name)
+
+		sps = append(sps, name)
+	}
+
+	return sps
 }
 
 func (d *DoctorDao) GetHotSearchDoctors() *[]models.Doctor {
@@ -187,8 +204,12 @@ func (d *DoctorDao) GetHotSearchDoctors() *[]models.Doctor {
 
 func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
 	var doctors []models.Doctor
-
-	d.engine.Limit(10).Offset(100).Find(&doctors)
+	d.engine.Raw("select * from doctors where specialty = ? and npi != ? and city = ? and state = ?",
+		relateDoctor.Specialty,
+		relateDoctor.Npi,
+		relateDoctor.City,
+		relateDoctor.State,
+		).Scan(&doctors)
 	return &doctors
 }
 
@@ -218,4 +239,23 @@ func (d *DoctorDao) SearchDoctorsByNpiList(npiList []int) []models.Doctor  {
 	d.engine.Raw("select * from doctors where npi in (?)", npiList).Scan(&doctors)
 
 	return doctors
+}
+
+func (d *DoctorDao) GetDoctorByNpi(npi int) models.Doctor {
+	var doctor models.Doctor
+	d.engine.Raw("select * from doctors where npi = ?", npi).Scan(&doctor)
+
+	return doctor
+}
+
+func (d *DoctorDao) GetDoctorsNoAddress(page int , pageSize int) []models.Doctor  {
+	var docs []models.Doctor
+	d.engine.Raw("select * from doctors where address = '' limit ? offset ?", pageSize, (page - 1)*pageSize).Scan(&docs)
+
+	return docs
+}
+
+func (d *DoctorDao) UpdateDoctorAddress(doc models.Doctor) error  {
+	db := d.engine.Model(&doc).Update("address", doc.Address)
+	return db.Error
 }
