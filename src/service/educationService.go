@@ -8,7 +8,7 @@ import (
 
 type EducationService interface {
 	Add(edu *models.Education) error
-	GetEducationByNpi(npi int) []models.Education
+	GetEducationByNpi(npi int) []*models.Education
 }
 
 type educationService struct {
@@ -23,7 +23,7 @@ func (s *educationService) Add(edu *models.Education) error  {
 	return s.dao.Add(edu)
 }
 
-func (s *educationService) GetEducationByNpi(npi int) []models.Education  {
+func (s *educationService) GetEducationByNpi(npi int) []*models.Education  {
 	return s.dao.GetEducationByNpi(npi)
 }
 

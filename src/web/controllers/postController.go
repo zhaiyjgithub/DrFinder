@@ -70,15 +70,12 @@ func (c *PostController) AddLikes()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.AddLike(param.PostID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
 	}else {
@@ -93,15 +90,12 @@ func (c *PostController) AddFavor()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.AddFavor(param.PostID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
 	}else {
@@ -116,15 +110,12 @@ func (c *PostController) DeletePost()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.DeleteByUser(param.ID, param.UserID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, response.NotFound, nil)
 	}else {
@@ -159,7 +150,6 @@ func (c *PostController) GetPostByPage()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return

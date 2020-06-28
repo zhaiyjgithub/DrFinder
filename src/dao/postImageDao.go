@@ -19,8 +19,8 @@ func (d *PostImageDao) CreatePostImage(postImage models.PostImage) error {
 	return db.Error
 }
 
-func (d *PostImageDao) GetImageByPostId(postId int) []models.PostImage {
-	var postImages []models.PostImage
+func (d *PostImageDao) GetImageByPostId(postId int) []*models.PostImage {
+	var postImages []*models.PostImage
 
 	d.engine.Where("post_id = ?", postId).Find(&postImages)
 

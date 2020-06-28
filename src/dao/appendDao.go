@@ -19,8 +19,8 @@ func (d *AppendDao) AddAppend(append *models.Append) error {
 	return db.Error
 }
 
-func (d *AppendDao) GetAppends(postId int) []models.Append {
-	var appends []models.Append
+func (d *AppendDao) GetAppends(postId int) []*models.Append {
+	var appends []*models.Append
 	d.engine.Where("post_id = ?", postId).Find(&appends)
 
 	return appends

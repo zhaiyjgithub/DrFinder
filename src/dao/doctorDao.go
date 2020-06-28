@@ -27,7 +27,6 @@ func (d *DoctorDao) Add(doctor *models.Doctor) bool  {
 func (d *DoctorDao) GetDoctorById(id int)  *models.Doctor  {
 	var doctor models.Doctor
 	db := d.engine.Where("id = ?", id).First(&doctor)
-
 	if db.Error != nil {
 		return nil
 	}else {
@@ -38,7 +37,6 @@ func (d *DoctorDao) GetDoctorById(id int)  *models.Doctor  {
 func (d *DoctorDao) GetDoctorBySpecialty(specialty string) *models.Doctor  {
 	var doctor models.Doctor
 	db:= d.engine.Where("specialty LIKE ?", specialty).First(&doctor)
-
 	if db.Error != nil {
 		return  nil
 	}
@@ -46,17 +44,15 @@ func (d *DoctorDao) GetDoctorBySpecialty(specialty string) *models.Doctor  {
 	return &doctor
 }
 
-func (d *DoctorDao) SearchDoctor(doctor *models.Doctor) []models.Doctor  {
-	var doctors []models.Doctor
+func (d *DoctorDao) SearchDoctor(doctor *models.Doctor) []*models.Doctor  {
+	var doctors []*models.Doctor
 	d.engine.Where(doctor).Find(&doctors)
-
 	return doctors
 }
 
 func (d *DoctorDao) UpdateDoctorById(newDoctor *models.Doctor) error {
 	var doctor models.Doctor
 	db:= d.engine.Where("id = ?", newDoctor.ID).First(&doctor)
-
 	if db.Error != nil {
 		return db.Error
 	}
@@ -69,7 +65,6 @@ func (d *DoctorDao) UpdateDoctorById(newDoctor *models.Doctor) error {
 func (d *DoctorDao) UpdateDoctorInfo(info *models.Doctor) error  {
 	var doctor models.Doctor
 	db := d.engine.Where("id = ?", info.ID).First(&doctor)
-
 	if db.Error != nil {
 		return db.Error
 	}
@@ -85,7 +80,6 @@ func (d *DoctorDao) DeleteDoctorById(id int) bool {
 
 	if doctor.ID > 0 {
 		db:= d.engine.Delete(&doctor)
-
 		if db.Error != nil {
 			return false
 		}
@@ -96,8 +90,8 @@ func (d *DoctorDao) DeleteDoctorById(id int) bool {
 	return false
 }
 
-func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor {
-	var doctors []models.Doctor
+func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []*models.Doctor {
+	var doctors []*models.Doctor
 
 	firstName := fmt.Sprintf("%%%s%%", doctor.FirstName)
 	lastName := fmt.Sprintf("%%%s%%", doctor.LastName)
@@ -116,8 +110,8 @@ func (d *DoctorDao) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize
 	return doctors
 }
 
-func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo  {
-	var doctorGeos []models.DoctorGeo
+func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []*models.DoctorGeo  {
+	var doctorGeos []*models.DoctorGeo
 	var genderList []string
 
 	lastName := fmt.Sprintf("%s%%", doctor.LastName)
@@ -169,12 +163,9 @@ func (d *DoctorDao) FindDoctorByPage(doctor *models.Doctor, lat float64, lng flo
 	return doctorGeos
 }
 
-func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
-	var doctors []models.Doctor
-
-	//d.engine.Limit(pageSize).Offset((page - 1) * pageSize).Find(&doctors)
-	d.engine.Raw("select * from doctors where state = ? limit ? offset ?", "NY", pageSize, (page - 1)*pageSize).Scan(&doctors)
-
+func (d *DoctorDao) GetDoctorByPage(page int, pageSize int) []*models.Doctor  {
+	var doctors []*models.Doctor
+	d.engine.Limit(pageSize).Offset((page - 1) * pageSize).Find(&doctors)
 	return doctors
 }
 
@@ -186,31 +177,28 @@ func (d *DoctorDao) GetCity() []string {
 
 	for rows.Next() {
 		var name string
-		rows.Scan(&name)
-
+		_ = rows.Scan(&name)
 		sps = append(sps, name)
 	}
 
 	return sps
 }
 
-func (d *DoctorDao) GetHotSearchDoctors() *[]models.Doctor {
-	var doctors []models.Doctor
-
+func (d *DoctorDao) GetHotSearchDoctors() []*models.Doctor {
+	var doctors []*models.Doctor
 	d.engine.Limit(50).Offset(0).Find(&doctors)
-
-	return &doctors
+	return doctors
 }
 
-func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
-	var doctors []models.Doctor
+func (d *DoctorDao) GetRelatedDoctors(relateDoctor *models.Doctor) []*models.Doctor {
+	var doctors []*models.Doctor
 	d.engine.Raw("select * from doctors where specialty = ? and npi != ? and city = ? and state = ?",
 		relateDoctor.Specialty,
 		relateDoctor.Npi,
 		relateDoctor.City,
 		relateDoctor.State,
 		).Scan(&doctors)
-	return &doctors
+	return doctors
 }
 
 func (d *DoctorDao) GetDoctorStarStatus(userId int, npi int) bool {
@@ -219,39 +207,33 @@ func (d *DoctorDao) GetDoctorStarStatus(userId int, npi int) bool {
 
 func (d *DoctorDao) GetSpecialty() []string {
 	var sps []string
-
 	rows, _ := d.engine.Raw("select specialty from doctors").Rows()
 	defer rows.Close()
 
 	for rows.Next() {
 		var name string
-		rows.Scan(&name)
-
+		_ = rows.Scan(&name)
 		sps = append(sps, name)
 	}
 
 	return sps
 }
 
-func (d *DoctorDao) SearchDoctorsByNpiList(npiList []int) []models.Doctor  {
+func (d *DoctorDao) SearchDoctorsByNpiList(npiList []int) []*models.Doctor  {
 	var doctors []models.Doctor
-
 	d.engine.Raw("select * from doctors where npi in (?)", npiList).Scan(&doctors)
-
 	return doctors
 }
 
-func (d *DoctorDao) GetDoctorByNpi(npi int) models.Doctor {
-	var doctor models.Doctor
+func (d *DoctorDao) GetDoctorByNpi(npi int) *models.Doctor {
+	var doctor *models.Doctor
 	d.engine.Raw("select * from doctors where npi = ?", npi).Scan(&doctor)
-
 	return doctor
 }
 
-func (d *DoctorDao) GetDoctorsNoAddress(page int , pageSize int) []models.Doctor  {
-	var docs []models.Doctor
+func (d *DoctorDao) GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor  {
+	var docs []*models.Doctor
 	d.engine.Raw("select * from doctors where address = '' limit ? offset ?", pageSize, (page - 1)*pageSize).Scan(&docs)
-
 	return docs
 }
 

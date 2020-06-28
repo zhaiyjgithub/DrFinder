@@ -31,9 +31,7 @@ func (c *AnswerController) AddAnswer()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
@@ -45,7 +43,6 @@ func (c *AnswerController) AddAnswer()  {
 	answer.Likes = 0
 
 	err = c.Service.AddAnswer(&answer)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
@@ -60,15 +57,12 @@ func (c *AnswerController) DeleteById()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.DeleteByUser(param.ID, param.UserID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "", nil)
 	}else {
@@ -83,15 +77,12 @@ func (c *AnswerController) AddAnswerLikes()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.AddLikes(param.AnswerID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "", nil)
 	}else {
@@ -108,9 +99,7 @@ func (c *AnswerController) GetAnswerListByPage()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}

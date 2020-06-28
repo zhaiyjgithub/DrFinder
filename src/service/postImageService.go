@@ -8,7 +8,7 @@ import (
 
 type PostImageService interface {
 	CreatePostImage(postImage models.PostImage) error
-	GetImageByPostId(postId int) []models.PostImage
+	GetImageByPostId(postId int) []*models.PostImage
 }
 
 type postImageService struct {
@@ -23,7 +23,7 @@ func (s *postImageService) CreatePostImage(postImage models.PostImage) error {
 	return s.dao.CreatePostImage(postImage)
 }
 
-func (s *postImageService) GetImageByPostId(postId int) []models.PostImage {
+func (s *postImageService) GetImageByPostId(postId int) []*models.PostImage {
 	return s.dao.GetImageByPostId(postId)
 }
 

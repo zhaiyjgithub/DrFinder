@@ -8,7 +8,7 @@ import (
 
 type AppendService interface {
 	AddAppend(append *models.Append) error
-	GetAppends(postId int) []models.Append
+	GetAppends(postId int) []*models.Append
 }
 
 type appendService struct {
@@ -23,7 +23,7 @@ func (s *appendService)AddAppend(append *models.Append) error  {
 	return s.dao.AddAppend(append)
 }
 
-func (s *appendService)GetAppends(postId int) []models.Append  {
+func (s *appendService)GetAppends(postId int) []*models.Append  {
 	return s.dao.GetAppends(postId)
 }
 

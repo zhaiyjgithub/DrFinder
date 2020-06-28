@@ -41,7 +41,6 @@ func (c *UserController) CreateUser() {
 
 	var param Param
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
@@ -51,7 +50,6 @@ func (c *UserController) CreateUser() {
 	user.Password = param.Password
 
 	err = c.UserService.CreateUser(&user)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
@@ -68,13 +66,11 @@ func (c *UserController) UpdatePassword() {
 
 	var param Param
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.UserService.UpdatePassword(param.Email, param.OldPwd, param.NewPwd)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "email or old password is wrong", nil)
 	}else {
