@@ -16,3 +16,4 @@
 *.DS_Store
 
 go.sum
+src/main_*
