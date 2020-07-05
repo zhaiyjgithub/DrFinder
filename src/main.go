@@ -7,7 +7,6 @@ import (
 	"DrFinder/src/web/controllers"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -142,13 +141,4 @@ func userTrackMVC(app *mvc.Application)  {
 		)
 
 	app.Handle(new(controllers.UserTrackController))
-}
-
-func testLog()  {
-	log := logrus.New()
-
-	log.WithFields(logrus.Fields{
-		"animal": "walrus",
-		"size": 10,
-	}).Info("A group of walrus emerges from the ocean")
 }

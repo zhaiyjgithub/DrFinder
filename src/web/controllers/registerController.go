@@ -168,12 +168,12 @@ func (c *RegisterController) SignIn()  {
 		tokenString, _ := token.SignedString(conf.JWRTSecret)
 
 		type UserInfo struct {
-			User models.User
+			*models.User
 			Token string
 		}
 
 		var userInfo UserInfo
-		userInfo.User = *user
+		userInfo.User = user
 		userInfo.Token = tokenString
 		response.Success(c.Ctx, "login success", userInfo)
 	}
