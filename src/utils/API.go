@@ -37,6 +37,7 @@ const (
 	SignIn = "/SignIn"
 	VerifyEmail = "/VerifyEmail"
 	HeaderImg = "/HeaderImg"
+	DownloadFile = "/DownloadFile"
 )
 
 const (

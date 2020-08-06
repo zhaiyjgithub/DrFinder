@@ -10,6 +10,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
+	"io/ioutil"
 	"time"
 )
 
@@ -46,6 +47,7 @@ func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.AddFavorite, "AddFavorite", j.Serve)
 	b.Handle(iris.MethodPost, utils.DeleteMyFavorite, "DeleteMyFavorite", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddNewFeedback, "AddNewFeedback", j.Serve)
+	b.Handle(iris.MethodGet, "/GetDoctorList", "GetDoctorList")
 }
 
 func (c *UserController) CreateUser() {
@@ -281,4 +283,15 @@ func (c *UserController)DeleteMyFavorite()  {
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *UserController) GetDoctorList()  {
+	b, err := ioutil.ReadFile("./src/web/sources/test.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	body := string(b[:])
+
+	c.Ctx.Text(body)
 }

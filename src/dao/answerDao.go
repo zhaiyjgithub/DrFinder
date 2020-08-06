@@ -15,7 +15,6 @@ func NewAnswerDao(engine *gorm.DB) *AnswerDao {
 
 func (d *AnswerDao) AddAnswer(answer *models.Answer) error {
 	db := d.engine.Create(answer)
-
 	return db.Error
 }
 

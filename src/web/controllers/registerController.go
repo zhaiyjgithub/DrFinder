@@ -40,6 +40,11 @@ func (c *RegisterController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.ResetPassword, "ResetPassword")
 	b.Handle(iris.MethodPost, utils.VerifyEmail, "VerifyEmail")
 	b.Handle(iris.MethodGet, utils.HeaderImg, "HeaderImg")
+	b.Handle(iris.MethodGet, utils.DownloadFile, "DownloadFile")
+}
+
+func (c *RegisterController) DownloadFile()  {
+	//
 }
 
 func (c *RegisterController) HeaderImg()  {

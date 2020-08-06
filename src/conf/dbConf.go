@@ -14,7 +14,7 @@ var MasterDBConf = DBConf{
 	Host:"127.0.0.1",
 	Port: 3306,
 	User:"root",
-	Pwd: "123456",
+	Pwd: "12345678",
 	DBName:"drfinder",
 }
 
@@ -23,5 +23,5 @@ var MongoDBConf = DBConf{
 	Port: 27017,
 	User: "zack",
 	Pwd: "123456",
-	DBName: "user",
+	DBName: "usadoctors",
 }
