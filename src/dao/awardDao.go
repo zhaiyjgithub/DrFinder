@@ -19,8 +19,8 @@ func (d *AwardDao) Add(award *models.Award) error {
 	return db.Error
 }
 
-func (d *AwardDao) GetAwardByNpi(npi int) []models.Award {
-	var award []models.Award
+func (d *AwardDao) GetAwardByNpi(npi int) []*models.Award {
+	var award []*models.Award
 
 	db := d.engine.Where("npi = ?", npi).Find(&award)
 

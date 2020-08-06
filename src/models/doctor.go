@@ -27,6 +27,8 @@ type Doctor struct {
 	SubSpecialty string `gorm:"column:sub_specialty"`
 	JobTitle     string `gorm:"column:job_title"`
 	Summary      string `gorm:"column:summary"`
+	Lang         string `gorm:"column:lang"`
+	YearOfExperience string `gorm:"column:year_of_experience"`
 }
 
 // TableName sets the insert table name for this struct type

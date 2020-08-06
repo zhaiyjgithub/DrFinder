@@ -21,8 +21,8 @@ func (d *AffiliationDao) Add(affiliation *models.Affiliation) error {
 	return db.Error
 }
 
-func (d *AffiliationDao) GetAffiliationByNpi(npi int) []models.Affiliation {
-	var affiliation []models.Affiliation
+func (d *AffiliationDao) GetAffiliationByNpi(npi int) []*models.Affiliation {
+	var affiliation []*models.Affiliation
 	db := d.engine.Where("npi = ?", npi).Find(&affiliation)
 	
 	if db.Error != nil {

@@ -61,7 +61,6 @@ func (c *RegisterController) SendVerificationCode() {
 
 	var param Param
 	err := utils.ValidateParam(c.Ctx, registerValidate, &param)
-
 	if err != nil  {
 		return
 	}
@@ -74,7 +73,7 @@ func (c *RegisterController) SendVerificationCode() {
 	}
 
 	cb, _ := json.Marshal(vcode)
-	err = dataSource.Save(param.Email, string(cb))
+	_ = dataSource.Save(param.Email, string(cb))
 
 	err = sendEmail(param.Email, vcode.Value)
 	if err != nil {
@@ -95,13 +94,11 @@ func (c *RegisterController) Register() {
 	
 	var param Param
 	err := utils.ValidateParam(c.Ctx, registerValidate, &param)
-
 	if err != nil {
 		return
 	}
 
 	_, err = c.Service.GetUserByEmail(param.Email)
-
 	if err == nil {
 		response.Fail(c.Ctx, response.IsExist, "This email has been registered", nil)
 	}
@@ -165,7 +162,6 @@ func (c *RegisterController) SignIn()  {
 	}
 
 	user, err := c.Service.GetUserByEmail(param.Email)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "not exist", nil)
 	}else if user.Password != param.Password {
@@ -174,16 +170,15 @@ func (c *RegisterController) SignIn()  {
 		token := jwt.NewTokenWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"dispatch_time": time.Now().Format(conf.TimeFormat),
 		})
-
 		tokenString, _ := token.SignedString(conf.JWRTSecret)
 
 		type UserInfo struct {
-			User models.User
+			*models.User
 			Token string
 		}
 
 		var userInfo UserInfo
-		userInfo.User = *user
+		userInfo.User = user
 		userInfo.Token = tokenString
 		response.Success(c.Ctx, "login success", userInfo)
 	}
@@ -216,7 +211,7 @@ func (c *RegisterController) ResetPassword()  {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}

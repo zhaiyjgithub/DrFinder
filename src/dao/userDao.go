@@ -42,7 +42,6 @@ func (d *UserDao) UpdateUser(newUser *models.User) error {
 	if db.Error != nil {
 		return db.Error
 	}
-
 	db = d.engine.Model(&user).Update(newUser)
 
 	return db.Error
@@ -55,7 +54,6 @@ func (d *UserDao) DeleteUserById(id int) error {
 
 	var user models.User
 	user.ID = id
-
 	db := d.engine.Delete(&user)
 
 	return db.Error

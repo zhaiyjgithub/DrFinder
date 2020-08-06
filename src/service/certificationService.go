@@ -8,7 +8,7 @@ import (
 
 type CertificationService interface {
 	Add(cer *models.Certification) error
-	GetCertificationByNpi(npi int) []models.Certification
+	GetCertificationByNpi(npi int) []*models.Certification
 }
 
 type certificationService struct {
@@ -23,7 +23,7 @@ func (s *certificationService) Add(cer *models.Certification) error {
 	return s.dao.Add(cer)
 }
 
-func (s *certificationService) GetCertificationByNpi(npi int) []models.Certification  {
+func (s *certificationService) GetCertificationByNpi(npi int) []*models.Certification  {
 	return s.dao.GetCertificationByNpi(npi)
 }
 

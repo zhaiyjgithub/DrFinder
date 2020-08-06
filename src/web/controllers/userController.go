@@ -1,15 +1,12 @@
 package controllers
 
 import (
-	"DrFinder/src/conf"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
 	"DrFinder/src/utils"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"time"
 )
@@ -24,21 +21,7 @@ type UserController struct {
 	FeedbackService service.FeedbackService
 }
 
-var userValidate *validator.Validate
-
 func (c *UserController) BeforeActivation(b mvc.BeforeActivation)  {
-	userValidate = validator.New()
-
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
-
 	b.Handle(iris.MethodPost, utils.CreateUser, "CreateUser")
 	b.Handle(iris.MethodPost, utils.UpdatePassword, "UpdatePassword", j.Serve)
 	b.Handle(iris.MethodPost, utils.UpdateUserInfo, "UpdateUserInfo", j.Serve)
@@ -57,8 +40,7 @@ func (c *UserController) CreateUser() {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
-
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -68,7 +50,6 @@ func (c *UserController) CreateUser() {
 	user.Password = param.Password
 
 	err = c.UserService.CreateUser(&user)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
@@ -84,14 +65,12 @@ func (c *UserController) UpdatePassword() {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
-
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
 
 	err = c.UserService.UpdatePassword(param.Email, param.OldPwd, param.NewPwd)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "email or old password is wrong", nil)
 	}else {
@@ -106,7 +85,7 @@ func (c *UserController) UpdateUserInfo()  {
 	}
 
 	var param Param
-	err := utils.ValidateParam(c.Ctx, userValidate, &param)
+	err := utils.ValidateParam(c.Ctx, validate, &param)
 	if err != nil {
 		return
 	}
@@ -201,7 +180,7 @@ func (c *UserController) GetMyFavorite()  {
 
 		var postInfos []PostInfo
 		for i := 0; i < len(posts); i ++  {
-			post := &posts[i]
+			post := posts[i]
 			postUser := c.UserService.GetUserById(post.UserID)
 			answer, count := c.AnswerService.GetLastAnswer(post.ID)
 

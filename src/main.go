@@ -7,7 +7,6 @@ import (
 	"DrFinder/src/web/controllers"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -16,22 +15,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	//j := jwt.New(jwt.Config{
-	//	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-	//		return conf.JWRTSecret, nil
-	//	},
-	//	SigningMethod: jwt.SigningMethodHS256,
-	//	ErrorHandler: func(ctx iris.Context, e error) {
-	//		response.Fail(ctx, response.Expire, e.Error(), nil)
-	//	},
-	//})
 
 	app:= iris.New()
-
-	//app.RegisterView(iris.HTML("./src/web/templates/", ".html"))
-
-	//doctorParty := app.Party(utils.APIDoctor, j.Serve)
-
 	doctorParty := app.Party(utils.APIDoctor)
 	mvc.Configure(doctorParty, doctorMVC)
 
@@ -156,13 +141,4 @@ func userTrackMVC(app *mvc.Application)  {
 		)
 
 	app.Handle(new(controllers.UserTrackController))
-}
-
-func testLog()  {
-	log := logrus.New()
-
-	log.WithFields(logrus.Fields{
-		"animal": "walrus",
-		"size": 10,
-	}).Info("A group of walrus emerges from the ocean")
 }

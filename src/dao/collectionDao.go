@@ -26,8 +26,8 @@ func (d *CollectionDao) Add(userId int, objectID int, objectType int) error {
 	return  errors.New("is existing")
 }
 
-func (d *CollectionDao) GetCollections(userId int, objectType int) []models.Collection {
-	var collections []models.Collection
+func (d *CollectionDao) GetCollections(userId int, objectType int) []*models.Collection {
+	var collections []*models.Collection
 
 	db := d.engine.Where("user_id = ? AND object_type = ?", userId, objectType).Find(&collections)
 
@@ -60,16 +60,16 @@ func (d *CollectionDao) Delete(userId int, objectID int, objectType int) error {
 	return db.Error
 }
 
-func (d *CollectionDao) GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []models.Doctor {
-	var doctors []models.Doctor
+func (d *CollectionDao) GetMyFavoriteDoctors(userId int, objectType int, page int, pageSize int) []*models.Doctor {
+	var doctors []*models.Doctor
 	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("SELECT * from doctors WHERE npi in " +
 		"(SELECT object_id FROM collections WHERE user_id = ? and object_type = ?)", userId, objectType).Find(&doctors)
 
 	return doctors
 }
 
-func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []models.Post {
-	var posts []models.Post
+func (d *CollectionDao) GetMyFavoritePosts(userId int, objectType int, page int, pageSize int) []*models.Post {
+	var posts []*models.Post
 	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Raw("select * from posts where id in " +
 		"(select object_id from collections where user_id = ? and object_type = ?)", userId, objectType).Find(&posts)
 

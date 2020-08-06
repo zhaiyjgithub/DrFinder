@@ -10,17 +10,20 @@ type DoctorService interface {
 	Add(doctor *models.Doctor) bool
 	GetDoctorById(id int) *models.Doctor
 	GetDoctorBySpecialty(specialty string) *models.Doctor
-	SearchDoctor(doctor *models.Doctor) []models.Doctor
+	SearchDoctor(doctor *models.Doctor) []*models.Doctor
 	UpdateDoctorById(doctor *models.Doctor) error
 	UpdateDoctorInfo(info *models.Doctor) error
 	DeleteDoctorById(id int) bool
-	SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor
-	GetDoctorByPage(page int, pageSize int) []models.Doctor
-	GetHotSearchDoctors() *[]models.Doctor
-	GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor
+	SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []*models.Doctor
+	GetDoctorByPage(page int, pageSize int) []*models.Doctor
+	GetHotSearchDoctors() []*models.Doctor
+	GetRelatedDoctors(relateDoctor *models.Doctor) []*models.Doctor
 	GetSpecialty() []string
-	SearchDoctorsByNpiList(npiList []int) []models.Doctor
-	FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo
+	SearchDoctorsByNpiList(npiList []int) []*models.Doctor
+	FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []*models.DoctorGeo
+	GetDoctorByNpi(npi int) *models.Doctor
+	GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor
+	UpdateDoctorAddress(doc *models.Doctor) error
 }
 
 type doctorService struct {
@@ -47,7 +50,7 @@ func (s *doctorService) GetDoctorBySpecialty(specialty string) *models.Doctor  {
 	return s.dao.GetDoctorBySpecialty(specialty)
 }
 
-func (s *doctorService) SearchDoctor(doctor *models.Doctor) []models.Doctor {
+func (s *doctorService) SearchDoctor(doctor *models.Doctor) []*models.Doctor {
 	return s.dao.SearchDoctor(doctor)
 }
 
@@ -63,19 +66,19 @@ func (s *doctorService) DeleteDoctorById(id int) bool  {
 	return s.dao.DeleteDoctorById(id)
 }
 
-func (s *doctorService) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []models.Doctor  {
+func (s *doctorService) SearchDoctorByPage(doctor *models.Doctor, page int, pageSize int) []*models.Doctor  {
 	return s.dao.SearchDoctorByPage(doctor, page, pageSize)
 }
 
-func (s *doctorService) GetDoctorByPage(page int, pageSize int) []models.Doctor  {
+func (s *doctorService) GetDoctorByPage(page int, pageSize int) []*models.Doctor  {
 	return s.dao.GetDoctorByPage(page, pageSize)
 }
 
-func (s *doctorService) GetHotSearchDoctors() *[]models.Doctor {
+func (s *doctorService) GetHotSearchDoctors() []*models.Doctor {
 	return s.dao.GetHotSearchDoctors()
 }
 
-func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) *[]models.Doctor {
+func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) []*models.Doctor {
 	return s.dao.GetRelatedDoctors(relateDoctor)
 }
 
@@ -83,10 +86,22 @@ func (s *doctorService) GetSpecialty() []string {
 	return s.dao.GetSpecialty()
 }
 
-func (s *doctorService) SearchDoctorsByNpiList(npiList []int) []models.Doctor  {
+func (s *doctorService) SearchDoctorsByNpiList(npiList []int) []*models.Doctor  {
 	return s.dao.SearchDoctorsByNpiList(npiList)
 }
 
-func (s *doctorService) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []models.DoctorGeo   {
+func (s *doctorService) FindDoctorByPage(doctor *models.Doctor, lat float64, lng float64, page int, pageSize int) []*models.DoctorGeo   {
 	return s.dao.FindDoctorByPage(doctor, lat, lng, page, pageSize)
+}
+
+func (s *doctorService) GetDoctorByNpi(npi int) *models.Doctor  {
+	return s.dao.GetDoctorByNpi(npi)
+}
+
+func (s *doctorService)GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor  {
+	return s.dao.GetDoctorsNoAddress(page, pageSize)
+}
+
+func (s *doctorService) UpdateDoctorAddress(doc *models.Doctor) error  {
+	return s.dao.UpdateDoctorAddress(doc)
 }

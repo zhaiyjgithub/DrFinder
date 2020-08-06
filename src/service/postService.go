@@ -8,13 +8,13 @@ import (
 
 type PostService interface {
 	Add(post *models.Post) (error, int)
-	GetPostListByPage(postType int, page int, pageSize int) []models.Post
+	GetPostListByPage(postType int, page int, pageSize int) []*models.Post
 	Delete(id int) error
 	Update(newPost *models.Post) error
 	AddLike(id int) error
 	AddFavor(id int) error
 	DeleteByUser(id int, userId int) error
-	GetMyPostListByPage(userId int, page int, pageSize int) []models.Post
+	GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post
 }
 
 
@@ -30,7 +30,7 @@ func (s *postService) Add(post *models.Post) (error, int)  {
 	return s.dao.Add(post)
 }
 
-func (s *postService) GetPostListByPage(postType int, page int, pageSize int) []models.Post  {
+func (s *postService) GetPostListByPage(postType int, page int, pageSize int) []*models.Post  {
 	return s.dao.GetPostListByPage(postType, page, pageSize)
 }
 
@@ -54,6 +54,6 @@ func (s *postService) DeleteByUser(id int, userId int) error  {
 	return s.dao.DeleteByUser(id, userId)
 }
 
-func (s *postService) GetMyPostListByPage(userId int, page int, pageSize int) []models.Post {
+func (s *postService) GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post {
 	return s.dao.GetMyPostListByPage(userId, page, pageSize)
 }

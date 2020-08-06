@@ -1,12 +1,10 @@
 package controllers
 
 import (
-	"DrFinder/src/conf"
-	"DrFinder/src/utils"
 	"DrFinder/src/models"
 	"DrFinder/src/response"
 	"DrFinder/src/service"
-	"github.com/iris-contrib/middleware/jwt"
+	"DrFinder/src/utils"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"time"
@@ -19,16 +17,6 @@ type AnswerController struct {
 }
 
 func (c *AnswerController) BeforeActivation(b mvc.BeforeActivation)  {
-	j := jwt.New(jwt.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return conf.JWRTSecret, nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, e error) {
-			response.Fail(ctx, response.Expire, e.Error(), nil)
-		},
-	})
-
 	b.Handle(iris.MethodPost, utils.AddAnswer, "AddAnswer", j.Serve)
 	b.Handle(iris.MethodPost, utils.DeleteDoctorById, "DeleteById", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddAnswerLikes, "AddAnswerLikes", j.Serve)
@@ -43,9 +31,7 @@ func (c *AnswerController) AddAnswer()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
@@ -57,7 +43,6 @@ func (c *AnswerController) AddAnswer()  {
 	answer.Likes = 0
 
 	err = c.Service.AddAnswer(&answer)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
@@ -72,15 +57,12 @@ func (c *AnswerController) DeleteById()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.DeleteByUser(param.ID, param.UserID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "", nil)
 	}else {
@@ -95,15 +77,12 @@ func (c *AnswerController) AddAnswerLikes()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}
 
 	err = c.Service.AddLikes(param.AnswerID)
-
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, "", nil)
 	}else {
@@ -120,9 +99,7 @@ func (c *AnswerController) GetAnswerListByPage()  {
 	}
 
 	var param Param
-
 	err := utils.ValidateParam(c.Ctx, validate, &param)
-
 	if err != nil {
 		return
 	}

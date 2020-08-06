@@ -10,7 +10,7 @@ type AnswerService interface {
 	AddAnswer(answer *models.Answer) error
 	DeleteByUser(id int, userId int) error
 	AddLikes(id int) error
-	GetAnswerListByPage(postId int, page int, pageSize int) []models.Answer
+	GetAnswerListByPage(postId int, page int, pageSize int) []*models.Answer
 	GetLastAnswer(postId int) (*models.Answer, int)
 }
 
@@ -34,7 +34,7 @@ func (s *answerService) AddLikes(id int) error   {
 	return s.dao.AddLikes(id)
 }
 
-func (s *answerService) GetAnswerListByPage(postId int, page int, pageSize int) []models.Answer  {
+func (s *answerService) GetAnswerListByPage(postId int, page int, pageSize int) []*models.Answer  {
 	return s.dao.GetAnswerListByPage(postId, page, pageSize)
 }
 
