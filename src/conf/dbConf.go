@@ -14,7 +14,7 @@ var MasterDBConf = DBConf{
 	Host:"127.0.0.1",
 	Port: 3306,
 	User:"root",
-	Pwd: "12345678",
+	Pwd: "123456",
 	DBName:"drfinder",
 }
 
@@ -23,5 +23,13 @@ var MongoDBConf = DBConf{
 	Port: 27017,
 	User: "zack",
 	Pwd: "123456",
-	DBName: "usadoctors",
+	DBName: "user",
+}
+
+var ElasticSearchConf = DBConf{
+	Host:   "http://192.168.11.140",
+	Port:   9200,
+	User:   "",
+	Pwd:    "",
+	DBName: "",
 }

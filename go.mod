@@ -47,6 +47,7 @@ require (
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/o1egl/govatar v0.3.0
 	github.com/olivere/elastic/v7 v7.0.19
+	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
 	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 	github.com/sergi/go-diff v1.0.0 // indirect
@@ -72,5 +73,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
-	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

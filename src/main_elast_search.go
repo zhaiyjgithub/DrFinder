@@ -6,17 +6,17 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-const ES_NODE_URL = "http://172.16.54.128:9200"
+const EsNodeUrl = "http://172.16.54.128:9200"
 
 func main()  {
 	ctx := context.Background()
 
-	client, err := elastic.NewClient(elastic.SetURL(ES_NODE_URL))
+	client, err := elastic.NewClient(elastic.SetURL(EsNodeUrl))
 	if err != nil {
 		panic(err)
 	}
 
-	info, code, err := client.Ping(ES_NODE_URL).Do(ctx)
+	info, code, err := client.Ping(EsNodeUrl).Do(ctx)
 	if err != nil {
 		panic(err)
 	}

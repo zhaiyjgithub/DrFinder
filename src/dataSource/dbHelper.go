@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -23,9 +24,11 @@ var (
 	masterEngine *gorm.DB
 	cacheDB *bolt.DB
 	mongoEngine *mongo.Database
+	elasticSearchClient *elastic.Client
 
 	masterDBOnce sync.Once
 	mongoDBOnce sync.Once
+	elasticSearchOnce sync.Once
 )
 
 func InstanceMaster() *gorm.DB {
@@ -71,6 +74,34 @@ func InstanceMongoDB() *mongo.Database {
 	})
 
 	return mongoEngine
+}
+
+func InstanceElasticSearch()  *elastic.Client {
+	elasticSearchOnce.Do(func() {
+		//addr := net.JoinHostPort(conf.ElasticSearchConf.Host, conf.ElasticSearchConf.Port)
+		url := fmt.Sprintf("%s/%d", conf.ElasticSearchConf.Host, conf.ElasticSearchConf.Port)
+		client, err := elastic.NewClient(elastic.SetURL(url))
+		if err != nil {
+			log.Fatalf("Setup elastic search server failed....: %v", err)
+		}
+
+		info, code, err := client.Ping(url).Do(context.Background())
+		if err != nil {
+			log.Fatalf("ping elastic search server error: %v", err)
+		}
+
+		fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
+
+		version, err := client.ElasticsearchVersion(url)
+		if err != nil {
+			log.Fatalf("Get elastic version error: %v", err)
+		}
+		fmt.Printf("Elasticsearch version %s\n", version)
+
+		elasticSearchClient = client
+	})
+
+	return elasticSearchClient
 }
 
 func InstanceCacheDB() error {

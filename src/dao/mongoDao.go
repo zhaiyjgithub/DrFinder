@@ -16,12 +16,10 @@ func NewMongoDao(engine *mongo.Database) *MongoDao {
 
 func (d *MongoDao) InsertOne(collection string, val interface{}) error {
 	_, err := d.engine.Collection(collection).InsertOne(context.TODO(), val)
-
 	return err
 }
 
 func (d *MongoDao) FindOne(collection string, filter interface{},) (interface{}, error) {
-
 	var val struct{
 		Name string
 		Time time.Time
