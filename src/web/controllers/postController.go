@@ -23,6 +23,7 @@ type PostController struct {
 	UserService service.UserService
 	PostImageService service.PostImageService
 	AppendService service.AppendService
+	ElasticService service.PostElasticService
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -376,11 +377,21 @@ func (c *PostController) CreatePost()  {
 		}
 	}
 
+	//sync post to elastic
+	err = c.syncPostToElastic(&post)
+	if err != nil {
+		fmt.Printf("Sync post to elastic failed. Id: %d", post.ID)
+	}
+
 	if err != nil {
 		response.Fail(c.Ctx, response.Err, err.Error(), nil)
 	}else {
 		response.Success(c.Ctx, response.Successful, nil)
 	}
+}
+
+func (c *PostController) syncPostToElastic(post *models.Post) error {
+	return c.ElasticService.AddOnePost(post)
 }
 
 func saveFile(imgBase64 string, destDir string, fileName string) (int64, error)  {

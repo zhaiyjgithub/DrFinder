@@ -114,6 +114,7 @@ func postMVC(app *mvc.Application)  {
 	userService := service.NewUserService()
 	postImageService := service.NewPostImageService()
 	appendService := service.NewAppendService()
+	elasticService := service.NewPostElasticService()
 
 	app.Register(
 		postService,
@@ -121,6 +122,7 @@ func postMVC(app *mvc.Application)  {
 		userService,
 		postImageService,
 		appendService,
+		elasticService,
 		)
 	app.Handle(new(controllers.PostController))
 }

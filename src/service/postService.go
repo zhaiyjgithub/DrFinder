@@ -17,7 +17,6 @@ type PostService interface {
 	GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post
 }
 
-
 type postService struct {
 	dao *dao.PostDao
 }

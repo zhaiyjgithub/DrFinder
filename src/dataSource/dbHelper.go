@@ -76,10 +76,10 @@ func InstanceMongoDB() *mongo.Database {
 	return mongoEngine
 }
 
-func InstanceElasticSearch()  *elastic.Client {
+func InstanceElasticSearchClient()  *elastic.Client {
 	elasticSearchOnce.Do(func() {
 		//addr := net.JoinHostPort(conf.ElasticSearchConf.Host, conf.ElasticSearchConf.Port)
-		url := fmt.Sprintf("%s/%d", conf.ElasticSearchConf.Host, conf.ElasticSearchConf.Port)
+		url := fmt.Sprintf("%s:%d", conf.ElasticSearchConf.Host, conf.ElasticSearchConf.Port)
 		client, err := elastic.NewClient(elastic.SetURL(url))
 		if err != nil {
 			log.Fatalf("Setup elastic search server failed....: %v", err)
