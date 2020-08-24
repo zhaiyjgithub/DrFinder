@@ -40,10 +40,6 @@ const (
 `
 )
 
-func CreateIndexMappingsIfNotExisting(indexName string)  {
-
-}
-
 func NewElasticDao(client *elastic.Client) *PostElasticDao {
 	return &PostElasticDao{client:client}
 }

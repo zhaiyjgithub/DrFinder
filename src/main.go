@@ -11,6 +11,7 @@ import (
 
 func main() {
 	err := dataSource.InstanceCacheDB()
+	dataSource.ElasticSetup()
 
 	if err != nil {
 		panic(err)
