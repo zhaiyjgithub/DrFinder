@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
+	"time"
 )
 
 type PostElasticDao struct {
@@ -49,9 +50,11 @@ func (d *PostElasticDao) AddOnePost(post *models.Post) error {
 		PostId int `json:"post_id"`
 		Title string `json:"title"`
 		Description string `json:"description"`
+		CreateDate string `json:"create_date"`
 	}
 
-	postType := PostType{PostId: post.ID, Title:post.Title, Description: post.Description}
+	date := post.CreatedAt.UTC().Format(time.RFC3339)
+	postType := PostType{PostId: post.ID, Title:post.Title, Description: post.Description, CreateDate: date}
 	_, err := d.client.Index().Index(IndexPostName).BodyJson(postType).Do(context.Background())
 
 	return err

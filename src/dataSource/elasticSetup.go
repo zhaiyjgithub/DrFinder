@@ -21,18 +21,10 @@ const (
 	},
 	"mappings":{
 		"properties":{
-			"title":{
-				"type":"text"
-			},
-			"description":{
-				"type":"text",
-			},
-			"post_id":{
-				"type": int
-			},
-			"create_date":{
-				"type":"geo_point"
-			},
+			"post_id": {"type": "integer"},
+			"title": {"type": "text"},
+			"description": {"type": "text"},
+			"create_date": {"type": "date"}
 		}
 	}
 }
@@ -62,7 +54,7 @@ func createIndexMappingsIfNotExisting(client *elastic.Client, name string, mappi
 			log.Fatalf("Create Index(%s) fatal.", name)
 		}
 
-		if index != nil {
+		if index == nil {
 			log.Fatalf("Create Index(%s) fatal, should not nil.", name)
 		}
 	}

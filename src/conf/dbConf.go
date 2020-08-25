@@ -27,7 +27,7 @@ var MongoDBConf = DBConf{
 }
 
 var ElasticSearchConf = DBConf{
-	Host:   "http://192.168.11.140",
+	Host:   "http://192.168.11.143",
 	Port:   9200,
 	User:   "",
 	Pwd:    "",
