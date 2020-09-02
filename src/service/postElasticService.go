@@ -8,7 +8,7 @@ import (
 
 type PostElasticService interface {
 	AddOnePost(post *models.Post) error
-	QueryPost(content string)
+	QueryPost(content string, page int, pageSize int) []int
 }
 
 type postElasticService struct {
@@ -23,7 +23,7 @@ func (s *postElasticService) AddOnePost(post *models.Post) error {
 	return s.dao.AddOnePost(post)
 }
 
-func (s *postElasticService) QueryPost(content string) {
-	s.dao.QueryPost(content)
+func (s *postElasticService) QueryPost(content string, page int, pageSize int) []int {
+	return s.dao.QueryPost(content, page, pageSize)
 }
 

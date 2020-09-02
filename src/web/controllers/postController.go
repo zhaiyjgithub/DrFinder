@@ -27,7 +27,7 @@ type PostController struct {
 }
 
 func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
-	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost", j.Serve)
+	b.Handle(iris.MethodPost, utils.CreatePost, "CreatePost")
 	b.Handle(iris.MethodPost, utils.UpdatePost, "UpdatePost", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddLikes, "AddLikes", j.Serve)
 	b.Handle(iris.MethodPost, utils.AddFavor, "AddFavor", j.Serve)
@@ -38,6 +38,7 @@ func (c *PostController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.AddAppendToPost, "AddAppendToPost", j.Serve)
 	b.Handle(iris.MethodPost, utils.GetAppendByPostID, "GetAppendByPostID", j.Serve)
 	b.Handle(iris.MethodPost, utils.DeletePostByIds, "DeletePostByIds", j.Serve)
+	b.Handle(iris.MethodPost, utils.SearchPostByPageFromElastic, "SearchPostByPageFromElastic")
 }
 
 func (c *PostController) UpdatePost()  {
@@ -287,6 +288,78 @@ func (c *PostController) GetMyPostByPage()  {
 	response.Success(c.Ctx, response.Successful, postInfos)
 }
 
+func (c *PostController) SearchPostByPageFromElastic()  {
+	type Param struct {
+		Content string `validate:"gt=0"`
+		Page int `validate:"gt=0"`
+		PageSize int `validate:"gt=0"`
+	}
+
+	var param Param
+	err := utils.ValidateParam(c.Ctx, validate, &param)
+	if err != nil {
+		return
+	}
+
+	type PostInfo struct {
+		PostID int
+		UserIcon string
+		UserName string
+		Type int
+		Title string
+		Description string
+		Likes int
+		PostDate time.Time
+		AnswerCount int
+		LastAnswerName string
+		LastAnswerDate time.Time
+		URLs []string
+	}
+
+	postIds := c.ElasticService.QueryPost(param.Content, param.Page, param.PageSize)
+	posts := c.Service.GetPostByPostId(postIds)
+
+	var postInfos []PostInfo
+	for i := 0; i < len(posts); i ++  {
+		post := posts[i]
+		postUser := c.UserService.GetUserById(post.ID)
+		answer, count := c.AnswerService.GetLastAnswer(post.ID)
+
+		var answerName string
+		var lastCreateAt time.Time
+
+		if answer != nil {
+			user := c.UserService.GetUserById(answer.UserID)
+			answerName = user.Name
+			lastCreateAt = answer.CreatedAt
+		}
+
+		postImgs := c.PostImageService.GetImageByPostId(post.ID)
+
+		urls := make([]string, 0)
+		for _, img:= range postImgs {
+			urls = append(urls, img.URL)
+		}
+
+		var postInfo PostInfo
+		postInfo.PostID = post.ID
+		postInfo.UserIcon = postUser.HeaderIcon
+		postInfo.UserName = postUser.Name
+		postInfo.Type = post.Type
+		postInfo.Title = post.Title
+		postInfo.Description = post.Description
+		postInfo.Likes = post.Likes
+		postInfo.PostDate = post.CreatedAt
+		postInfo.AnswerCount = count
+		postInfo.LastAnswerName = answerName
+		postInfo.LastAnswerDate = lastCreateAt
+		postInfo.URLs = urls
+		postInfos = append(postInfos, postInfo)
+	}
+
+	response.Success(c.Ctx, response.Successful, postInfos)
+}
+
 func (c *PostController) AddAppendToPost()  {
 	type Param struct {
 		PostID int `validate:"gt=0"`
@@ -363,19 +436,20 @@ func (c *PostController) CreatePost()  {
 	post.UpdatedAt = time.Now()
 
 	err, postId := c.Service.Add(&post)
+	post.ID = postId
 
-	files := param.Files
-	failure := 0
-	for _, file := range files {
-		fileName := fmt.Sprintf("%s.%s", generateFileName(param.UserID), file.Ext)
-		_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
-		if err != nil {
-			failure ++
-		}else {
-			postImg := models.PostImage{PostID:postId, URL: fileName}
-			_ = c.PostImageService.CreatePostImage(postImg)
-		}
-	}
+	//files := param.Files
+	//failure := 0
+	//for _, file := range files {
+	//	fileName := fmt.Sprintf("%s.%s", generateFileName(param.UserID), file.Ext)
+	//	_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
+	//	if err != nil {
+	//		failure ++
+	//	}else {
+	//		postImg := models.PostImage{PostID:postId, URL: fileName}
+	//		_ = c.PostImageService.CreatePostImage(postImg)
+	//	}
+	//}
 
 	//sync post to elastic
 	err = c.syncPostToElastic(&post)

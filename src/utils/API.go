@@ -62,6 +62,7 @@ const (
 	AddAppendToPost = "/AddAppendToPost"
 	GetAppendByPostID = "/GetAppendByPostID"
 	DeletePostByIds = "/DeletePostByIds"
+	SearchPostByPageFromElastic = "/SearchPostByPageFromElastic"
 )
 
 const (

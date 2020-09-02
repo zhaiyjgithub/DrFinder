@@ -31,6 +31,13 @@ func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []*mod
 	return posts
 }
 
+func (d *PostDao) GetPostByPostId(ids []int) []*models.Post {
+	var post []*models.Post
+	d.engine.Where("id in (?)", ids).Find(&post)
+
+	return post
+}
+
 func (d *PostDao) GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post {
 	var posts []*models.Post
 	d.engine.Limit(pageSize).Offset((page - 1)*pageSize).Where("user_id = ?", userId).Order("title", false).Find(&posts)

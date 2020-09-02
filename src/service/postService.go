@@ -15,6 +15,7 @@ type PostService interface {
 	AddFavor(id int) error
 	DeleteByUser(id int, userId int) error
 	GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post
+	GetPostByPostId(ids []int) []*models.Post
 }
 
 type postService struct {
@@ -55,4 +56,8 @@ func (s *postService) DeleteByUser(id int, userId int) error  {
 
 func (s *postService) GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post {
 	return s.dao.GetMyPostListByPage(userId, page, pageSize)
+}
+
+func (s *postService) GetPostByPostId(ids []int) []*models.Post  {
+	return s.dao.GetPostByPostId(ids)
 }

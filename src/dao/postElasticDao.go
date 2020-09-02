@@ -4,7 +4,6 @@ import (
 	"DrFinder/src/models"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/olivere/elastic/v7"
 	"time"
 )
@@ -60,17 +59,20 @@ func (d *PostElasticDao) AddOnePost(post *models.Post) error {
 	return err
 }
 
-func (d *PostElasticDao) QueryPost(content string)  {
+func (d *PostElasticDao) QueryPost(content string, page int, pageSize int) []int {
 	q := elastic.NewMatchAllQuery()
-	result, err := d.client.Search().Index(IndexPostName).Query(q).Pretty(true).Do(context.Background())
+	result, err := d.client.Search().Index(IndexPostName).
+		Size(pageSize).
+		From((page - 1)*pageSize).
+		Query(q).
+		Pretty(true).
+		Do(context.Background())
 
 	type PostType struct {
-		PostId int
-		Title string
-		Description string
+		PostId int `json:"post_id"`
 	}
 
-	var postTypes []PostType
+	var postIds []int
 	for _, hit := range result.Hits.Hits {
 		var postType PostType
 		err = json.Unmarshal(hit.Source, &postType)
@@ -79,8 +81,8 @@ func (d *PostElasticDao) QueryPost(content string)  {
 			continue
 		}
 
-		postTypes = append(postTypes, postType)
+		postIds = append(postIds, postType.PostId)
 	}
 
-	fmt.Print(postTypes)
+	return postIds
 }
