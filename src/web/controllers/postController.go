@@ -319,7 +319,7 @@ func (c *PostController) SearchPostByPageFromElastic()  {
 	postIds := c.ElasticService.QueryPost(param.Content, param.Page, param.PageSize)
 	posts := c.Service.GetPostByPostId(postIds)
 
-	var postInfos []PostInfo
+	postInfos := make([]*PostInfo, 0)
 	for i := 0; i < len(posts); i ++  {
 		post := posts[i]
 		postUser := c.UserService.GetUserById(post.ID)
@@ -354,7 +354,7 @@ func (c *PostController) SearchPostByPageFromElastic()  {
 		postInfo.LastAnswerName = answerName
 		postInfo.LastAnswerDate = lastCreateAt
 		postInfo.URLs = urls
-		postInfos = append(postInfos, postInfo)
+		postInfos = append(postInfos, &postInfo)
 	}
 
 	response.Success(c.Ctx, response.Successful, postInfos)
@@ -438,23 +438,23 @@ func (c *PostController) CreatePost()  {
 	err, postId := c.Service.Add(&post)
 	post.ID = postId
 
-	//files := param.Files
-	//failure := 0
-	//for _, file := range files {
-	//	fileName := fmt.Sprintf("%s.%s", generateFileName(param.UserID), file.Ext)
-	//	_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
-	//	if err != nil {
-	//		failure ++
-	//	}else {
-	//		postImg := models.PostImage{PostID:postId, URL: fileName}
-	//		_ = c.PostImageService.CreatePostImage(postImg)
-	//	}
-	//}
-
 	//sync post to elastic
 	err = c.syncPostToElastic(&post)
 	if err != nil {
 		fmt.Printf("Sync post to elastic failed. Id: %d", post.ID)
+	}
+
+	files := param.Files
+	failure := 0
+	for _, file := range files {
+		fileName := fmt.Sprintf("%s.%s", generateFileName(param.UserID), file.Ext)
+		_, err = saveFile(file.Base64Data, "./src/upload/post", fileName)
+		if err != nil {
+			failure ++
+		}else {
+			postImg := models.PostImage{PostID:postId, URL: fileName}
+			_ = c.PostImageService.CreatePostImage(postImg)
+		}
 	}
 
 	if err != nil {

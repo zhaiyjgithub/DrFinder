@@ -32,10 +32,10 @@ func (d *PostDao) GetPostListByPage(postType int, page int, pageSize int) []*mod
 }
 
 func (d *PostDao) GetPostByPostId(ids []int) []*models.Post {
-	var post []*models.Post
-	d.engine.Where("id in (?)", ids).Find(&post)
+	posts := make([]*models.Post, 0)
+	d.engine.Where("id in (?)", ids).Find(&posts)
 
-	return post
+	return posts
 }
 
 func (d *PostDao) GetMyPostListByPage(userId int, page int, pageSize int) []*models.Post {

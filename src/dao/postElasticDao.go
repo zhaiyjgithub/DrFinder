@@ -60,7 +60,7 @@ func (d *PostElasticDao) AddOnePost(post *models.Post) error {
 }
 
 func (d *PostElasticDao) QueryPost(content string, page int, pageSize int) []int {
-	q := elastic.NewMatchAllQuery()
+	q := elastic.NewMultiMatchQuery(content, "title", "description")
 	result, err := d.client.Search().Index(IndexPostName).
 		Size(pageSize).
 		From((page - 1)*pageSize).
@@ -72,7 +72,7 @@ func (d *PostElasticDao) QueryPost(content string, page int, pageSize int) []int
 		PostId int `json:"post_id"`
 	}
 
-	var postIds []int
+	postIds := make([]int, 0)
 	for _, hit := range result.Hits.Hits {
 		var postType PostType
 		err = json.Unmarshal(hit.Source, &postType)
