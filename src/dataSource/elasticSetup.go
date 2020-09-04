@@ -25,14 +25,14 @@ const (
 				"type":"text"
 			},
 			"description":{
-				"type":"text",
+				"type":"text"
 			},
 			"post_id":{
 				"type": int
 			},
 			"create_date":{
 				"type":"date"
-			},
+			}
 		}
 	}
 }
@@ -50,35 +50,35 @@ const (
 				"type":"integer"
 			},
 			"full_name":{
-				"type":"text",
+				"type":"text"
 			},
 			"last_name":{
-				"type":"text",
+				"type":"text"
 			},
 			"first_name":{
-				"type":"text",
+				"type":"text"
 			},
 			"specialty":{
-				"type":"text",
+				"type":"text"
 			},
 			"sub_specialty":{
-				"type":"text",
+				"type":"text"
 			},	
 			"address":{
-				"type":"text",
+				"type":"text"
 			},
 			"city":{
-				"type":"keyword",
+				"type":"keyword"
 			},
 			"state":{
-				"type":"keyword",
+				"type":"keyword"
 			},
 			"zip_code":{
-				"type":"integer",
+				"type":"integer"
 			},
 			"create_date":{
 				"type":"date"
-			},
+			}
 		}
 	}
 }
@@ -88,6 +88,7 @@ const (
 func ElasticSetup()  {
 	elasticIndexInfos := [...]elasticIndexInfo{
 		{Name: IndexPostName, Mapping: IndexPostMappings},
+		{Name: IndexDoctorName, Mapping: IndexDoctorMappings},
 	}
 	client := InstanceElasticSearchClient()
 
