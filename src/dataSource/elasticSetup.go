@@ -12,8 +12,8 @@ type elasticIndexInfo struct {
 }
 
 const (
-	indexPostName = "post"
-	indexPostMappings = `
+	IndexPostName = "post"
+	IndexPostMappings = `
 {
 	"settings":{
 		"number_of_shards":1,
@@ -21,10 +21,64 @@ const (
 	},
 	"mappings":{
 		"properties":{
-			"post_id": {"type": "integer"},
-			"title": {"type": "text"},
-			"description": {"type": "text"},
-			"create_date": {"type": "date"}
+			"title":{
+				"type":"text"
+			},
+			"description":{
+				"type":"text",
+			},
+			"post_id":{
+				"type": int
+			},
+			"create_date":{
+				"type":"date"
+			},
+		}
+	}
+}
+`
+	IndexDoctorName = "doctor"
+	IndexDoctorMappings = `
+{
+	"settings":{
+		"number_of_shards":1,
+		"number_of_replicas":0
+	},
+	"mappings":{
+		"properties":{
+			"npi":{
+				"type":"integer"
+			},
+			"full_name":{
+				"type":"text",
+			},
+			"last_name":{
+				"type":"text",
+			},
+			"first_name":{
+				"type":"text",
+			},
+			"specialty":{
+				"type":"text",
+			},
+			"sub_specialty":{
+				"type":"text",
+			},	
+			"address":{
+				"type":"text",
+			},
+			"city":{
+				"type":"keyword",
+			},
+			"state":{
+				"type":"keyword",
+			},
+			"zip_code":{
+				"type":"integer",
+			},
+			"create_date":{
+				"type":"date"
+			},
 		}
 	}
 }
@@ -33,7 +87,7 @@ const (
 
 func ElasticSetup()  {
 	elasticIndexInfos := [...]elasticIndexInfo{
-		{Name: indexPostName, Mapping: indexPostMappings},
+		{Name: IndexPostName, Mapping: IndexPostMappings},
 	}
 	client := InstanceElasticSearchClient()
 
