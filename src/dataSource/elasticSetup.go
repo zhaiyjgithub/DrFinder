@@ -79,8 +79,12 @@ const (
 			"gender":{
 				"type":"integer"
 			},
-			"location": {
-            	"type": "geo_point"
+			"pin": {
+            	"properties": {
+          			"location": {
+            			"type": "geo_point"
+          			}
+        		}
           	},
 			"create_date":{
 				"type":"date"

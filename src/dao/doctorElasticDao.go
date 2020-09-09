@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/olivere/elastic/v7"
+	"strconv"
 )
 
 type DoctorElasticDao struct {
@@ -16,7 +17,7 @@ func NewDoctorElasticDao(client *elastic.Client) *DoctorElasticDao {
 	return &DoctorElasticDao{client:client}
 }
 
-func (d *DoctorElasticDao) AddDoctor(doctor *models.Doctor)  {
+func (d *DoctorElasticDao) AddDoctor(doctor *models.Doctor, lat float64, lon float64) error {
 	type DoctorES struct {
 		Npi int `json:"npi"`
 		FullName string `json:"full_name"`
@@ -29,10 +30,41 @@ func (d *DoctorElasticDao) AddDoctor(doctor *models.Doctor)  {
 		State string `json:"state"`
 		ZipCode int `json:"zip_code"`
 		Gender int `json:"gender"`
-		Location string `json:"location"`
+		Pin struct{
+			Location struct{
+				Lat float64 `json:"lat"`
+				Lon float64 `json:"lon"`
+			} `json:"location"`
+		} `json:"pin"`
 	}
 
+	zip, _ := strconv.Atoi(doctor.Zip)
+	gender := 0
+	if doctor.Gender == "M" {
+		gender = 1
+	}else {
+		gender = 2
+	}
+	doctorEs := &DoctorES{
+		Npi: doctor.Npi,
+		FullName: doctor.FullName,
+		LastName: doctor.LastName,
+		FirstName: doctor.FirstName,
+		Specialty: doctor.Specialty,
+		SubSpecialty: doctor.SubSpecialty,
+		Address: doctor.Address,
+		City: doctor.City,
+		State: doctor.State,
+		ZipCode: zip,
+		Gender: gender,
+		}
 
+	doctorEs.Pin.Location.Lat = lat
+	doctorEs.Pin.Location.Lon = lon
+
+	_, err := d.client.Index().Index(dataSource.IndexDoctorName).BodyJson(doctorEs).Do(context.Background())
+
+	return err
 }
 
 func (d *DoctorElasticDao)QueryDoctor(doctorName string,
@@ -104,7 +136,7 @@ func (d *DoctorElasticDao) QueryNewByDoctor(lat float64,
 	) []int {
 	npiList := make([]int, 0)
 
-	q := elastic.NewGeoDistanceQuery("doctor.location")
+	q := elastic.NewGeoDistanceQuery("pin.location")
 	q = q.Lat(lat)
 	q = q.Lon(lon)
 	q = q.Distance(distance)
