@@ -25,6 +25,7 @@ type DoctorController struct {
 	MemberService service.MembershipService
 	CollectionService service.CollectionService
 	UserTrackService service.UserTrackService
+	DoctorElasticService service.DoctorElasticService
 }
 
 func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
@@ -40,6 +41,7 @@ func (c *DoctorController) BeforeActivation(b mvc.BeforeActivation)  {
 	b.Handle(iris.MethodPost, utils.GetCollections, "GetCollections", j.Serve)
 	b.Handle(iris.MethodPost, utils.GetCollectionStatus, "GetCollectionStatus", j.Serve)
 	b.Handle(iris.MethodPost, utils.DeleteCollection, "DeleteCollection", j.Serve)
+	b.Handle(iris.MethodPost, utils.SearchDoctorES, "SearchDoctorES")
 }
 
 func (c *DoctorController) AddDoctor() {
@@ -169,6 +171,47 @@ func (c *DoctorController) SearchDoctor()  {
 	doctor.City = param.City
 
 	doctors:= c.Service.SearchDoctor(&doctor)
+
+	response.Success(c.Ctx, response.Successful, doctors)
+}
+
+func (c *DoctorController) SearchDoctorES()  {
+	type Param struct {
+		Name string
+		Specialty string
+		Gender int
+		Address string
+		City string
+		State string
+		ZipCode int
+		Page int
+		PageSize int
+	}
+
+	var param Param
+	err:= utils.ValidateParam(c.Ctx, validate, &param)
+
+	if err != nil {
+		return
+	}
+
+	npiList := make([]int, 0)
+
+	npiList = c.DoctorElasticService.QueryDoctor(param.Name,
+			param.Specialty,
+			param.Gender,
+			param.State,
+			param.City,
+			param.Address,
+			param.ZipCode,
+			param.Page,
+			param.PageSize,
+		)
+
+	doctors := make([]*models.Doctor, 0)
+	if len(npiList) > 0 {
+		doctors = c.Service.GetDoctorByNpiList(npiList)
+	}
 
 	response.Success(c.Ctx, response.Successful, doctors)
 }

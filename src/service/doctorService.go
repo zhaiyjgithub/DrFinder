@@ -24,6 +24,7 @@ type DoctorService interface {
 	GetDoctorByNpi(npi int) *models.Doctor
 	GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor
 	UpdateDoctorAddress(doc *models.Doctor) error
+	GetDoctorByNpiList(npiList []int) []*models.Doctor
 }
 
 type doctorService struct {
@@ -96,6 +97,10 @@ func (s *doctorService) FindDoctorByPage(doctor *models.Doctor, lat float64, lng
 
 func (s *doctorService) GetDoctorByNpi(npi int) *models.Doctor  {
 	return s.dao.GetDoctorByNpi(npi)
+}
+
+func (s *doctorService) GetDoctorByNpiList(npiList []int) []*models.Doctor {
+	return s.dao.GetDoctorByNpiList(npiList)
 }
 
 func (s *doctorService)GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor  {

@@ -231,6 +231,13 @@ func (d *DoctorDao) GetDoctorByNpi(npi int) *models.Doctor {
 	return doctor
 }
 
+func (d *DoctorDao) GetDoctorByNpiList(npiList []int) []*models.Doctor {
+	doctors := make([]*models.Doctor, 0)
+	d.engine.Raw("select * from doctors where npi in (?)", npiList).Find(&doctors)
+
+	return doctors
+}
+
 func (d *DoctorDao) GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor  {
 	var docs []*models.Doctor
 	d.engine.Raw("select * from doctors where address = '' limit ? offset ?", pageSize, (page - 1)*pageSize).Scan(&docs)

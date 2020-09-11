@@ -14,6 +14,7 @@ const (
 	GetCollections = "/GetCollections"
 	GetCollectionStatus = "/GetCollectionStatus"
 	DeleteCollection = "/DeleteCollection"
+	SearchDoctorES = "/SearchDoctorES"
 )
 
 const (

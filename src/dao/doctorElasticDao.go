@@ -5,7 +5,9 @@ import (
 	"DrFinder/src/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/olivere/elastic/v7"
+	"log"
 	"strconv"
 )
 
@@ -83,15 +85,19 @@ func (d *DoctorElasticDao)QueryDoctor(doctorName string,
 	q := elastic.NewBoolQuery()
 
 	if len(doctorName) > 0 {
-		q = q.Must(elastic.NewMatchQuery("full_name", doctorName))
+		q = q.Must(elastic.NewMatchQuery("full_name", doctorName)) //map type = text
+	}
+
+	if len(specialty) > 0 {
+		q = q.Filter(elastic.NewMatchQuery("specialty", specialty)) // map type = text
 	}
 
 	if gender > 0 {
-		q = q.Must(elastic.NewTermQuery("gender", gender))
+		q = q.Must(elastic.NewTermQuery("gender", gender)) //int
 	}
 
 	if len(state) > 0 {
-		q = q.Must(elastic.NewTermQuery("state", state))
+		q = q.Must(elastic.NewTermQuery("state", state)) //keyword
 	}
 
 	if len(city) > 0 {
@@ -105,6 +111,19 @@ func (d *DoctorElasticDao)QueryDoctor(doctorName string,
 	if zipCode > 0 {
 		q = q.Must(elastic.NewTermQuery("zip_code", zipCode))
 	}
+
+	q = q.QueryName("Test")
+	src, err := q.Source()
+	if err != nil {
+		log.Fatal(err)
+	}
+	data, err := json.Marshal(src)
+	if err != nil {
+		log.Fatalf("marshaling to JSON failed: %v", err)
+	}
+	got := string(data)
+
+	fmt.Println(got)
 
 	result, err := d.client.Search().Index(dataSource.IndexDoctorName).
 		Size(pageSize).

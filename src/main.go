@@ -57,6 +57,7 @@ func doctorMVC(app *mvc.Application) {
 	memberShipService := service.NewMembershipService()
 	collectionService := service.NewCollectionService()
 	userTrackService := service.NewUserTrackService()
+	doctorElasticService := service.NewDoctorElasticService()
 
 	app.Register(
 		doctorService,
@@ -70,6 +71,7 @@ func doctorMVC(app *mvc.Application) {
 		memberShipService,
 		collectionService,
 		userTrackService,
+		doctorElasticService,
 		)
 	app.Handle(new(controllers.DoctorController))
 }
