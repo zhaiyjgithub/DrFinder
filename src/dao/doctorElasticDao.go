@@ -84,8 +84,8 @@ func (d *DoctorElasticDao)QueryDoctor(doctorName string,
 
 	q := elastic.NewBoolQuery()
 
-	if len(doctorName) > 0 {
-		q = q.Must(elastic.NewMatchQuery("full_name", doctorName)) //map type = text
+	if len(doctorName) > 0 && len(address) > 0{
+		q = q.Must(elastic.NewMultiMatchQuery(doctorName, "full_name^3", "address" )) //map type = text
 	}
 
 	if len(specialty) > 0 {
@@ -102,10 +102,6 @@ func (d *DoctorElasticDao)QueryDoctor(doctorName string,
 
 	if len(city) > 0 {
 		q = q.Must(elastic.NewTermQuery("city", city))
-	}
-
-	if len(address) > 0 {
-		q = q.Must(elastic.NewMatchQuery("address", address))
 	}
 
 	if zipCode > 0 {
