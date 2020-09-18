@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
@@ -31,4 +32,43 @@ func (d *MongoDao) FindOne(collection string, filter interface{},) (interface{},
 	}
 
 	return val, nil
+}
+
+func (d *MongoDao) GetHotDoctor()([]int, error) {
+	type DoctorNpiMongo struct {
+		Npi int `bson:"npi"`
+		Count int `bson:"count"`
+	}
+
+	groupStage := bson.D{{"$group",
+		bson.D{{"_id", "$npi"}, {"count", bson.D{{"$sum", 1}}}}}}
+
+	addFieldsStage := bson.D{{"$addFields", bson.D{{"npi", "$_id"}}}}
+
+	sortStage := bson.D{{"$sort", bson.D{{"count", -1}}}}
+	limitStage := bson.D{{"$limit", 20}}
+
+	cur, err := d.engine.Collection(SearchDrResultRecord).Aggregate(context.TODO(), mongo.Pipeline{
+		groupStage, addFieldsStage, sortStage, limitStage})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resultList []bson.M
+	if err = cur.All(context.TODO(), &resultList); err != nil {
+		return nil, err
+	}
+
+	npiList := make([]int, 0)
+	for _, doctor := range resultList {
+		var d DoctorNpiMongo
+
+		b, _ := bson.Marshal(doctor)
+		_ = bson.Unmarshal(b, &d)
+
+		npiList = append(npiList, d.Npi)
+	}
+
+	return npiList, nil
 }

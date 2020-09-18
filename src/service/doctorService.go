@@ -25,15 +25,18 @@ type DoctorService interface {
 	GetDoctorsNoAddress(page int , pageSize int) []*models.Doctor
 	UpdateDoctorAddress(doc *models.Doctor) error
 	GetDoctorByNpiList(npiList []int) []*models.Doctor
+
 }
 
 type doctorService struct {
 	dao *dao.DoctorDao
+	mongoDao *dao.MongoDao
 }
 
 func NewDoctorService() DoctorService {
 	return &doctorService{
 		dao: dao.NewDoctorDao(dataSource.InstanceMaster()),
+		mongoDao: dao.NewMongoDao(dataSource.InstanceMongoDB()),
 	}
 }
 
@@ -76,7 +79,28 @@ func (s *doctorService) GetDoctorByPage(page int, pageSize int) []*models.Doctor
 }
 
 func (s *doctorService) GetHotSearchDoctors() []*models.Doctor {
-	return s.dao.GetHotSearchDoctors()
+	doctors := make([]*models.Doctor, 0)
+
+	npiList, err := s.mongoDao.GetHotDoctor()
+	if err != nil || len(npiList) == 0 {
+		return doctors
+	}
+
+	doctors = s.dao.GetDoctorByNpiList(npiList)
+
+	sortDoctors := make([]*models.Doctor, 0)
+
+	for _, npi := range npiList {
+		for i := 0; i < len(doctors); i ++ {
+			d := doctors[i]
+			if npi == d.Npi {
+				sortDoctors = append(sortDoctors, d)
+				break
+			}
+		}
+	}
+
+	return sortDoctors
 }
 
 func (s *doctorService) GetRelatedDoctors(relateDoctor *models.Doctor) []*models.Doctor {

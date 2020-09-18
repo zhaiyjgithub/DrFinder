@@ -84,7 +84,7 @@ func (d *DoctorElasticDao)QueryDoctor(doctorName string,
 
 	q := elastic.NewBoolQuery()
 
-	if len(doctorName) > 0 && len(address) > 0{
+	if len(doctorName) > 0 || len(address) > 0 { //客户端输入框的地址和医生名字同事使用
 		q = q.Must(elastic.NewMultiMatchQuery(doctorName, "full_name^3", "address" )) //map type = text
 	}
 
