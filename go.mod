@@ -9,7 +9,6 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/boltdb/bolt v1.3.1
-	github.com/denisenkom/go-mssqldb v0.0.0-20190515213511-eb9f6a1743f3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
 	github.com/etcd-io/bbolt v1.3.3 // indirect
@@ -29,9 +28,7 @@ require (
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/iris-contrib/middleware v0.0.0-20190816193017-7838277651e8
-	github.com/jimsmart/schema v0.0.0-20181113191328-8d0563922e25
 	github.com/jinzhu/gorm v1.9.10
-	github.com/jinzhu/inflection v1.0.0
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40 // indirect
@@ -40,20 +37,16 @@ require (
 	github.com/klauspost/compress v1.7.6 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
-	github.com/lib/pq v1.1.1
 	github.com/mattn/go-colorable v0.1.2 // indirect
-	github.com/mattn/go-sqlite3 v1.10.0
-	github.com/microcosm-cc/bluemonday v1.0.2 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.25 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/o1egl/govatar v0.3.0
 	github.com/olivere/elastic/v7 v7.0.19
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/ryanuber/columnize v2.1.0+incompatible // indirect
-	github.com/serenize/snaker v0.0.0-20171204205717-a683aaf2d516
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/smallnest/gen v0.0.0-20190622061851-4f74901757b2
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
